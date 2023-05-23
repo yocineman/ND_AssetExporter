@@ -435,14 +435,13 @@ def export_anim_main(**kwargs):
             cmds.select(node, add=True)
         except Exception as e:
             print(e)
+
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
     if baseAnimationLayer != None and len(cmds.ls(sl=True)) != 0:
         animLayers = cmds.ls(type='animLayer')
         for al in animLayers:
             cmds.animLayer(al, e=True, sel=False)
-        cmds.animLayer(baseAnimationLayer, e=True, sel=True)
-        cmds.bakeResults(t=(sframe, eframe), sb=True,
-                         ral=True, dic=True, pok=True, sm=True)
+        cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True)
 
     attrs = getNoKeyAttributes(all_nodes)
     if len(node_and_attrs) != 0:
