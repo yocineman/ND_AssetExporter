@@ -627,7 +627,7 @@ def is_arnold(project):
 
 
 class SGProjectClass(object):
-    def __init__(self, project, field_codes, ProjectInfoClass):
+    def __init__(self, project, field_codes, ProjectInfoClass=None):
         self.SGFieldDict = {}
         self.project_name = project
         self.project_code = sg_util.get_project(project)

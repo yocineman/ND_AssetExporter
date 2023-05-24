@@ -5,8 +5,7 @@ import maya.cmds as cmds
 
 def ndPyLibAnimGetAnimNodeAndAttr (inForNodes, inMode, isCheckAnimCurve, isCheckConstraint):
     retNodes = []
-
-    if (inMode >= 0 and inMode <= 3) and len(inForNodes)>0:
+    if inForNodes:
         retNodes = ndPyLibAnimGetAnimNodeAndAttrFunc(inForNodes, inMode, isCheckAnimCurve, isCheckConstraint)
     else:
         cmds.confirmDialog(title='Error...', message='Please select the mode that 0-3 is correct or node is zero.')
@@ -81,7 +80,7 @@ def ndPyLibAnimGetAnimNodeAndAttrFunc (inForNodes, inMode, isCheckAnimCurve, isC
     for j in range(len(inForNodes)):
         checkNode = inForNodes[j]
         retNodes = _GetAnimNodeAndAttrFunc(checkNode, inMode)
-
+        print(checkNode, retNodes)
         if isCheckAnimCurve and len(retNodes) <= 0:
             listNoAnimCurveNode.append(checkNode)
             listNoAnimCurveNodeCnt += 1
@@ -96,27 +95,5 @@ def ndPyLibAnimGetAnimNodeAndAttrFunc (inForNodes, inMode, isCheckAnimCurve, isC
                     retNodes.extend(_GetAnimNodeAndAttrFunc(obj, inMode))
 
         retNodesAll += retNodes
-
-        if isCheckAnimCurve or isCheckConstraint:
-            message = ''
-            if isCheckAnimCurve:
-                if listNoAnimCurveNodeCnt>0:
-                    message = '[No Animation Node(setKeyframe):] \n' + '\n'.join(listNoAnimCurveNode)
-                else:
-                    message = '[No Animation Node:] Nothing'
-            else:
-                message = '[No Animation Node:] No Check'
-            message = message + '\n\n'
-
-            if isCheckConstraint:
-                if listConstraintConnectNodeCnt>0:
-                    message = message + '[Constraint Connect Node:] \n' + '\n'.join(listConstraintConnectNode)
-                else:
-                    message = message + '[Constraint Connect Node:] Nothing'
-            else:
-                message = message + '[Constraint Connect Node:] No Check'
-            message = message + '\n'
-
-            ### result
 
     return retNodesAll

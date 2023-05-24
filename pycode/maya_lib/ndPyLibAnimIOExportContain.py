@@ -6,7 +6,7 @@ import os
 
 def ndPyLibAnimIOExportContain_main(**kwargs):
     isFilterCurve = kwargs['is_filter']
-    inPfxInfo = kwargs['inPfxInfo']
+    inPfxInfo = 3
     inDirPath = kwargs['publish_ver_anim_path']
     inFileName = kwargs['anim_file_name']
     inForNodes = kwargs['pick_nodes']
@@ -16,26 +16,20 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
     retNodes = []
     addCmd = []
 
-    pfxSw = int(inPfxInfo[0])
     NS = ['', '_', ':', '']
-
+    pfxSw = 3
     tmpFile = 'ndExportAnimCurveTmp.ma'
 
-    if pfxSw<3:
-        retNodes = ndPyLibAnimGetAnimNodeAndAttr(inForNodes, 2, isCheckAnimCurve, isCheckConstraint)
-        if len(inForNodesAttr)!=0:
-            retNodes += ndPyLibAnimGetAnimNodeAndAttr(inForNodesAttr, 2, isCheckAnimCurve, isCheckConstraint)
-    else:
-        retNodes = ndPyLibAnimGetAnimNodeAndAttr(inForNodes, 0, isCheckAnimCurve, isCheckConstraint)
-        if len(inForNodesAttr)!=0:
-            retNodes += ndPyLibAnimGetAnimNodeAndAttr(inForNodesAttr, 0, isCheckAnimCurve, isCheckConstraint)
+    retNodes = ndPyLibAnimGetAnimNodeAndAttr(inForNodes, 0, isCheckAnimCurve, isCheckConstraint)
+    if len(inForNodesAttr)!=0:
+        retNodes += ndPyLibAnimGetAnimNodeAndAttr(inForNodesAttr, 0, isCheckAnimCurve, isCheckConstraint)
 
     if len(retNodes) <= 0:
         return
 
     cmds.select(cl=True)
     for i in range(int(len(retNodes)/2)):
-        if cmds.objExists(retNodes[i*2+1]) == 1:
+        if cmds.objExists(retNodes[i*2+1]):
             buf = retNodes[i*2+1].split(':')
             if len(buf) == 2:
                 try:
@@ -72,8 +66,7 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
     cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0)
 
     for i in range(int(len(retNodes)/2)):
-        node = retNodes[i*2].split('|')[-1]
-        cmd = 'connectAttr -f \"' + retNodes[i*2+1] + '.output\" \":' + inPfxInfo[1] + NS[pfxSw] + retNodes[i*2] + '\";\n'
+        cmd = 'connectAttr -f \"' + retNodes[i*2+1] + '.output\" \":' + retNodes[i*2] + '\";\n'
         # cmd = 'connectAttr \"' + retNodes[i*2+1] + '.output\" \":' + inPfxInfo[1] + NS[pfxSw] + ":".join(node.split(":")[-2:]) + '\" -f ;\n'
         addCmd.append(cmd)
 
