@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
-from distutils.log import info
-import os
+try:
+    from importlib import reload
+except:
+    pass
 
+import os
 import maya.cmds as cmds
 import maya.mel as mel
 import re
@@ -38,9 +41,6 @@ def search_cam():
         cam_shapes.remove('deformation_camShape')
     except ValueError:
         pass
-    top_nodes = cmds.ls(assemblies=True)
-    cache_nodes = cmds.ls(type='cacheFile')
-    hidden_objs = []
     for camShape in cam_shapes[:]:
         if cmds.getAttr("{}.orthographic".format(camShape)):
             cam_shapes.remove(camShape)
@@ -218,22 +218,12 @@ def get_tg_ns_list(scene_ns_list, input_ns_list):
 def export_manual(info_dic):
     info_dic['ma_cam_path'] = '{}/{}.ma'.format(
         info_dic['outputdir'], info_dic['file_name'])
-    # argsdic['anim_cam_path']= '{}/anim/{}_anim.ma'.format(opc.publish_ver_cam_path, oFilename)
-    # フルパスとファイル名
     info_dic['abc_cam_path'] = '{}/{}.abc'.format(
         info_dic['outputdir'], info_dic['file_name'])
-    # フルパスとファイル名
     info_dic['fbx_cam_path'] = '{}/{}.fbx'.format(
         info_dic['outputdir'], info_dic['file_name'])
-    # export_cam_main(
-    #     'ma_cam_path' = info_dic['ma_cam_path'],
-    #     'abc_cam_path' = info_dic['abc_cam_path'],
-    #     'fbx_cam_path' = info_dic['fbx_cam_path'],
-    #     'cam_scale' = info_dic['cam_scale'],
-    #     'frame_handle' = info_dic['frame_handle'],
-    #     'frame_range' = info_dic['frame_range']
-    # )
     export_cam_main(info_dic)
+
 
 def export_cam_main(kwargs):
     top_nodes = cmds.ls(assemblies=True)
@@ -275,11 +265,14 @@ def export_cam_main(kwargs):
         cmds.delete('cam_grp')
 
     cmds.group(em=True, n='cam_grp')
+
+    bake_cams = []
     for i in range(len(cams)):
         from_cam = cams[i][1]
         to_cam = cams[i][0]
         cmds.parent(to_cam,'cam_grp')
         cmds.rename(to_cam, from_cam.split("|")[-1])
+        bake_cams.append(to_cam)
 
     cmds.select('cam_grp')
 
@@ -323,6 +316,11 @@ def export_cam_main(kwargs):
     mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
     cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
     # cmds.showHidden(hidden_objs)
+
+    if 'remain_cam' in kwargs.keys():
+        if kwargs['remain_cam'] == True:
+            for i in range(len(bake_cams)):
+                cmds.delete(bake_cams[i])
 
 
 def ndPylibExportCam_caller(**kwargs):
