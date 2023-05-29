@@ -12,23 +12,39 @@ import maya.cmds as cmds
 class ExportCameraAbc(object):
     def __init__(self):
         current_scene_name = cmds.file(q=True, sn=True)
-        scene_name = os.path.basename(current_scene_name).split('.')[0]
+        self.file_name = os.path.basename(current_scene_name).split('.')[0]
         if 'work' in current_scene_name:
-            self.outputdir = os.path.join(current_scene_name.split('work')[0], 'publish', 'cache', 'alembic', scene_name)
+            self.output_base = os.path.join(current_scene_name.split('work')[0], 'publish', 'cache')
         elif 'publish' in current_scene_name:
-            self.outputdir = os.path.join(current_scene_name.split('publish')[0], 'publish', 'cache', 'alembic', scene_name)
+            self.output_base = os.path.join(current_scene_name.split('publish')[0], 'publish', 'cache')
         else:
             cmds.inViewMessage(amg='scene path is not valid.', pos='botLeft', fade=True, fot=2000)
             raise ValueError('scene path is not valid.')
         # outputdir = r'C:\Users\k_ueda\Desktop\work\test'
-        if not os.path.exists(self.outputdir):
-            os.makedirs(self.outputdir)
+        if not os.path.exists(self.output_base):
+            os.makedirs(self.output_base)
         self.cam_scale = 0
         self.frame_hundle = 5
         self.frame_range = False
 
+        self.ma_cam_path = os.path.join(self.output_base, 'ma','{}.ma'.format(self.file_name)).replace('\\', '/')
+        self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.ma'.format(self.file_name)).replace('\\', '/')
+        self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.ma'.format(self.file_name)).replace('\\', '/')
 
-    def export(self, remain_cam=False):
+    def get_ext_dir(self, ext_type='all'):
+        if ext_type == 'all':
+            self.exp_dir = os.path.join(self.output_base)
+        elif ext_type == 'abc':
+            self.exp_dir = os.path.join(self.output_base, 'abc')
+        elif ext_type == 'fbx':
+            self.exp_dir = os.path.join(self.output_base, 'fbx')
+        elif ext_type == 'ma':
+            self.exp_dir = os.path.join(self.output_base, 'ma')
+        return self.exp_dir
+
+
+
+    def export(self, remain_cam=False, ext_type='all'):
         try:
             if cmds.getAttr('time1.enableTimewarp') and cmds.listConnections('time1.timewarpIn_Raw') == True:
                 scene_timewarp = True
@@ -36,17 +52,21 @@ class ExportCameraAbc(object):
                 scene_timewarp = False
         except:
             scene_timewarp = True
+        self.get_ext_dir(ext_type)
 
         info_dic = {
-            'outputdir': self.outputdir.replace('\\', '/'),
+            'outputdir': self.exp_dir.replace('\\', '/'),
             'file_name': 'cam',
             'cam_scale': self.cam_scale,
             'frame_handle': self.frame_hundle,
             'frame_range': self.frame_range,
             'scene_timewarp': scene_timewarp,
-            'mode': 'all',
+            'ext_type': ext_type,
             'remain_cam':  remain_cam,
+            'ma_cam_path': self.ma_cam_path,
+            'abc_cam_path': self.abc_cam_path,
+            'fbx_cam_path': self.fbx_cam_path
         }
-        ndPyLibExportCam.export_manual(info_dic)
+        ndPyLibExportCam.export_cam_main(info_dic)
 
         return True

@@ -130,6 +130,7 @@ def back_starter_main(**kwargs):
             oFilename = opc.pro_name+ '_'+ opc.roll+ '_' + opc.sequence +'_'+  opc.shot + '_cam'
         except:
             oFilename = opc.pro_name+ '_'+ opc.sequence +'_'+  opc.shot + '_cam'
+        argsdic['ext_type'] = 'all'
         argsdic['ma_cam_path'] =  '{}/{}.ma'.format(opc.publish_ver_path, oFilename)
         argsdic['abc_cam_path'] = '{}/{}.abc'.format(opc.publish_ver_path, oFilename) #フルパスとファイル名
         argsdic['fbx_cam_path'] = '{}/{}.fbx'.format(opc.publish_ver_path, oFilename) #フルパスとファイル名
@@ -170,17 +171,6 @@ def back_starter_main(**kwargs):
             argsdic['ass_ver_path'] = opc.publish_ver_ass_path+"/"+ ass_file
             batch.assAttach(**argsdic)
             ma_set_list.append([ma_file, ass_file, file_namespace])
-
-        # output_set_list = []
-        # for ma_set in ma_set_list:
-        #     file_namespace = ma_set[0]
-        #     ma_file = ma_set[1]
-        #     ass_file = ma_set[2]
-        #     argsdic['file_namespace'] = file_namespace
-        #     argsdic['ma_ver_path'] = opc.publish_ver_path+"/"+ ass_file
-        #     argsdic['ass_ver_path'] = opc.publish_ver_ass_path+"/"+ ass_file
-        #     batch.assAttach(**argsdic)
-        #     output_set_list.append([ma_file, ass_file])
         opc.copy_ver2current()
 
         for ma_set in ma_set_list:

@@ -55,12 +55,21 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
 
     def export_btn_clciked(self):
         remain_cam = self.ui.ramain_cam_chk.isChecked()
+        self.get_ext_type()
         self.InstanceExportCameraAbc.export(remain_cam)
+
+    def get_ext_type(self):
+        self.ext_type = self.ui.ext_group.checkedButton().text().split('_exp')[0]
 
     def open_exp_folder_btn_clicked(self):
         # open folder
-        dir_path = self.InstanceExportCameraAbc.outputdir
-        subprocess.Popen(["start", "", dir_path], shell=True)
+        self.get_ext_type()
+        dir_path = self.InstanceExportCameraAbc.get_ext_dir(self.ext_type)
+        if os.path.exists(dir_path):
+            subprocess.Popen(["start", "", dir_path], shell=True)
+        else:
+            dir_path = self.InstanceExportCameraAbc.output_base
+            subprocess.Popen(["start", "", dir_path], shell=True)
 
     def instance_export_camera_abc(self):
         self.InstanceExportCameraAbc = export_camera_abc_main.ExportCameraAbc()

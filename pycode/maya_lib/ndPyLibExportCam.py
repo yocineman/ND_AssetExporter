@@ -60,7 +60,6 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
     if cams is None:
         return
     shapeAttrs = ['fl','hfa','vfa','lsr','fs','fd','sa','coi','ncp','fcp', 'locatorScale', 'centerOfInterest']
-
     result_cams = []
     from_cam = []
     to_cam = []
@@ -117,16 +116,12 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
                 cmds.currentTime(t)
                 attrsTrans = cmds.xform(from_cam[i],q=True,ws=True,t=True)
                 attrsRot = cmds.xform(from_cam[i],q=True,ws=True,ro=True)
-
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[0], at='tx')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[1], at='ty')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[2], at='tz')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsRot[0], at='rx')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsRot[1], at='ry')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsRot[2], at='rz')
-
-                # cmds.camera(cam, e=True, aspectRatio=cmds.getAttr('defaultResolution.deviceAspectRatio'))
-                # cmds.camera(cam, e=True, filmFit=cmds.getAttr('{}.filmFit'.format(from_cam[i])))
                 cmds.setAttr("{}.filmFit".format(to_cam[i]), cmds.getAttr('{}.filmFit'.format(from_cam[i])))
         for t in range(int(sframe),int(eframe+1)):
             for i in range(len(to_cam)):
@@ -138,13 +133,8 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
                     cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=camScale, at='.cs')
 
                 for thisAttr in shapeAttrs:
-                    # print(from_cam[i], to_cam[i], cmds.getAttr(from_cam[i]+'.'+thisAttr))
                     cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=cmds.getAttr(from_cam[i]+'.'+thisAttr), at='.'+thisAttr)
-            # anim = cmds.listConnections(from_cam[i+1]+'.'+thisAttr)
-            # if anim is not None and len(anim) > 0:
 
-    # for i in range(len(to_cam)):
-        # cmds.setAttr(to_cam[i]+'.'+thisAttr, cmds.getAttr(from_cam[i]+'.'+thisAttr))
 
     for i in range(len(to_cam)):
         try:
@@ -154,16 +144,13 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
 
         cmds.setAttr(to_cam[i]+'.renderable', True)
         cmds.setAttr(to_cam[i]+'.renderable', lock=False)
-
         cmds.setAttr(to_cam[i]+'.rotateAxisX', cmds.getAttr(from_cam[i]+'.rotateAxisX'))
         cmds.setAttr(to_cam[i]+'.rotateAxisY', cmds.getAttr(from_cam[i]+'.rotateAxisY'))
         cmds.setAttr(to_cam[i]+'.rotateAxisZ', cmds.getAttr(from_cam[i]+'.rotateAxisZ'))
-        # cmds.setAttr(to_cam[i]+'.ro', cmds.getAttr(from_cam[i]+'.ro'))
 
         for thisAttr in shapeAttrs:
             cmds.setAttr(to_cam[i]+'.'+thisAttr,lock=True)
 
-        # if cam_scale != -1:
         cmds.setAttr(to_cam[i]+'.cs',lock=True)
         cmds.setAttr(to_cam[i]+'.translate',lock=True)
         cmds.setAttr(to_cam[i]+'.rotate',lock=True)
@@ -171,19 +158,11 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
         cmds.setAttr(to_cam[i]+'.ro',lock=True)
 
         result_cams.append([to_cam[i], from_cam[i]])
-        # bake_cams.append(from_cam[i])
 
         mel.eval('setAttr '+to_cam[i]+'.bestFitClippingPlanes true')
     Euler_filter(to_cam)
 
     return result_cams
-#end of ndPylibExportCam_bakeCamera
-
-
-def ndPyLibPlatform(text):
-    prefix = 'nd'
-    otsr = ''
-    otsr = otsr+'['+prefix+']'+text+'\n'
 
 
 def get_unload_ns_dic():
@@ -201,7 +180,6 @@ def get_unload_ns_dic():
                 unLoaded_ref_dic[ref_ns] = ref
         except Exception as e:
             print(e)
-            # cmds.file(lr=ref)
     return unLoaded_ref_dic
 
 
@@ -215,19 +193,54 @@ def get_tg_ns_list(scene_ns_list, input_ns_list):
     return tg_ns_list
 
 
-def export_manual(info_dic):
-    info_dic['ma_cam_path'] = '{}/{}.ma'.format(
-        info_dic['outputdir'], info_dic['file_name'])
-    info_dic['abc_cam_path'] = '{}/{}.abc'.format(
-        info_dic['outputdir'], info_dic['file_name'])
-    info_dic['fbx_cam_path'] = '{}/{}.fbx'.format(
-        info_dic['outputdir'], info_dic['file_name'])
-    export_cam_main(info_dic)
+def export_ma(ma_path):
+    if not os.path.exists(os.path.dirname(ma_path)):
+        os.makedirs(os.path.dirname(ma_path))
+    try:
+        cmds.file(ma_path, force=True, options='v=0', typ='mayaAscii', pr=True, es=True, f=True)
+    except:
+        try:
+            mb_path = ma_path.replace('.ma', '.mb')
+            cmds.file(mb_path, force=True, options='v=0', typ='mayaBinary', pr=True, es=True, f=True)
+        except:
+            pass
+
+
+def export_fbx(fbx_path):
+    if not os.path.exists(os.path.dirname(fbx_path)):
+        os.makedirs(os.path.dirname(fbx_path))
+    if cmds.pluginInfo('fbxmaya', q=True, l=True) == 0:
+        cmds.loadPlugin('fbxmaya')
+    cmds.file(fbx_path, force=True, options='v=0', typ='FBX export', pr=True, es=True, f=True)
+
+
+def export_abc(abc_path, sframe, eframe):
+    if not os.path.exists(os.path.dirname(abc_path)):
+        os.makedirs(os.path.dirname(abc_path))
+    if cmds.pluginInfo('AbcExport', q=True, l=True) == 0:
+        cmds.loadPlugin('AbcExport')
+    cmds.evaluationManager(mode='off')
+    strAbc = ''
+    strAbc = strAbc+'-frameRange '+str(sframe)+' '+str(eframe)+' '
+    strAbc = strAbc+'-uvWrite '
+    strAbc = strAbc+'-worldSpace '
+    strAbc = strAbc+'-eulerFilter '
+    strAbc = strAbc+'-dataFormat ogawa '
+    strAbc = strAbc+ '-root cam_grp '
+    strAbc = strAbc+ '-file '+ abc_path
+    print ('AbcExport -j ' + strAbc)
+    mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
+    # cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
 
 
 def export_cam_main(kwargs):
     top_nodes = cmds.ls(assemblies=True)
     batch_mode = cmds.about(batch=True)
+    if 'ext_type' not in kwargs.keys():
+        ext_type = 'all'
+    else:
+        ext_type = kwargs['ext_type']
+
     if batch_mode:
         cache_nodes = cmds.ls(type='cacheFile')
         hidden_objs = []
@@ -253,7 +266,6 @@ def export_cam_main(kwargs):
     else:
         sframe = cmds.playbackOptions(q=True, min=True)
         eframe = cmds.playbackOptions(q=True, max=True)
-
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
@@ -263,9 +275,7 @@ def export_cam_main(kwargs):
 
     if cmds.objExists('cam_grp'):
         cmds.delete('cam_grp')
-
     cmds.group(em=True, n='cam_grp')
-
     bake_cams = []
     for i in range(len(cams)):
         from_cam = cams[i][1]
@@ -273,9 +283,6 @@ def export_cam_main(kwargs):
         cmds.parent(to_cam,'cam_grp')
         cmds.rename(to_cam, from_cam.split("|")[-1])
         bake_cams.append(to_cam)
-
-    cmds.select('cam_grp')
-
     try:
         publish_ver_path = kwargs['publish_ver_path']
         if not os.path.exists(publish_ver_path):
@@ -286,12 +293,22 @@ def export_cam_main(kwargs):
             f.write(str(eframe)+'\n')
     except:
         pass
+    cmds.select('cam_grp')
+    if ext_type == 'ma' or ext_type == 'all':
+        ma_cam_path = kwargs['ma_cam_path']
+        export_ma(ma_cam_path)
+    if ext_type == 'fbx' or ext_type == 'all':
+        fbx_cam_path = kwargs['fbx_cam_path']
+        export_fbx(fbx_cam_path)
+    if ext_type == 'abc' or ext_type == 'all':
+        abc_cam_path = kwargs['abc_cam_path']
+        export_abc(abc_cam_path, sframe, eframe)
 
-    cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
+    if 'remain_cam' in kwargs.keys():
+        if kwargs['remain_cam'] == True:
+            for i in range(len(bake_cams)):
+                cmds.delete(bake_cams[i])
 
-    if cmds.pluginInfo('fbxmaya', q=True, l=True) == 0:
-        cmds.loadPlugin('fbxmaya')
-    cmds.file(kwargs['fbx_cam_path'], force=True, options='v=0', typ='FBX export', pr=True, es=True)
     if batch_mode:
         for obj in hidden_objs:
             try:
@@ -301,27 +318,6 @@ def export_cam_main(kwargs):
             except Exception as e:
                 print(e)
         cmds.showHidden(hidden_objs)
-    if cmds.pluginInfo('AbcExport', q=True, l=True) == 0:
-        cmds.loadPlugin('AbcExport')
-    cmds.evaluationManager(mode='off')
-    strAbc = ''
-    strAbc = strAbc+'-frameRange '+str(sframe)+' '+str(eframe)+' '
-    strAbc = strAbc+'-uvWrite '
-    strAbc = strAbc+'-worldSpace '
-    strAbc = strAbc+'-eulerFilter '
-    strAbc = strAbc+'-dataFormat ogawa '
-    strAbc = strAbc+ '-root cam_grp '
-    strAbc = strAbc+ '-file '+ kwargs['abc_cam_path'] #abc
-    print ('AbcExport -j ' + strAbc)
-    mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
-    cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
-    # cmds.showHidden(hidden_objs)
-
-    if 'remain_cam' in kwargs.keys():
-        if kwargs['remain_cam'] == True:
-            for i in range(len(bake_cams)):
-                cmds.delete(bake_cams[i])
-
 
 def ndPylibExportCam_caller(**kwargs):
     export_cam_main(kwargs)
