@@ -35,18 +35,11 @@ def env_load(project, is_env_load):
         import shell_lib.env_loader
         shell_lib.env_loader.run(project, fork=True)
 
-mtoa_load_txt = ("import os;import sys;"
-       "import maya.cmds as cmds;"
-       "sys.path.append('Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts');"
-       "import arnold;"
-       "scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts';"
-       "os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path;"
-       "os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path;"
-       "plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/plug-ins';"
-       "os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path;"
-       "mod_path = 'Y:/users/env/maya/2022/mod';"
-       "os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path;"
-       "cmds.loadPlugin('mtoa')';")
+        #python3も2で実行されるように
+        os.environ['MAYA_PYTHON_VERSION']='2'
+    # if project == 'd_wh':
+    #     set_dw_h_env()
+
 
 def maya_version(project, ver_override=False):
     # ------------------------------------
@@ -268,3 +261,13 @@ def assReplace(**kwargs):
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     print(cmd)
     subprocess.call(cmd,shell=True)
+
+
+def set_dw_h_env():
+    scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts'
+    os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
+    os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
+    plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/plug-ins'
+    os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
+    mod_path = 'Y:/users/env/maya/2022/mod'
+    os.environ['MAYA_MODULE_PATH'] = mod_path

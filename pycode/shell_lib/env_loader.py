@@ -11,7 +11,6 @@ __credits__ = ["Masato Hirabayashi"]
 import sys
 import os
 import yaml
-import time
 
 #------------------------------
 ND_TOOL_PATH_default = "Y:/tool/ND_Tools/python"
@@ -85,4 +84,3 @@ def run(args, **kwargs):
     #-----------------------------------
     envDict = util_env.loadConf(filePath, **options)
     # env = util_env.getEnvDict(envDict, env=os.environ, expand=True)
-

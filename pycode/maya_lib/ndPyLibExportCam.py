@@ -198,12 +198,13 @@ def export_ma(ma_path):
         os.makedirs(os.path.dirname(ma_path))
     try:
         cmds.file(ma_path, force=True, options='v=0', typ='mayaAscii', pr=True, es=True, f=True)
-    except:
-        try:
-            mb_path = ma_path.replace('.ma', '.mb')
-            cmds.file(mb_path, force=True, options='v=0', typ='mayaBinary', pr=True, es=True, f=True)
-        except:
-            pass
+    except Exception as e:
+        print(e)
+        # try:
+        #     mb_path = ma_path.replace('.ma', '.mb')
+        #     cmds.file(mb_path, force=True, options='v=0', typ='mayaBinary', pr=True, es=True, f=True)
+        # except:
+        #     pass
 
 
 def export_fbx(fbx_path):
