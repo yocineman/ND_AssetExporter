@@ -11,7 +11,6 @@ __credits__ = ["Masato Hirabayashi"]
 import sys
 import os
 import yaml
-import time
 
 #------------------------------
 ND_TOOL_PATH_default = "Y:/tool/ND_Tools/python"
@@ -49,7 +48,12 @@ def run(args, **kwargs):
 
 
     #プロジェクト名からShotgunの設定を取得する
-    project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
+    print(args.lower())
+    if args.lower() == 'd_wh':
+        project_app_launcher = "%s\\ND_sgtoolkit_%s_old\\%s" % (toolkit_path, args.lower(), app_launcher_path)
+    else:
+        project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
+
 
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
@@ -85,4 +89,3 @@ def run(args, **kwargs):
     #-----------------------------------
     envDict = util_env.loadConf(filePath, **options)
     # env = util_env.getEnvDict(envDict, env=os.environ, expand=True)
-
