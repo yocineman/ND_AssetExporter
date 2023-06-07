@@ -52,7 +52,10 @@ def maya_version(project, ver_override=False):
     toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
     dcc_tools = ["maya", "nuke", "nukex"]
-    project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
+    if project.lower() == 'd_wh':
+        project_app_launcher = "%s\\ND_sgtoolkit_%s_old\\%s" % (toolkit_path, project.lower(), app_launcher_path)
+    else:
+        project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
     #------------------------------------
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
