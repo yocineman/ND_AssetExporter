@@ -230,7 +230,7 @@ def camExport(**kwargs):
     unique_order = (
         'from ndPyLibExportCam import ndPylibExportCam_caller;'
         'ndPylibExportCam_caller(**{})'.format(argsdic))
-    cmd = maya_cmd_maker(unique_order, kwargs['input_path'], mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     subprocess.call(cmd, shell=True)
 
 
