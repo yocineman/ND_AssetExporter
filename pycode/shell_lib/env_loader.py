@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #------------------------------
-import ND_appEnv.lib.util.env_io as util_env
+
 __version__ = "0.0.1"
 __copyright__ = "Copyright (C) 2016, N-Design"
 __author__ = "Masato Hirabayashi"
@@ -10,7 +10,10 @@ __credits__ = ["Masato Hirabayashi"]
 
 import sys
 import os
-import yaml
+sys.path.append('Y:/tool/ND_Tools/python')
+sys.path.append('Y:/users/env/maya/scripts/Python/site-packages')
+
+import ND_appEnv.lib.util.env_io as util_env
 
 #------------------------------
 ND_TOOL_PATH_default = "Y:/tool/ND_Tools/python"
@@ -24,15 +27,13 @@ for path in ND_TOOL_PATH.split(';'):
 
 #------------------------------
 import ND_appEnv.env as env_param
+import yaml
 
 
 #-----------------------------------
 #-----------------------------------
 def run(args, **kwargs):
     fork = kwargs.get('fork', True)
-    # values_ana = ['mem2/maya/2018/amd64/win']
-    # values_ana = ['MSTB4/maya/2018/amd64/win']
-    # values_ana = ['MST_NS/maya/2018/amd64/win']
     #------------------------------------
     env_key = 'ND_TOOL_PATH_PYTHON'
     ND_TOOL_PATH = os.environ.get(env_key,'Y:/tool/ND_Tools/python')
@@ -48,11 +49,7 @@ def run(args, **kwargs):
 
 
     #プロジェクト名からShotgunの設定を取得する
-    print(args.lower())
-    if args.lower() == 'd_wh':
-        project_app_launcher = "%s\\ND_sgtoolkit_%s_old\\%s" % (toolkit_path, args.lower(), app_launcher_path)
-    else:
-        project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
+    project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
 
 
     f = open(project_app_launcher, "r")
