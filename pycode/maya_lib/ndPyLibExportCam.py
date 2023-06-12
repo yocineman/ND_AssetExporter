@@ -50,7 +50,8 @@ def set_env(kwargs):
         pass
 
     # シーンのオープン
-    cmds.file(kwargs['input_path'], o=True, f=True)
+    if not cmds.file(q=True, exists=True):
+        cmds.file(kwargs['input_path'], o=True, f=True)
 
 
 def Euler_filter(obj_list):
@@ -244,11 +245,6 @@ def export_ma(ma_path):
         cmds.file(ma_path, force=True, options='v=0', typ='mayaAscii', pr=True, es=True, f=True)
     except Exception as e:
         print(e)
-        # try:
-        #     mb_path = ma_path.replace('.ma', '.mb')
-        #     cmds.file(mb_path, force=True, options='v=0', typ='mayaBinary', pr=True, es=True, f=True)
-        # except:
-        #     pass
 
 
 def export_fbx(fbx_path):

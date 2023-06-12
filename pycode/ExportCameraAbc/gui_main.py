@@ -1,6 +1,6 @@
 # coding: utf-8
 # ------------------------------
-_version_ = "0.0.1"
+_version_ = "0.1.0"
 _author_ = "Kei Ueda"
 # ------------------------------
 import os
@@ -55,11 +55,12 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
 
     def export_btn_clciked(self):
         remain_cam = self.ui.ramain_cam_chk.isChecked()
-        self.get_ext_type()
-        self.InstanceExportCameraAbc.export(remain_cam)
+
+        self.InstanceExportCameraAbc.export(remain_cam, self.get_ext_type())
 
     def get_ext_type(self):
         self.ext_type = self.ui.ext_group.checkedButton().text().split('_exp')[0]
+        return self.ext_type
 
     def open_exp_folder_btn_clicked(self):
         # open folder

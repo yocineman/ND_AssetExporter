@@ -28,8 +28,8 @@ class ExportCameraAbc(object):
         self.frame_range = False
 
         self.ma_cam_path = os.path.join(self.output_base, 'ma','{}.ma'.format(self.file_name)).replace('\\', '/')
-        self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.ma'.format(self.file_name)).replace('\\', '/')
-        self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.ma'.format(self.file_name)).replace('\\', '/')
+        self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.abc'.format(self.file_name)).replace('\\', '/')
+        self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.fbx'.format(self.file_name)).replace('\\', '/')
 
     def get_ext_dir(self, ext_type='all'):
         if ext_type == 'all':
