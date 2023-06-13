@@ -14,7 +14,7 @@ except:
 sys.path.append(r"Y:\tool\ND_Tools\DCC\dev\standalone\ND_AssetExporter\pycode\maya_lib")
 import ndPyLibAnimIOExportContain; reload(ndPyLibAnimIOExportContain)
 
-def set_env(kwargs):
+def set_dw_h_env():
     # 環境変数の設定
     # arnold
     sys.path.append('Y:/users/env/arnold/mtoa/2020_MtoA_5211/scripts')
@@ -53,13 +53,41 @@ def set_env(kwargs):
     except:
         pass
 
-    # シーンのオープン
-    cmds.file(kwargs['input_path'], o=True, f=True)
+
+def set_env():
+    # arnold
+    sys.path.append('Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts')
+    try:
+        import arnold
+    except:
+        pass
+    # scripts
+    scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts'
+    os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
+    os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
+    # plug-in
+    plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/plug-ins'
+    os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
+    # mod
+    mod_path = 'Y:/users/env/maya/2022/mod'
+    # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
+    os.environ['MAYA_MODULE_PATH'] = mod_path
+    try:
+        cmds.loadPlugin('mtoa')
+    except:
+        pass
 
 
 def export_anim_main(**kwargs):
     pprint.pprint(kwargs.items())
-    set_env(kwargs)
+    if kwargs['project'].lower() == 'd_wh':
+        set_dw_h_env()
+    else:
+        set_env()
+
+    # シーンのオープン
+    cmds.file(kwargs['input_path'], o=True, f=True)
+
     #  evaluateの設定
     evaluate = kwargs['evaluate']
     if evaluate != False:
