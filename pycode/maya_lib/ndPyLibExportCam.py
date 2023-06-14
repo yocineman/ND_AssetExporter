@@ -220,7 +220,7 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
     cams = search_cam()
     if cams is None:
         return
-    shapeAttrs = ['fl','hfa','vfa','lsr','fs','fd','sa','coi','ncp','fcp', 'locatorScale', 'centerOfInterest']
+    shapeAttrs = ['fl','hfa','vfa','lsr','fs','fd','sa','coi','ncp','fcp', 'locatorScale', 'centerOfInterest', 'rotateOrder']
     result_cams = []
     from_cam = []
     to_cam = []
