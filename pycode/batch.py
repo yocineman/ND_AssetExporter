@@ -19,7 +19,6 @@ def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None):
         cmd.append(mayafile)
     cmd.append('-command')
     cmd.append('python(\"{}\")'.format(maya_cmd.replace(';', '\;').replace('\'', '\\\'')))
-
     return cmd
 
 
@@ -52,10 +51,10 @@ def maya_version(project, ver_override=False):
     toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
     dcc_tools = ["maya", "nuke", "nukex"]
-    if project.lower() == 'd_wh':
-        project_app_launcher = "%s\\ND_sgtoolkit_%s_old\\%s" % (toolkit_path, project.lower(), app_launcher_path)
-    else:
-        project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
+    # if project.lower() == 'd_wh':
+    #     project_app_launcher = "%s\\ND_sgtoolkit_%s_old\\%s" % (toolkit_path, project.lower(), app_launcher_path)
+    # else:
+    project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
     #------------------------------------
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
@@ -69,9 +68,8 @@ def maya_version(project, ver_override=False):
 
     ryear = renderinfo[0]
     if ver_override == 'False' or ver_override == False:
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(
-        str(ryear))
-        # maya_exe = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
+        # maya_exe = 'C:\\Program Files\\Autodesk\\Maya2020\\bin\\maya.exe'
     else:
         maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(
             str(ver_override))
@@ -88,8 +86,10 @@ def animExport(**kwargs):
         'from maya_lib.ndPyLibExportAnim import export_anim_main;'
         'export_anim_main(**{})'.format(kwargs)
     )
-    cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch)
-    subprocess.call(cmd, shell=True)
+    # cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    print(cmd)
+    subprocess.call(cmd, shell=True, env=os.environ)
 
 def animAttach(**kwargs):
     env_load(kwargs['project'], kwargs['env_load'])
@@ -109,7 +109,7 @@ def animAttach(**kwargs):
         'loadAsset(\'{}\', \'{}_anim\');'.format(anim_ver_path, file_namespace) +
         'saveAs(\'{}\')'.format(ma_ver_path))
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
-    subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True, env=os.environ)
 
 
 def animReplace(**kwargs):
@@ -125,7 +125,7 @@ def animReplace(**kwargs):
         'save();'
     )
     cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch)
-    subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True, env=os.environ)
 
 
 # ------------------------------------
@@ -140,6 +140,7 @@ def abcExport(**kwargs):
             'ndPyLibExportAbc_caller({})'.format(argsdic))
     cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch)
     subprocess.call(cmd,  shell=True)
+
 
 def abcAttach(**kwargs):
     env_load(kwargs['project'], kwargs['env_load'])
@@ -160,6 +161,7 @@ def abcAttach(**kwargs):
             'saveAs(\'{}\')'.format(ma_ver_path))
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     subprocess.call(cmd, shell=True)
+
 
 def abcReplace(**kwargs):
     env_load(kwargs['project'], kwargs['env_load'])
@@ -200,6 +202,7 @@ def abcAnimAttach(**kwargs):
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     subprocess.call(cmd, shell=True)
 
+
 def abcAnimReplace(**kwargs):
     argsdic = kwargs
     env_load(kwargs['project'], kwargs['env_load'])
@@ -227,7 +230,7 @@ def camExport(**kwargs):
     unique_order = (
         'from ndPyLibExportCam import ndPylibExportCam_caller;'
         'ndPylibExportCam_caller(**{})'.format(argsdic))
-    cmd = maya_cmd_maker(unique_order, kwargs['input_path'], mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     subprocess.call(cmd, shell=True)
 
 
@@ -267,10 +270,13 @@ def assReplace(**kwargs):
 
 
 def set_dw_h_env():
-    scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts'
-    os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
-    os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
-    plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/plug-ins'
-    os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
-    mod_path = 'Y:/users/env/maya/2022/mod'
-    os.environ['MAYA_MODULE_PATH'] = mod_path
+    # scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts'
+    # os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
+    # os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
+    # plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/plug-ins'
+    # os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
+    # mod_path = 'Y:/users/env/maya/2022/mod'
+    # os.environ['MAYA_MODULE_PATH'] = mod_path
+    print("##set_dw_h_env##")
+    import maya_lib.project.set_dw_h as set_dw_h
+    set_dw_h.main()

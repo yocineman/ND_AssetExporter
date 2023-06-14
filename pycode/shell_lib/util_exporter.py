@@ -616,8 +616,8 @@ def is_arnold(project):
     project_name = project
     toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
-    if project_name == 'D_WH':
-        project_name = 'd_wh_old'
+    # if project_name == 'D_WH':
+    #     project_name = 'd_wh_old'
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project_name, app_launcher_path)
     f = open(project_app_launcher, "r")
     data = yaml.load(f)
