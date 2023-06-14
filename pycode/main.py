@@ -140,11 +140,11 @@ class GUI(QMainWindow):
 
     def camscale_override_chk_stateChange(self):
         state = self.ui.frame_step_override_chk.isChecked()
-        self.ui.stepValue_LineEdit.setEnabled(state)
+        self.ui.frame_step_value_line.setEnabled(state)
 
     def frame_step_override_chk_stateChange(self):
         state = self.ui.frame_step_override_chk.isChecked()
-        self.ui.stepValue_lineEdit.setEnabled(state)
+        self.ui.frame_step_value_line.setEnabled(state)
 
     def check_selected_btn_clicked(self):
         for selected_row in self.ui.main_table.selectedIndexes():
@@ -461,7 +461,6 @@ class GUI(QMainWindow):
                 'priority': str(self.ui.priority.text()),
                 'pool': str(self.ui.poollist.currentText()),
                 'group': str(self.ui.grouplist.currentText()),
-                'env_load':self.ui.env_load_chk.isChecked(),
                 'load_pref':self.ui.force_load_preference_chk.isChecked(),
                 'maya_version':str(maya_version),
                 'log_shape':self.ui.log_shape_chk.isChecked()}
@@ -537,52 +536,6 @@ def thread_main(**kwargs):
         from shell_lib import log_shaper
         log_shaper.main(log_path)
     return
-
-# def log_shaper(file_path):
-#     shaped_lines = []
-#     with open(file_path) as f:
-#         lines = f.readlines()
-#     for line in lines:
-#         # line = line.replace('\n', '')
-#         if line.startswith(' u\''):line.replace(' u\'', '\'')
-#         if line.startswith(' u\''):line.replace(' u\'', '\'')
-#         # if line.startswith('Error: '): continue
-#         if line.startswith('Warning: '): continue
-#         if line.startswith('Read '): continue
-#         if line.startswith('the data object '): continue
-#         if line.startswith('File read '): continue
-#         if line.startswith('\'NoneType\' object'):continue
-#         if line.startswith('No attribute was specified.'):continue
-#         if line.startswith('no imp'):continue
-#         if 'AbcImport' in line:continue
-#         if 'has no attribute \"ai' in line:continue
-#         if 'No object matches name: .ai' in line:continue
-#         if '"mtoa", was not found' in line:continue
-#         if 'aov_' in line:continue
-#         if 'aovs' in line:continue
-#         if 'has no \'ai_' in line:continue
-#         if 'has no \'.ai_' in line:continue
-#         if 'UI commands can\'t be run' in line:continue
-#         if line.startswith('Error: line 1: Error reading'):continue
-#         if line.startswith('Failed to execute userSetup.py'):continue
-#         if line.startswith('Traceback (most recent call last):'):continue
-#         if line.startswith('  File '):continue
-#         if line.startswith('    if not cmds.commandPort'):continue
-#         if line.startswith('RuntimeError: Maya command error'):continue
-#         if line.startswith('list.remove(x)'):continue
-#         if line.startswith('Result: '):continue
-#         if line.startswith('get CurrentContext Error'):continue
-#         if line.startswith('The attribute is compound with mixed type elements.'):continue
-#         if line.startswith('Message attributes have no data values.'):continue
-#         if line == '\n': continue
-#         if line == '': continue
-#         if line == '\r': continue
-#         if line == ' ':continue
-#         if line == '\r\n': continue
-#         shaped_lines.append(line)
-#     with open(file_path, 'w+') as f:
-#         f.writelines(shaped_lines)
-
 
 def runs(*argv):
     app = QApplication.instance()

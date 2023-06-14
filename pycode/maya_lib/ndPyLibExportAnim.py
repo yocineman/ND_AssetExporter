@@ -130,12 +130,9 @@ def export_anim_main(**kwargs):
         f.write(str(cmds.getAttr("defaultResolution.width"))+"\n")
         f.write(str(cmds.getAttr("defaultResolution.height"))+"\n")
 
-    input_ns_list = kwargs['namespace'][0].replace(
-        ' ', '').rstrip(',').split(',')
-    regex_list = [i for i in kwargs['export_item']['anim'].replace(
-        ' ', '').replace('vertical_bar', '|').split(',') if not '.' in i]  # 通常のエクスポート対象
-    regex_attr_list = [i for i in kwargs['export_item']
-                       ['anim'].split(',') if '.' in i]  # アトリビュートを直接指定
+    input_ns_list = kwargs['namespace'][0].replace(' ', '').rstrip(',').split(',')
+    regex_list = [i for i in kwargs['export_item']['anim'].replace(' ', '').replace('vertical_bar', '|').split(',') if not '.' in i]  # 通常のエクスポート対象
+    regex_attr_list = [i for i in kwargs['export_item']['anim'].split(',') if '.' in i]  # アトリビュートを直接指定
 
     if kwargs['load_pref'] == True:
         unload_ns_dic = get_unload_ns_dic()
@@ -149,11 +146,9 @@ def export_anim_main(**kwargs):
     if len(tg_ns_list) == 0:
         print('Namespaceが見つかりませんでした。')
         return False
-    print(tg_ns_list, regex_list)
     tg_nodes = get_tg_nodes(tg_ns_list, regex_list)
     for regex_attr in regex_attr_list:
         tg_nodes.append(regex_attr.split('.')[0])
-
 
     if len(tg_nodes) == 0:
         print('(正規表現とマッチするオブジェクト)が見つかりませんでした。')
@@ -204,15 +199,27 @@ def export_anim_main(**kwargs):
             attrs.extend(
                 list(set(cmds.listConnections(node, s=True, type="constraint"))))
 
+    # SceneTimeWarp
     if kwargs['scene_timewarp'] == True or kwargs['scene_timewarp'] == 'True':
         time_set_list = []
         time_value_set_list = []
 
         cmds.setAttr("time1.enableTimewarp", 1)
-        for t in range(int(sframe),int(eframe+1)):
-            cmds.currentTime(t)
-            warp_time = cmds.getAttr("time1.outTime", time=t)
-            time_set_list.append([t, warp_time])
+
+        step_value = kwargs['step_value']
+        _frame = sframe
+        while True:
+            cmds.currentTime(_frame)
+            warp_time = cmds.getAttr("time1.outTime", time=_frame)
+            time_set_list.append([_frame, warp_time])
+            _frame += step_value
+            if _frame > eframe:
+                break
+
+        # for t in range(int(sframe),int(eframe+1)):
+        #     cmds.currentTime(t)
+        #     warp_time = cmds.getAttr("time1.outTime", time=t)
+        #     time_set_list.append([t, warp_time])
 
         cmds.setAttr("time1.enableTimewarp", 1)
         for time_set in time_set_list:
@@ -251,6 +258,7 @@ def export_anim_main(**kwargs):
                 cmds.setKeyframe(attr, v=value, t=frame)
             except Exception as e:
                 pass
+    # 通常のベイク
     else:
         attrs = list(set(attrs)-set(ignore_attrs))
         for obj_and_attr in attrs:
@@ -315,8 +323,7 @@ def export_anim_main(**kwargs):
             argsdic['scene_timewarp'] = kwargs['scene_timewarp']
             argsdic['is_check_constraint'] = True
             argsdic['is_check_anim_curve'] = True
-            ndPyLibAnimIOExportContain.ndPyLibAnimIOExportContain_main(
-                **argsdic)
+            ndPyLibAnimIOExportContain.ndPyLibAnimIOExportContain_main(**argsdic)
     return output_files
 
 
@@ -373,7 +380,7 @@ def get_tg_ns_list(scene_ns_list, input_ns_list):
 
 def get_rec_sets(set):
     set_items = cmds.sets(set, q=True)
-    print('##set##')
+    print('####set')
     print(set, set_items)
     result = []
     if set_items == None:
@@ -390,7 +397,6 @@ def get_rec_sets(set):
 
 def get_tg_nodes(ns_list, regex_list):
     all_objs = cmds.ls()
-    # all_objs.extend(cmds.ls(shapes=True))
     result_nodes = []
     for ns in ns_list:
         nodes = []

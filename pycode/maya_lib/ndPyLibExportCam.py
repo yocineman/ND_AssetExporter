@@ -54,7 +54,7 @@ def export_cam_main(kwargs):
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
-    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'])
+    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'], kwargs['step_value'])
     if cams is None:
         return
 
@@ -216,7 +216,7 @@ def search_cam():
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
+def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value):
     cams = search_cam()
     if cams is None:
         return
@@ -236,15 +236,26 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
             shape_value_set_list = []
 
             cmds.setAttr("time1.enableTimewarp", 1)
-            for t in range(int(sframe),int(eframe+1)):
-                cmds.currentTime(t)
-                warp_time = cmds.getAttr("time1.outTime", time=t)
-                time_set_list.append([t, warp_time])
+            # step_value = kwargs['step_value']
+            _frame = sframe
+            while True:
+                cmds.currentTime(_frame)
+                warp_time = cmds.getAttr("time1.outTime", time=_frame)
+                time_set_list.append([_frame, warp_time])
+                _frame += step_value
+                if _frame > eframe:
+                    break
+
+            # for t in range(int(sframe),int(eframe+1)):
+            #     cmds.currentTime(t)
+            #     warp_time = cmds.getAttr("time1.outTime", time=t)
+            #     time_set_list.append([t, warp_time])
 
             cmds.setAttr("time1.enableTimewarp", 1)
             for time_set in time_set_list:
                 t = time_set[0]
                 warp_time = time_set[1]
+                print(t, warp_time)
                 cmds.currentTime(t)
                 try:
                     attrsTrans = cmds.xform(from_cam[i],q=True,ws=True,t=True)
