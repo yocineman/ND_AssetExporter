@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
-# from __future__ import print_function
-
 import os
 import sys
 import time
-import importlib
+
 import yaml
+
 try:
     from importlib import reload
 except:
     pass
 # ------------------------------
-__version__ = '8.4.0'
+__version__ = '8.5.0'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/')
-sys.path.append(EXPORTER_PATH)
 # ------------------------------
 import datetime
+import json
 import subprocess
 import threading
-import json
+
 from shell_lib import util_exporter
 
 try:
@@ -35,18 +34,19 @@ except:
     from PySide2.QtUiTools import QUiLoader
 # ------------------------------------
 
-import shell_lib.util_exporter as util_exporter; reload(util_exporter)
+
 try:
     import ND_Submitter.env as util_env
 except Exception as e:
-    print(e)
     NoDeadlineMode = True
 else:
     NoDeadlineMode = False
 
-# PYPATH = r'C:\Users\k_ueda\AppData\Local\Programs\Python\Python310\python.exe'
 PYPATH = 'Y:\\tool\\MISC\\Python2710_amd64_vs2010\\python.exe'
-LOGDIR = 'Y:\\users\\'+os.environ.get('USERNAME')+'\\DCC_log\\ND_AssetExporter'
+USERNAME = os.environ.get('USERNAME')
+if USERNAME is None:
+    USERNAME = 'deadlineuser'
+LOGDIR = 'Y:\\users\\'+USERNAME+'\\DCC_log\\ND_AssetExporter'
 
 onpath = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
 os.chdir(onpath)
@@ -56,6 +56,7 @@ class GUI(QMainWindow):
     WINDOW = 'ND_AssetExporter'
 
     def __init__(self, parent=None, qApp=None):
+        #  GUI
         super(self.__class__, self).__init__(parent)
         self.debug = False
         self.ui_path = '.\\gui\\exporter_gui.ui'
@@ -63,10 +64,11 @@ class GUI(QMainWindow):
         self.setCentralWidget(self.ui)
         self.setGeometry(500, 200, 1000, 800)
         self.setWindowTitle('%s %s' % (self.WINDOW, __version__))
-
+        #
         self.input_path = ''
         self.log_txt = ''
-        #Shotgrid
+
+        # Shotgrid
         self.asset_fields = [
                 'code', 'sg_namespace', 'sg_export_type',
                 'sg_top_node', 'sg_abc_export_list',
@@ -79,7 +81,8 @@ class GUI(QMainWindow):
                 'sg_top_node', 'sg_abc_export_list',
                 'sg_anim_export_list', 'sg_asset_path',
                 'sequences']
-        # GUI
+
+        # table
         self.headers_item = [
                 'Asset name', 'Name space',
                 'Export Type', 'Export Item',
@@ -97,59 +100,50 @@ class GUI(QMainWindow):
         self.check_row = []
         self.executed_row = []
 
+        #  Deadline
         self.priority = 50
         self.group = '16gb'
 
-        maya_version_list = ['2015', '2016', '2017', '2019', '2020', '2022']
+        maya_version_list = ['2022', '2020', '2019', '2017', '2016', '2015']
         for maya_version in maya_version_list:
             self.ui.maya_version_comboBox.addItem(maya_version)
 
         self.selected_item = None
 
         self.ui.dd_area.installEventFilter(self)
+
+        # Connect UI
         self.ui.main_table.clicked.connect(self.main_table_clicked)
         self.ui.main_table.doubleClicked.connect(self.main_table_doubleClicked)
-
-        self.ui.debug_chk.stateChanged.connect(self.debug_chk_stateChange)
-
         self.ui.cam_scale_override_chk.stateChanged.connect(self.cam_scale_override_chk_stateChange)
-        self.ui.abc_step_override_chk.stateChanged.connect(self.abc_step_override_chk_stateChange)
-
+        self.ui.frame_step_override_chk.stateChanged.connect(self.frame_step_override_chk_stateChange)
         self.ui.custom_frame_range_chk.clicked.connect(self.custom_frame_range_chk)
         self.ui.frame_handle_chk.clicked.connect(self.frame_handle_chk_clicked)
-
         self.ui.open_log_button.clicked.connect(self.open_log_button_clicked)
         self.ui.current_refresh_button.clicked.connect(self.current_refresh_button_clicked)
         self.ui.open_publish_dir_button.clicked.connect(self.open_publish_dir_button_clicked)
         self.ui.help_button.clicked.connect(self.help_button_clicked)
         self.ui.restore_last_file_button.clicked.connect(self.load_user_info)
-
         self.ui.check_selected_btn.clicked.connect(self.check_selected_btn_clicked)
         self.ui.uncheck_selected_btn.clicked.connect(self.uncheck_selected_btn_clicked)
         self.ui.allcheck_btn.clicked.connect(self.allcheck_btn_clicked)
         self.ui.alluncheck_btn.clicked.connect(self.alluncheck_btn_clicked)
-
         self.ui.export_local_btn.clicked.connect(self.export_local_btn_clicked)
         self.ui.export_submit_btn.clicked.connect(self.export_submit_btn_clicked)
-
         self.ui.maya_version_chk.stateChanged.connect(self.maya_version_check_stateChange)
-
-        self.ui.evaluate_chk.stateChanged.connect(
-            self.evaluate_chk_stateChange)
+        self.ui.evaluate_chk.stateChanged.connect(self.evaluate_chk_stateChange)
 
         self.ui.log_list_btn.clicked.connect(self.log_list_btn_clicked)
         self.ui.log_return_btn.clicked.connect(self.log_return_btn_clicked)
 
 
-    def debug_chk_stateChange(self):
-        self.debug = self.ui.debug_chk.isChecked()
 
     def camscale_override_chk_stateChange(self):
-        state = self.ui.abc_step_override_chk.isChecked()
+        state = self.ui.frame_step_override_chk.isChecked()
         self.ui.stepValue_LineEdit.setEnabled(state)
 
-    def abc_step_override_chk_stateChange(self):
-        state = self.ui.abc_step_override_chk.isChecked()
+    def frame_step_override_chk_stateChange(self):
+        state = self.ui.frame_step_override_chk.isChecked()
         self.ui.stepValue_lineEdit.setEnabled(state)
 
     def check_selected_btn_clicked(self):
@@ -244,8 +238,7 @@ class GUI(QMainWindow):
         else:
             check_rows.append(clicked_row)
         self.check_row = list(set(check_rows))
-        model = util_exporter.ExporterTableModel(
-            self.tabledata, self.headers, self.check_row, self.executed_row)
+        model = util_exporter.ExporterTableModel(self.tabledata, self.headers, self.check_row, self.executed_row)
         self.ui.main_table.setModel(model)
 
     def main_table_rclicked(self):
@@ -254,22 +247,19 @@ class GUI(QMainWindow):
             _row = self.selected_item.row()
             _column = self.selected_item.column()
             newitem = self.selected_item.data()
-
         self.ui.main_table.openPersistentEditor(self.selected_item)
 
     def current_refresh_button_clicked(self):
-        from shell_lib import copy_main
-        from shell_lib import util_exporter
+        from shell_lib import copy_main, util_exporter
         opc = util_exporter.outputPathConf(self.input_path)
         shot_path = opc.shot_path
-        if self.debug:
+        if self.ui.test_debug.isChecked():
             current_path = os.path.join(shot_path, 'publish', 'test_charSet')
         else:
             current_path = os.path.join(shot_path, 'publish', 'charSet')
         copy_main.copy_main(current_path)
 
     def open_publish_dir_button_clicked(self):
-        # import util_exporter
         opc = util_exporter.outputPathConf(self.input_path)
         shot_path = opc.shot_path
         publish_path = os.path.join(shot_path, 'publish')
@@ -296,7 +286,7 @@ class GUI(QMainWindow):
 
     def load_user_info(self):
         filename = 'user_info.py'
-        output_dir = 'Y:\\users\\'+os.environ.get('USERNAME')+'\\DCC_log\\ND_AssetExporter'
+        output_dir = 'Y:\\users\\'+USERNAME+'\\DCC_log\\ND_AssetExporter'
         output_file = output_dir + '\\' + filename
         if not os.path.exists(output_dir):
             return
@@ -308,7 +298,7 @@ class GUI(QMainWindow):
 
     def output_user_info(self):
         filename = 'user_info.py'
-        output_dir = 'Y:\\users\\'+os.environ.get('USERNAME')+'\\DCC_log\\ND_AssetExporter'
+        output_dir = 'Y:\\users\\'+USERNAME+'\\DCC_log\\ND_AssetExporter'
         output_file = output_dir + '\\' + filename
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
@@ -412,10 +402,10 @@ class GUI(QMainWindow):
         else:
             frame_range = False
 
-        if self.ui.abc_step_override_chk.isChecked():
-            abc_step_override = float(self.ui.abc_step_value_line.text())
+        if self.ui.frame_step_override_chk.isChecked():
+            frame_step_override = float(self.ui.frame_step_value_line.text())
         else:
-            abc_step_override = 1.0
+            frame_step_override = 1.0
 
         if self.ui.maya_version_chk.isChecked():
             maya_version = self.ui.maya_version_comboBox.currentText()
@@ -456,8 +446,8 @@ class GUI(QMainWindow):
                 'export_item': yaml.safe_load(export_item.replace('|', 'vertical_bar')),
                 'top_node': top_node,
                 'asset_path': asset_path,
-                'debug': self.debug,
-                'step_value': abc_step_override,
+                'debug': self.ui.debug_chk.isChecked(),
+                'step_value': frame_step_override,
                 'export_type': export_type,
                 'project': self.project,
                 'frame_range': frame_range,
@@ -525,9 +515,7 @@ class GUI(QMainWindow):
 
         self.ui.stack_area.setCurrentIndex(0)
         self.executed_row = list(set(self.executed_row))
-        util_exporter.ExporterTableModel(
-                self.tabledata, self.headers,
-                self.check_row, self.executed_row)
+        util_exporter.ExporterTableModel(self.tabledata, self.headers,self.check_row, self.executed_row)
         print('===============Export End==================')
 
 
@@ -542,58 +530,58 @@ def thread_main(**kwargs):
     with open(log_path, 'w')as f:
         try:
             proc = subprocess.Popen([python, py_path, argsdic], shell=True, stdout=f, cwd=current_dir)
-            # proc = subprocess.call([python, py_path, argsdic], shell=True, cwd=current_dir)
             proc.wait()
         except Exception as e:
             print(e)
     if kwargs['argsdic']['log_shape']==True:
-        log_shaper(log_path)
+        from shell_lib import log_shaper
+        log_shaper.main(log_path)
     return
 
-def log_shaper(file_path):
-    shaped_lines = []
-    with open(file_path) as f:
-        lines = f.readlines()
-    for line in lines:
-        # line = line.replace('\n', '')
-        if line.startswith(' u\''):line.replace(' u\'', '\'')
-        if line.startswith(' u\''):line.replace(' u\'', '\'')
-        # if line.startswith('Error: '): continue
-        if line.startswith('Warning: '): continue
-        if line.startswith('Read '): continue
-        if line.startswith('the data object '): continue
-        if line.startswith('File read '): continue
-        if line.startswith('\'NoneType\' object'):continue
-        if line.startswith('No attribute was specified.'):continue
-        if line.startswith('no imp'):continue
-        if 'AbcImport' in line:continue
-        if 'has no attribute \"ai' in line:continue
-        if 'No object matches name: .ai' in line:continue
-        if '"mtoa", was not found' in line:continue
-        if 'aov_' in line:continue
-        if 'aovs' in line:continue
-        if 'has no \'ai_' in line:continue
-        if 'has no \'.ai_' in line:continue
-        if 'UI commands can\'t be run' in line:continue
-        if line.startswith('Error: line 1: Error reading'):continue
-        if line.startswith('Failed to execute userSetup.py'):continue
-        if line.startswith('Traceback (most recent call last):'):continue
-        if line.startswith('  File '):continue
-        if line.startswith('    if not cmds.commandPort'):continue
-        if line.startswith('RuntimeError: Maya command error'):continue
-        if line.startswith('list.remove(x)'):continue
-        if line.startswith('Result: '):continue
-        if line.startswith('get CurrentContext Error'):continue
-        if line.startswith('The attribute is compound with mixed type elements.'):continue
-        if line.startswith('Message attributes have no data values.'):continue
-        if line == '\n': continue
-        if line == '': continue
-        if line == '\r': continue
-        if line == ' ':continue
-        if line == '\r\n': continue
-        shaped_lines.append(line)
-    with open(file_path, 'w+') as f:
-        f.writelines(shaped_lines)
+# def log_shaper(file_path):
+#     shaped_lines = []
+#     with open(file_path) as f:
+#         lines = f.readlines()
+#     for line in lines:
+#         # line = line.replace('\n', '')
+#         if line.startswith(' u\''):line.replace(' u\'', '\'')
+#         if line.startswith(' u\''):line.replace(' u\'', '\'')
+#         # if line.startswith('Error: '): continue
+#         if line.startswith('Warning: '): continue
+#         if line.startswith('Read '): continue
+#         if line.startswith('the data object '): continue
+#         if line.startswith('File read '): continue
+#         if line.startswith('\'NoneType\' object'):continue
+#         if line.startswith('No attribute was specified.'):continue
+#         if line.startswith('no imp'):continue
+#         if 'AbcImport' in line:continue
+#         if 'has no attribute \"ai' in line:continue
+#         if 'No object matches name: .ai' in line:continue
+#         if '"mtoa", was not found' in line:continue
+#         if 'aov_' in line:continue
+#         if 'aovs' in line:continue
+#         if 'has no \'ai_' in line:continue
+#         if 'has no \'.ai_' in line:continue
+#         if 'UI commands can\'t be run' in line:continue
+#         if line.startswith('Error: line 1: Error reading'):continue
+#         if line.startswith('Failed to execute userSetup.py'):continue
+#         if line.startswith('Traceback (most recent call last):'):continue
+#         if line.startswith('  File '):continue
+#         if line.startswith('    if not cmds.commandPort'):continue
+#         if line.startswith('RuntimeError: Maya command error'):continue
+#         if line.startswith('list.remove(x)'):continue
+#         if line.startswith('Result: '):continue
+#         if line.startswith('get CurrentContext Error'):continue
+#         if line.startswith('The attribute is compound with mixed type elements.'):continue
+#         if line.startswith('Message attributes have no data values.'):continue
+#         if line == '\n': continue
+#         if line == '': continue
+#         if line == '\r': continue
+#         if line == ' ':continue
+#         if line == '\r\n': continue
+#         shaped_lines.append(line)
+#     with open(file_path, 'w+') as f:
+#         f.writelines(shaped_lines)
 
 
 def runs(*argv):
