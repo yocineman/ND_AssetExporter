@@ -30,19 +30,12 @@ try:
     from PySide.QtGui import *
     from PySide.QtUiTools import QUiLoader
 except:
-    # import PySide6.QtCore as QtCore
-    # import PySide6.QtGui as QtGui
-    # from PySide6.QtCore import *
-    # from PySide6.QtGui import *
-    # from PySide6.QtWidgets import *
-    # from PySide6.QtUiTools import QUiLoader
     from PySide2.QtCore import *
     from PySide2.QtGui import *
     from PySide2.QtUiTools import QUiLoader
 # ------------------------------------
 
 import shell_lib.util_exporter as util_exporter; reload(util_exporter)
-# import util; reload(util)
 try:
     import ND_Submitter.env as util_env
 except Exception as e:
