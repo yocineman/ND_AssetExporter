@@ -27,20 +27,20 @@ def getCharList(charsetpath):
 def getCurrentFilesList(charsetpath, mode="ma"):
     charsetpath = charsetpath.replace("\\", "/")
     charList = getCharList(charsetpath)
-    currentFiles = []
+    current_files = []
     if mode=="ma":
         for char in charList:
             if "non_connection_" in char:
                 continue
-            currentFile = getFiles(os.path.join(charsetpath, char, "current"))
-            currentFiles.extend(currentFile)
+            current_file = getFiles(os.path.join(charsetpath, char, "current"))
+            current_files.extend(current_file)
         camFile = os.path.join(charsetpath.replace('char','Cam'), "current", "cam")
-        currentFile.append(camFile)
+        current_files.append(camFile)
     elif mode=="anim":
         for char in charList:
-            currentFile = getFiles(os.path.join(charsetpath, char, "current", "anim"))
-            currentFiles.extend(currentFile)
-    return currentFiles
+            current_file = getFiles(os.path.join(charsetpath, char, "current", "anim"))
+            current_files.extend(current_file)
+    return current_files
 
 
 def getCurrentDirsList(charsetpath):
@@ -64,26 +64,8 @@ def open_folder(path):
     subprocess.call("explorer {}".format(path.replace("/", "\\")))
 
 
-# def check_newest_ver(info_file):
-#     char_dir = "/".join(info_file.split("/")[:-2])
-#     char_name = info_file.split("/")[-3]
-#     with open(info_file, 'r') as f:
-#         ver = int(str(f.readline().rstrip("\n")).split(":")[-1].lstrip("v"))
-#     next_ver = ver+1
-#     next_ver_str = str(next_ver).zfill(3)
-#     next_dir = char_dir + "/v" + next_ver_str
-#     if not os.path.exists(next_dir):
-#         return True
-#     while(1):
-#         next_ver = next_ver+1
-#         next_ver_str = str(next_ver).zfill(3)
-#         next_dir = char_dir + "/v" + next_ver_str
-#         if not os.path.exists(next_dir):
-#             return next_ver-1
-
 
 def check_newest_ver(char_dir):
-    dirs = os.listdir(char_dir)
     next_ver = 0
     while(1):
         next_ver = next_ver+1
@@ -97,9 +79,8 @@ def check_newest_ver(char_dir):
 
 
 def copy_main(dir_path):
-    # dir_path = r"P:\Project\RAM1\shots\OP\sOP\c009\publish\test_charSet"
-    charDirs = getCurrentDirsList(dir_path)
-    for char_dir in charDirs:
+    char_dirs = getCurrentDirsList(dir_path)
+    for char_dir in char_dirs:
         newest_ver = check_newest_ver(char_dir)
         char_name = char_dir.split("\\")[-1]
         if newest_ver is None:
@@ -108,9 +89,6 @@ def copy_main(dir_path):
             newest_dir = os.path.join(char_dir, "v{}".format(str(newest_ver).zfill(3)))
             current_dir = os.path.join(char_dir, "current")
             _result = distutils.dir_util.copy_tree(newest_dir, current_dir)
-            # with open(_file, 'w') as f:
-            #     f.write("current ver:v{}\n".format(str(newest_ver).zfill(3)))
-            # char_name = _file.split("/")[-3]
             print(_result)
             print("{}: -> ver:{}".format(char_name, str(newest_ver)))
     print("=== copy finished. ==")
