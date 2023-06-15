@@ -463,7 +463,8 @@ class GUI(QMainWindow):
                 'group': str(self.ui.grouplist.currentText()),
                 'load_pref':self.ui.force_load_preference_chk.isChecked(),
                 'maya_version':str(maya_version),
-                'log_shape':self.ui.log_shape_chk.isChecked()}
+                'log_shape':self.ui.log_shape_chk.isChecked(),
+                'tg_cam_list':None}
             if '{Empty!}' in argsdic.values():
                 continue
 

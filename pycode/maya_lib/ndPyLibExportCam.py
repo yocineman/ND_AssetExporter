@@ -54,7 +54,7 @@ def export_cam_main(kwargs):
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
-    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'], kwargs['step_value'])
+    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'], kwargs['step_value'], kwargs['tg_cam_list'])
     if cams is None:
         return
 
@@ -185,39 +185,38 @@ def Euler_filter(obj_list):
 
 
 def search_cam():
-    cam_shapes = cmds.ls(ca=True)
-    try:
-        cam_shapes.remove('frontShape')
-        cam_shapes.remove('perspShape')
-        cam_shapes.remove('sideShape')
-        cam_shapes.remove('topShape')
-        cam_shapes.remove('leftShape')
-        cam_shapes.remove('backShape')
-        cam_shapes.remove('bottomShape')
-        cam_shapes.remove('front1Shape')
-        cam_shapes.remove('persp1Shape')
-        cam_shapes.remove('side1Shape')
-        cam_shapes.remove('top1Shape')
-        cam_shapes.remove('persp2Shape')
-        cam_shapes.remove('deformation_camShape')
-    except ValueError:
-        pass
-    for camShape in cam_shapes[:]:
-        if cmds.getAttr("{}.orthographic".format(camShape)):
-            cam_shapes.remove(camShape)
-
-    cams = cmds.listRelatives(cam_shapes, p=True, f=True)
     tg_cam_list = []
-    if cams is None:
-        return
-    for i in range(len(cams)):
-        tg_cam_list.append(cams[i])
-
+    # try:
+    #     cam_shapes.remove('frontShape')
+    #     cam_shapes.remove('perspShape')
+    #     cam_shapes.remove('sideShape')
+    #     cam_shapes.remove('topShape')
+    #     cam_shapes.remove('leftShape')
+    #     cam_shapes.remove('backShape')
+    #     cam_shapes.remove('bottomShape')
+    #     cam_shapes.remove('front1Shape')
+    #     cam_shapes.remove('persp1Shape')
+    #     cam_shapes.remove('side1Shape')
+    #     cam_shapes.remove('top1Shape')
+    #     cam_shapes.remove('persp2Shape')
+    #     cam_shapes.remove('deformation_camShape')
+    # except ValueError:
+    #     pass
+    for cam_shape in cmds.ls(ca=True):
+        if cmds.getAttr("{}.orthographic".format(cam_shape)):
+            continue
+        cam = cmds.listRelatives(cam_shape, p=True)[0]
+        if cam == 'persp':
+            continue
+        tg_cam_list.append(cam)
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value):
-    cams = search_cam()
+def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list):
+    if tg_cam_list is None:
+        cams = search_cam()
+    else:
+        cams = tg_cam_list
     if cams is None:
         return
     shapeAttrs = ['fl','hfa','vfa','lsr','fs','fd','sa','coi','ncp','fcp', 'locatorScale', 'centerOfInterest', 'rotateOrder']
