@@ -186,22 +186,6 @@ def Euler_filter(obj_list):
 
 def search_cam():
     tg_cam_list = []
-    # try:
-    #     cam_shapes.remove('frontShape')
-    #     cam_shapes.remove('perspShape')
-    #     cam_shapes.remove('sideShape')
-    #     cam_shapes.remove('topShape')
-    #     cam_shapes.remove('leftShape')
-    #     cam_shapes.remove('backShape')
-    #     cam_shapes.remove('bottomShape')
-    #     cam_shapes.remove('front1Shape')
-    #     cam_shapes.remove('persp1Shape')
-    #     cam_shapes.remove('side1Shape')
-    #     cam_shapes.remove('top1Shape')
-    #     cam_shapes.remove('persp2Shape')
-    #     cam_shapes.remove('deformation_camShape')
-    # except ValueError:
-    #     pass
     for cam_shape in cmds.ls(ca=True):
         if cmds.getAttr("{}.orthographic".format(cam_shape)):
             continue

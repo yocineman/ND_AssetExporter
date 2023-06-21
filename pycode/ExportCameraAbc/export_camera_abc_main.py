@@ -28,9 +28,13 @@ class ExportCameraAbc(object):
         self.frame_range = False
         self.tg_cam_list = cam_list
 
-        self.ma_cam_path = os.path.join(self.output_base, 'ma','{}.ma'.format(self.file_name)).replace('\\', '/')
-        self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.abc'.format(self.file_name)).replace('\\', '/')
-        self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.fbx'.format(self.file_name)).replace('\\', '/')
+        # self.ma_cam_path = os.path.join(self.output_base, 'ma','{}.ma'.format(self.file_name)).replace('\\', '/')
+        # self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.abc'.format(self.file_name)).replace('\\', '/')
+        # self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.fbx'.format(self.file_name)).replace('\\', '/')
+
+        self.ma_cam_path = os.path.join(self.output_base, 'ma', self.file_name, 'cam.ma').replace('\\', '/')
+        self.abc_cam_path = os.path.join(self.output_base, 'abc', self.file_name, 'cam.abc').replace('\\', '/')
+        self.fbx_cam_path = os.path.join(self.output_base, 'fbx', self.file_name, 'cam.fbx').replace('\\', '/')
 
 
     def get_ext_dir(self, ext_type='all'):
