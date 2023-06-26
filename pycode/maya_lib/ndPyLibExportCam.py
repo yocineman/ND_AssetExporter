@@ -204,7 +204,7 @@ def search_cam():
 
 
 def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list):
-    if tg_cam_list is None:
+    if tg_cam_list is None or tg_cam_list is 'None':
         cams = search_cam()
     else:
         cams = tg_cam_list
