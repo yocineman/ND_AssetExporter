@@ -9,6 +9,13 @@ import maya.cmds as cmds
 import maya.mel as mel
 import re
 
+def unlock_current_layer():
+    try:
+        root_layer = cmds.animLayer(q=True, root=True)
+        cmds.animLayer(root_layer, solo=True)
+        cmds.animLayer(root_layer, e=True, lock=False)
+    except:
+        pass
 
 def export_cam_main(kwargs):
     if kwargs['project'].lower() == 'd_wh':
@@ -18,7 +25,7 @@ def export_cam_main(kwargs):
     # シーンのオープン
     if not cmds.file(q=True, exists=True):
         cmds.file(kwargs['input_path'], o=True, f=True)
-
+    unlock_current_layer()
     top_nodes = cmds.ls(assemblies=True)
     batch_mode = cmds.about(batch=True)
     if 'ext_type' not in kwargs.keys():
@@ -90,7 +97,7 @@ def export_cam_main(kwargs):
         export_abc(abc_cam_path, sframe, eframe)
 
     if 'remain_cam' in kwargs.keys():
-        if kwargs['remain_cam'] == True:
+        if kwargs['remain_cam'] == False:
             for i in range(len(bake_cams)):
                 cmds.delete(bake_cams[i])
 
@@ -292,6 +299,7 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list
 
 
     for i in range(len(to_cam)):
+        print('to_cam:', to_cam[i])
         try:
             cmds.setAttr(from_cam[i]+'.'+thisAttr, lock=False)
         except:
