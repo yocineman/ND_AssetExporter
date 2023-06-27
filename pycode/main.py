@@ -46,7 +46,8 @@ PYPATH = 'Y:\\tool\\MISC\\Python2710_amd64_vs2010\\python.exe'
 USERNAME = os.environ.get('USERNAME')
 if USERNAME is None:
     USERNAME = 'deadlineuser'
-LOGDIR = 'Y:\\users\\'+USERNAME+'\\DCC_log\\ND_AssetExporter'
+# LOGDIR = 'Y:\\users\\'+USERNAME+'\\DCC_log\\ND_AssetExporter'
+LOGDIR = 'Y:\\users\\'+'deadlineuser'+'\\DCC_log\\ND_AssetExporter'
 
 onpath = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
 os.chdir(onpath)
@@ -470,7 +471,7 @@ class GUI(QMainWindow):
 
             #  Export
             if mode == 'Local':
-                log_name = 'log_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + asset_name+ '.txt'
+                log_name = 'log_' + USERNAME + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + asset_name+ '.txt'
                 # log_dir = 'Y:\\users\\'+os.environ.get('USERNAME')+'\\DCC_log\\ND_AssetExporter'
                 log_path = LOGDIR + '\\' + log_name
                 current_dir = EXPORTER_PATH + '/pycode'

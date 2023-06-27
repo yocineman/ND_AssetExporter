@@ -492,9 +492,9 @@ class LogTableModel(QAbstractTableModel):
             if '.txt' in _file:
                 # log_list.append(_file)
                 file_path = log_dir+'\\'+_file
-                _date = _file.split('_')[1]
-                _time = _file.split('_')[2][0:6]
-                asset = _file.split('_')[2].replace(_time, '').replace('.txt', '')
+                _date = _file.split('_')[-1].replace('.txt', '')
+                _time = _file.split('_')[-2]
+                asset = _file.split(_time)[0].lstrip('log_').rstrip('_')
                 info_set = [str(asset), str(_date),
                             str(_time),  str(file_path)]
                 self.table_data.append(info_set)
