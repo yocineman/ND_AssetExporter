@@ -68,6 +68,17 @@ def symlink(source, link_name):
         if csl(link_name, source, flags) == 0:
             raise ctypes.WinError()
 
+
+def get_vers(folder_path):
+    vers = []
+    for _file in os.listdir(folder_path):
+        if '.' in _file:
+            continue
+        else:
+            vers.append(_file)
+    return vers
+
+
 class outputPathConf(object):
     def __init__(self, input_path, export_type=None, debug=False):
         self.input_path = input_path.replace('\\', '/')
@@ -103,7 +114,7 @@ class outputPathConf(object):
             self._publish_char_path = os.path.join(self.shot_path, 'publish', self.root_dir)
         if not os.path.exists(self.publish_current_path):
             os.makedirs(self.publish_current_path)
-        vers = os.listdir(self.publish_char_path)
+        vers = get_vers(self.publish_char_path)
         if len(vers) == 1:
             self.current_ver = 'v001'
         else:
@@ -113,7 +124,7 @@ class outputPathConf(object):
             self.current_ver = 'v' + str(current_ver_num).zfill(3)
 
     def ver_inc(self):
-        vers = os.listdir(self.publish_char_path)
+        vers = get_vers(self.publish_char_path)
         if len(vers) == 1:
             self.current_ver = 'v001'
         else:
