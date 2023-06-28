@@ -11,9 +11,9 @@ import re
 
 def unlock_current_layer():
     try:
-        root_layer = cmds.animLayer(q=True, root=True)
-        cmds.animLayer(root_layer, solo=True)
-        cmds.animLayer(root_layer, e=True, lock=False)
+        anim_layer_list = cmds.ls(type='animLayer')
+        for anim_layer in anim_layer_list:
+            cmds.animLayer(anim_layer, e=True, lock=False)
     except:
         pass
 
@@ -226,7 +226,6 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list
             shape_value_set_list = []
 
             cmds.setAttr("time1.enableTimewarp", 1)
-            # step_value = kwargs['step_value']
             _frame = sframe
             while True:
                 cmds.currentTime(_frame)
@@ -235,12 +234,6 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list
                 _frame += step_value
                 if _frame > eframe:
                     break
-
-            # for t in range(int(sframe),int(eframe+1)):
-            #     cmds.currentTime(t)
-            #     warp_time = cmds.getAttr("time1.outTime", time=t)
-            #     time_set_list.append([t, warp_time])
-
             cmds.setAttr("time1.enableTimewarp", 1)
             for time_set in time_set_list:
                 t = time_set[0]
