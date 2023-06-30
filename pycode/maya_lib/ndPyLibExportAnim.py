@@ -541,7 +541,7 @@ def export_anim_main(**kwargs):
         if cmds.listConnections(node, s=True, type="constraint") is not None:
             attrs.extend(
                 list(set(cmds.listConnections(node, s=True, type="constraint"))))
-
+    
     # SceneTimeWarp
     if scene_timewarp:
         time_set_list = []
@@ -572,6 +572,7 @@ def export_anim_main(**kwargs):
                 except Exception as e:
                     print(e)
         cmds.setAttr("time1.enableTimewarp", 0)
+        
         for attr in attrs:
             cmds.keyTangent(attr, edit=True, itt="linear", ott="linear")
 
@@ -581,8 +582,8 @@ def export_anim_main(**kwargs):
                 source_attrs = cmds.listConnections(attr, d=False, s=True, p=True)
                 if source_attrs is not None:
                     for source in source_attrs:
-                        if source.split('.')[-1]!='output':
-                            cmds.disconnectAttr(source, attr)
+                        # if source.split('.')[-1]!='output':
+                        cmds.disconnectAttr(source, attr)
             except Exception as e:
                 print(e)
 
@@ -591,12 +592,13 @@ def export_anim_main(**kwargs):
             attr = time_list[1]
             value = time_list[2]
             cmds.currentTime(frame)
-            # print(frame, attr, value)
+            print(frame, attr, value)
             try:
                 cmds.setAttr(attr, value)
                 cmds.setKeyframe(attr, v=value, t=frame)
             except Exception as e:
-                pass
+                print(e)
+                # pass
     # 通常のベイク
     else:
         attrs = list(set(attrs)-set(ignore_attrs))
@@ -612,7 +614,6 @@ def export_anim_main(**kwargs):
         # cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True)
         cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True, ral=True)
 
-
     for obj in hidden_objs:
         try:
             dst_obj = '{}.visibility'.format(obj.split('|')[-1])
@@ -622,8 +623,6 @@ def export_anim_main(**kwargs):
             print(e)
     try:
         cmds.showHidden(hidden_objs)
-            # if 'on_maya' in kwargs.keys():
-            #     return
     except:
         pass
     print('###scene_ns_list####################')

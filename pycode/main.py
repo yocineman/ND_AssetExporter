@@ -10,7 +10,7 @@ try:
 except:
     pass
 # ------------------------------
-__version__ = '8.5.4'
+__version__ = '8.5.5'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__))).replace('\\', '/')
