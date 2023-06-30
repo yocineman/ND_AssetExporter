@@ -501,15 +501,14 @@ def export_anim_main(**kwargs):
     if scene_timewarp:
         cmds.setAttr("time1.enableTimewarp", 0)
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
-    if scene_timewarp:
-        cmds.setAttr("time1.enableTimewarp", 1)
-    # if baseAnimationLayer != None and len(cmds.ls(sl=True)) != 0:
+    
     if baseAnimationLayer != None:
         animLayers = cmds.ls(type='animLayer')
         for al in animLayers:
             cmds.animLayer(al, e=True, sel=False)
         cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
-
+    if scene_timewarp:
+        cmds.setAttr("time1.enableTimewarp", 1)
     for tg_node in tg_nodes[:]:
         if cmds.objExists(tg_node) == False:
             tg_nodes.remove(tg_node)
