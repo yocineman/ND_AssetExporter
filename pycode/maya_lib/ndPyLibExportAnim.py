@@ -123,6 +123,11 @@ def export_anim_main(**kwargs):
     if 'on_maya' in kwargs.keys():
         frame_range = [sframe, sframe+1]
 
+    if kwargs['scene_timewarp'] == True or kwargs['scene_timewarp'] == 'True':
+        scene_timewarp = True
+    else:
+        scene_timewarp = False
+        
     with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))) + '/sceneConf.txt', 'w') as f:
         f.write(str(sframe)+'\n')
         f.write(str(eframe)+'\n')
@@ -157,10 +162,13 @@ def export_anim_main(**kwargs):
     if len(character_set) != 0:
         cmds.delete(character_set)
 
-    mergeAnimLayers()
-
+    if scene_timewarp:
+        cmds.setAttr("time1.enableTimewarp", 0)
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
-    if baseAnimationLayer != None and len(cmds.ls(sl=True)) != 0:
+    if scene_timewarp:
+        cmds.setAttr("time1.enableTimewarp", 1)
+    # if baseAnimationLayer != None and len(cmds.ls(sl=True)) != 0:
+    if baseAnimationLayer != None:
         animLayers = cmds.ls(type='animLayer')
         for al in animLayers:
             cmds.animLayer(al, e=True, sel=False)
@@ -200,7 +208,7 @@ def export_anim_main(**kwargs):
                 list(set(cmds.listConnections(node, s=True, type="constraint"))))
 
     # SceneTimeWarp
-    if kwargs['scene_timewarp'] == True or kwargs['scene_timewarp'] == 'True':
+    if scene_timewarp:
         time_set_list = []
         time_value_set_list = []
 
@@ -229,6 +237,7 @@ def export_anim_main(**kwargs):
             for attr in attrs:
                 try:
                     value = cmds.getAttr(attr)
+                    print(t, attr, value)
                     time_value_set_list.append([t, attr, value])
                 except Exception as e:
                     print(e)
@@ -638,7 +647,7 @@ def mergeAnimLayers():
     if animLayers:
         try:
             mel.eval('animLayerMerge {"%s"}' % '","'.join(animLayers))
-        except:
+        except Exception as e:
             pass
     return
 
