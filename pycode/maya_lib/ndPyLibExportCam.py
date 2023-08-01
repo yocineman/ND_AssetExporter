@@ -9,100 +9,13 @@ import maya.cmds as cmds
 import maya.mel as mel
 import re
 
-
-def export_cam_main(kwargs):
-    if kwargs['project'].lower() == 'd_wh':
-        set_dw_h_env()
-    else:
-        set_env()
-    # シーンのオープン
-    if not cmds.file(q=True, exists=True):
-        cmds.file(kwargs['input_path'], o=True, f=True)
-
-    top_nodes = cmds.ls(assemblies=True)
-    batch_mode = cmds.about(batch=True)
-    if 'ext_type' not in kwargs.keys():
-        ext_type = 'all'
-    else:
-        ext_type = kwargs['ext_type']
-
-    if batch_mode:
-        cache_nodes = cmds.ls(type='cacheFile')
-        hidden_objs = []
-        hidden_objs.extend(cmds.hide(top_nodes, rh=True))
-        hidden_objs.extend(cmds.hide(cache_nodes, rh=True))
-        ignore_attrs = []
-        if hidden_objs is not None:
-            for obj in hidden_objs:
-                ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
-        unload_ns_dic = get_unload_ns_dic()
-        tg_ns_list = get_tg_ns_list(unload_ns_dic.keys(), ['camera[a-zA-Z0-9]*'])
-        for tg_ns in tg_ns_list:
-            ref = unload_ns_dic[tg_ns]
-            cmds.file(lr=ref)
-        if hidden_objs is not None:
-            for obj in hidden_objs:
-                ignore_attrs.append('{}Shape.visibility'.format(obj.lstrip('|')))
-                ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
-
-    if kwargs['frame_range'] != False and kwargs['frame_range']!=None:
-        sframe = float(kwargs['frame_range'].split(',')[0])
-        eframe = float(kwargs['frame_range'].split(',')[1])
-    else:
-        sframe = cmds.playbackOptions(q=True, min=True)
-        eframe = cmds.playbackOptions(q=True, max=True)
-    sframe -= float(kwargs['frame_handle'])
-    eframe += float(kwargs['frame_handle'])
-
-    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'])
-    if cams is None:
-        return
-
-    if cmds.objExists('cam_grp'):
-        cmds.delete('cam_grp')
-    cmds.group(em=True, n='cam_grp')
-    bake_cams = []
-    for i in range(len(cams)):
-        from_cam = cams[i][1]
-        to_cam = cams[i][0]
-        cmds.parent(to_cam,'cam_grp')
-        cmds.rename(to_cam, from_cam.split("|")[-1])
-        bake_cams.append(to_cam)
+def unlock_current_layer():
     try:
-        publish_ver_path = kwargs['publish_ver_path']
-        if not os.path.exists(publish_ver_path):
-            os.makedirs(publish_ver_path)
-        sceneConfpath = os.path.join(publish_ver_path, '..', 'sceneConf.txt')
-        with open(sceneConfpath, 'w') as f:
-            f.write(str(sframe)+'\n')
-            f.write(str(eframe)+'\n')
+        anim_layer_list = cmds.ls(type='animLayer')
+        for anim_layer in anim_layer_list:
+            cmds.animLayer(anim_layer, e=True, lock=False)
     except:
         pass
-    cmds.select('cam_grp')
-    if ext_type == 'ma' or ext_type == 'all':
-        ma_cam_path = kwargs['ma_cam_path']
-        export_ma(ma_cam_path)
-    if ext_type == 'fbx' or ext_type == 'all':
-        fbx_cam_path = kwargs['fbx_cam_path']
-        export_fbx(fbx_cam_path)
-    if ext_type == 'abc' or ext_type == 'all':
-        abc_cam_path = kwargs['abc_cam_path']
-        export_abc(abc_cam_path, sframe, eframe)
-
-    if 'remain_cam' in kwargs.keys():
-        if kwargs['remain_cam'] == True:
-            for i in range(len(bake_cams)):
-                cmds.delete(bake_cams[i])
-
-    if batch_mode:
-        for obj in hidden_objs:
-            try:
-                dst_obj = '{}.visibility'.format(obj.split('|')[-1])
-                src_obj = cmds.listConnections(dst_obj, p=True)[0]
-                cmds.disconnectAttr(src_obj, dst_obj)
-            except Exception as e:
-                print(e)
-        cmds.showHidden(hidden_objs)
 
 
 def set_dw_h_env():
@@ -185,39 +98,22 @@ def Euler_filter(obj_list):
 
 
 def search_cam():
-    cam_shapes = cmds.ls(ca=True)
-    try:
-        cam_shapes.remove('frontShape')
-        cam_shapes.remove('perspShape')
-        cam_shapes.remove('sideShape')
-        cam_shapes.remove('topShape')
-        cam_shapes.remove('leftShape')
-        cam_shapes.remove('backShape')
-        cam_shapes.remove('bottomShape')
-        cam_shapes.remove('front1Shape')
-        cam_shapes.remove('persp1Shape')
-        cam_shapes.remove('side1Shape')
-        cam_shapes.remove('top1Shape')
-        cam_shapes.remove('persp2Shape')
-        cam_shapes.remove('deformation_camShape')
-    except ValueError:
-        pass
-    for camShape in cam_shapes[:]:
-        if cmds.getAttr("{}.orthographic".format(camShape)):
-            cam_shapes.remove(camShape)
-
-    cams = cmds.listRelatives(cam_shapes, p=True, f=True)
     tg_cam_list = []
-    if cams is None:
-        return
-    for i in range(len(cams)):
-        tg_cam_list.append(cams[i])
-
+    for cam_shape in cmds.ls(ca=True):
+        if cmds.getAttr("{}.orthographic".format(cam_shape)):
+            continue
+        cam = cmds.listRelatives(cam_shape, p=True)[0]
+        if cam == 'persp':
+            continue
+        tg_cam_list.append(cam)
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
-    cams = search_cam()
+def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list):
+    if tg_cam_list is None or tg_cam_list is 'None':
+        cams = search_cam()
+    else:
+        cams = tg_cam_list
     if cams is None:
         return
     shapeAttrs = ['fl','hfa','vfa','lsr','fs','fd','sa','coi','ncp','fcp', 'locatorScale', 'centerOfInterest', 'rotateOrder']
@@ -236,15 +132,19 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
             shape_value_set_list = []
 
             cmds.setAttr("time1.enableTimewarp", 1)
-            for t in range(int(sframe),int(eframe+1)):
-                cmds.currentTime(t)
-                warp_time = cmds.getAttr("time1.outTime", time=t)
-                time_set_list.append([t, warp_time])
-
+            _frame = sframe
+            while True:
+                cmds.currentTime(_frame)
+                warp_time = cmds.getAttr("time1.outTime", time=_frame)
+                time_set_list.append([_frame, warp_time])
+                _frame += step_value
+                if _frame > eframe:
+                    break
             cmds.setAttr("time1.enableTimewarp", 1)
             for time_set in time_set_list:
                 t = time_set[0]
                 warp_time = time_set[1]
+                print(t, warp_time)
                 cmds.currentTime(t)
                 try:
                     attrsTrans = cmds.xform(from_cam[i],q=True,ws=True,t=True)
@@ -298,6 +198,7 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp):
 
 
     for i in range(len(to_cam)):
+        print('to_cam:', to_cam[i])
         try:
             cmds.setAttr(from_cam[i]+'.'+thisAttr, lock=False)
         except:
@@ -389,6 +290,101 @@ def export_abc(abc_path, sframe, eframe):
     mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
     # cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
 
+
+
+def export_cam_main(kwargs):
+    if kwargs['project'].lower() == 'd_wh':
+        set_dw_h_env()
+    else:
+        set_env()
+    # シーンのオープン
+    if not cmds.file(q=True, exists=True):
+        cmds.file(kwargs['input_path'], o=True, f=True)
+    unlock_current_layer()
+    top_nodes = cmds.ls(assemblies=True)
+    batch_mode = cmds.about(batch=True)
+    if 'ext_type' not in kwargs.keys():
+        ext_type = 'all'
+    else:
+        ext_type = kwargs['ext_type']
+
+    if batch_mode:
+        cache_nodes = cmds.ls(type='cacheFile')
+        hidden_objs = []
+        hidden_objs.extend(cmds.hide(top_nodes, rh=True))
+        hidden_objs.extend(cmds.hide(cache_nodes, rh=True))
+        ignore_attrs = []
+        if hidden_objs is not None:
+            for obj in hidden_objs:
+                ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
+        unload_ns_dic = get_unload_ns_dic()
+        tg_ns_list = get_tg_ns_list(unload_ns_dic.keys(), ['camera[a-zA-Z0-9]*'])
+        for tg_ns in tg_ns_list:
+            ref = unload_ns_dic[tg_ns]
+            cmds.file(lr=ref)
+        if hidden_objs is not None:
+            for obj in hidden_objs:
+                ignore_attrs.append('{}Shape.visibility'.format(obj.lstrip('|')))
+                ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
+
+    if kwargs['frame_range'] != False and kwargs['frame_range']!=None:
+        sframe = float(kwargs['frame_range'].split(',')[0])
+        eframe = float(kwargs['frame_range'].split(',')[1])
+    else:
+        sframe = cmds.playbackOptions(q=True, min=True)
+        eframe = cmds.playbackOptions(q=True, max=True)
+    sframe -= float(kwargs['frame_handle'])
+    eframe += float(kwargs['frame_handle'])
+
+    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'], kwargs['step_value'], kwargs['tg_cam_list'])
+    if cams is None:
+        return
+
+    if cmds.objExists('cam_grp'):
+        cmds.delete('cam_grp')
+    cmds.group(em=True, n='cam_grp')
+    bake_cams = []
+    for i in range(len(cams)):
+        from_cam = cams[i][1]
+        to_cam = cams[i][0]
+        cmds.parent(to_cam,'cam_grp')
+        cmds.rename(to_cam, from_cam.split("|")[-1])
+        bake_cams.append(to_cam)
+    try:
+        publish_ver_path = kwargs['publish_ver_path']
+        if not os.path.exists(publish_ver_path):
+            os.makedirs(publish_ver_path)
+        sceneConfpath = os.path.join(publish_ver_path, '..', 'sceneConf.txt')
+        with open(sceneConfpath, 'w') as f:
+            f.write(str(sframe)+'\n')
+            f.write(str(eframe)+'\n')
+    except:
+        pass
+    cmds.select('cam_grp')
+    if ext_type == 'ma' or ext_type == 'all':
+        ma_cam_path = kwargs['ma_cam_path']
+        export_ma(ma_cam_path)
+    if ext_type == 'fbx' or ext_type == 'all':
+        fbx_cam_path = kwargs['fbx_cam_path']
+        export_fbx(fbx_cam_path)
+    if ext_type == 'abc' or ext_type == 'all':
+        abc_cam_path = kwargs['abc_cam_path']
+        export_abc(abc_cam_path, sframe, eframe)
+
+    if 'remain_cam' in kwargs.keys():
+        if kwargs['remain_cam'] == False:
+            for i in range(len(bake_cams)):
+                cmds.delete(bake_cams[i])
+
+    if batch_mode:
+        for obj in hidden_objs:
+            try:
+                dst_obj = '{}.visibility'.format(obj.split('|')[-1])
+                src_obj = cmds.listConnections(dst_obj, p=True)[0]
+                cmds.disconnectAttr(src_obj, dst_obj)
+            except Exception as e:
+                print(e)
+        cmds.showHidden(hidden_objs)
 
 def ndPylibExportCam_caller(**kwargs):
     export_cam_main(kwargs)

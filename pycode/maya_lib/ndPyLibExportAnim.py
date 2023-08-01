@@ -78,248 +78,6 @@ def set_env():
         pass
 
 
-def export_anim_main(**kwargs):
-    pprint.pprint(kwargs.items())
-    if kwargs['project'].lower() == 'd_wh':
-        set_dw_h_env()
-    else:
-        set_env()
-
-    # シーンのオープン
-    cmds.file(kwargs['input_path'], o=True, f=True)
-
-    #  evaluateの設定
-    evaluate = kwargs['evaluate']
-    if evaluate != False:
-        if evaluate == 'DG':
-            cmds.evaluationManager(mode='off')
-        else:
-            cmds.evaluationManager(mode=evaluate)
-    #  cacheをハイド
-    top_nodes = cmds.ls(assemblies=True)
-    cache_nodes = cmds.ls(type='cacheFile')
-    hidden_objs = []
-    hidden_objs.extend(cmds.hide(top_nodes, rh=True))
-    hidden_objs.extend(cmds.hide(cache_nodes, rh=True))
-    ignore_attrs = []
-    if hidden_objs is not None:
-        for obj in hidden_objs:
-            ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
-
-    output_files = []
-    tg_nodes = []
-    node_and_attrs = []
-
-    frame_handle = kwargs['frame_handle']
-    publish_ver_anim_path = kwargs['publish_ver_anim_path']
-
-    sframe = cmds.playbackOptions(q=True, min=True) - float(frame_handle)
-    eframe = cmds.playbackOptions(q=True, max=True) + float(frame_handle)
-
-    if 'frame_range' in kwargs.keys():
-        frame_range = kwargs['frame_range']
-    else:
-        frame_range = [sframe, eframe]
-    if 'on_maya' in kwargs.keys():
-        frame_range = [sframe, sframe+1]
-
-    with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))) + '/sceneConf.txt', 'w') as f:
-        f.write(str(sframe)+'\n')
-        f.write(str(eframe)+'\n')
-    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))), "resolutionConf.txt"), "w") as f:
-        f.write(str(cmds.getAttr("defaultResolution.width"))+"\n")
-        f.write(str(cmds.getAttr("defaultResolution.height"))+"\n")
-
-    input_ns_list = kwargs['namespace'][0].replace(
-        ' ', '').rstrip(',').split(',')
-    regex_list = [i for i in kwargs['export_item']['anim'].replace(
-        ' ', '').replace('vertical_bar', '|').split(',') if not '.' in i]  # 通常のエクスポート対象
-    regex_attr_list = [i for i in kwargs['export_item']
-                       ['anim'].split(',') if '.' in i]  # アトリビュートを直接指定
-
-    if kwargs['load_pref'] == True:
-        unload_ns_dic = get_unload_ns_dic()
-        tg_ns_list = get_tg_ns_list(unload_ns_dic.keys(), input_ns_list)
-        for tg_ns in tg_ns_list:
-            ref = unload_ns_dic[tg_ns]
-            cmds.file(lr=ref)
-
-    scene_ns_list = get_scene_ns_list()
-    tg_ns_list = get_tg_ns_list(scene_ns_list, input_ns_list)
-    if len(tg_ns_list) == 0:
-        print('Namespaceが見つかりませんでした。')
-        return False
-    print(tg_ns_list, regex_list)
-    tg_nodes = get_tg_nodes(tg_ns_list, regex_list)
-    for regex_attr in regex_attr_list:
-        tg_nodes.append(regex_attr.split('.')[0])
-
-
-    if len(tg_nodes) == 0:
-        print('(正規表現とマッチするオブジェクト)が見つかりませんでした。')
-
-    character_set = cmds.ls(type='character')
-    if len(character_set) != 0:
-        cmds.delete(character_set)
-
-    mergeAnimLayers()
-
-    baseAnimationLayer = cmds.animLayer(q=True, r=True)
-    if baseAnimationLayer != None and len(cmds.ls(sl=True)) != 0:
-        animLayers = cmds.ls(type='animLayer')
-        for al in animLayers:
-            cmds.animLayer(al, e=True, sel=False)
-        cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
-
-    for tg_node in tg_nodes[:]:
-        if cmds.objExists(tg_node) == False:
-            tg_nodes.remove(tg_node)
-
-    attrs = getNoKeyAttributes(tg_nodes)
-    if len(node_and_attrs) != 0:
-        attrs.extend(getNoKeyAttributes(node_and_attrs))
-    for tg_ns in tg_ns_list:
-        for regex_obj_and_attr in regex_attr_list:
-            obj_and_attr = tg_ns+':' + regex_obj_and_attr
-            if cmds.objExists(obj_and_attr):
-                attrs.append(obj_and_attr)
-
-    if len(attrs) != 0:
-        attrs = list(set(attrs)-set(ignore_attrs))
-        cmds.setKeyframe(attrs, t=sframe)
-
-    attrs += getConstraintAttributes(tg_nodes)
-    attrs += getMotionPathAttributes(tg_nodes)
-    attrs += getAddDoubleLinearAttributes(tg_nodes)
-    attrs += getTransformConnectionAttributes(tg_nodes)
-    attrs += getExpression(tg_nodes)
-    attrs += getKeyAttributes(tg_nodes)
-    attrs += getAnimLayerConnectionAttributes(tg_nodes)
-    attrs += getPairBlendAttributes(tg_nodes)
-    attrs = list(set(attrs)-set(ignore_attrs))
-    unlockAttributes(attrs)
-
-    for node in tg_nodes:
-        if cmds.listConnections(node, s=True, type="constraint") is not None:
-            attrs.extend(
-                list(set(cmds.listConnections(node, s=True, type="constraint"))))
-
-    if kwargs['scene_timewarp'] == True or kwargs['scene_timewarp'] == 'True':
-        time_set_list = []
-        time_value_set_list = []
-
-        cmds.setAttr("time1.enableTimewarp", 1)
-        for t in range(int(sframe),int(eframe+1)):
-            cmds.currentTime(t)
-            warp_time = cmds.getAttr("time1.outTime", time=t)
-            time_set_list.append([t, warp_time])
-
-        cmds.setAttr("time1.enableTimewarp", 1)
-        for time_set in time_set_list:
-            t = time_set[0]
-            warp_time = time_set[1]
-            cmds.currentTime(t)
-            for attr in attrs:
-                try:
-                    value = cmds.getAttr(attr)
-                    time_value_set_list.append([t, attr, value])
-                except Exception as e:
-                    print(e)
-        cmds.setAttr("time1.enableTimewarp", 0)
-        for attr in attrs:
-            cmds.keyTangent(attr, edit=True, itt="linear", ott="linear")
-
-        for time_list in time_value_set_list:
-            attr = time_list[1]
-            try:
-                source_attrs = cmds.listConnections(attr, d=False, s=True, p=True)
-                if source_attrs is not None:
-                    for source in source_attrs:
-                        if source.split('.')[-1]!='output':
-                            cmds.disconnectAttr(source, attr)
-            except Exception as e:
-                print(e)
-
-        for time_list in time_value_set_list:
-            frame = time_list[0]
-            attr = time_list[1]
-            value = time_list[2]
-            cmds.currentTime(frame)
-            # print(frame, attr, value)
-            try:
-                cmds.setAttr(attr, value)
-                cmds.setKeyframe(attr, v=value, t=frame)
-            except Exception as e:
-                pass
-    else:
-        attrs = list(set(attrs)-set(ignore_attrs))
-        for obj_and_attr in attrs:
-            if cmds.objExists(obj_and_attr) == True:
-                cmds.select(obj_and_attr, add=True)
-        # print(sframe, eframe)
-        _attrs = []
-        for attr in attrs[:]:
-            if not '.visiblity' in attr:
-                _attrs.append(attr)
-        cmds.select(_attrs)
-        print(_attrs)
-        print(tg_nodes)
-        # cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True)
-        cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True, ral=True)
-
-
-    for obj in hidden_objs:
-        try:
-            dst_obj = '{}.visibility'.format(obj.split('|')[-1])
-            src_obj = cmds.listConnections(dst_obj, p=True)[0]
-            cmds.disconnectAttr(src_obj, dst_obj)
-        except Exception as e:
-            print(e)
-    try:
-        cmds.showHidden(hidden_objs)
-            # if 'on_maya' in kwargs.keys():
-            #     return
-    except:
-        pass
-    print('###scene_ns_list####################')
-    pprint.pprint(scene_ns_list)
-    print('###tg_ns_list#######################')
-    pprint.pprint(tg_ns_list)
-    print('###tg_nodes########################')
-    pprint.pprint(tg_nodes)
-    print('####################################')
-    for ns in tg_ns_list:
-        pick_nodes = []
-        pick_node_and_attrs = []
-        for node in tg_nodes:
-            if 'Geo.' in node:
-                continue
-            if 'geo.' in node:
-                continue
-            if 'GEO.' in node:
-                continue
-            if ns+':' in node:
-                pick_nodes.append(node)
-        for node in pick_node_and_attrs:
-            if ns + ':' in node:
-                pick_node_and_attrs.append(node)
-
-        if len(pick_nodes) != 0 or len(pick_node_and_attrs) != 0:
-            argsdic = {}
-            argsdic['is_filter'] = True
-            argsdic['anim_file_name'] = 'anim_'+ns+'.ma'
-            argsdic['publish_ver_anim_path'] = kwargs['publish_ver_anim_path']
-            argsdic['pick_nodes'] = pick_nodes
-            argsdic['pick_node_and_attrs'] = pick_node_and_attrs
-            argsdic['frame_range'] = frame_range
-            argsdic['scene_timewarp'] = kwargs['scene_timewarp']
-            argsdic['is_check_constraint'] = True
-            argsdic['is_check_anim_curve'] = True
-            ndPyLibAnimIOExportContain.ndPyLibAnimIOExportContain_main(
-                **argsdic)
-    return output_files
-
-
 
 def eulerfilter(attr_list):
     for attr in attr_list:
@@ -373,7 +131,7 @@ def get_tg_ns_list(scene_ns_list, input_ns_list):
 
 def get_rec_sets(set):
     set_items = cmds.sets(set, q=True)
-    print('##set##')
+    print('####set')
     print(set, set_items)
     result = []
     if set_items == None:
@@ -390,7 +148,6 @@ def get_rec_sets(set):
 
 def get_tg_nodes(ns_list, regex_list):
     all_objs = cmds.ls()
-    # all_objs.extend(cmds.ls(shapes=True))
     result_nodes = []
     for ns in ns_list:
         nodes = []
@@ -632,7 +389,7 @@ def mergeAnimLayers():
     if animLayers:
         try:
             mel.eval('animLayerMerge {"%s"}' % '","'.join(animLayers))
-        except:
+        except Exception as e:
             pass
     return
 
@@ -656,6 +413,254 @@ def get_unload_ns_dic():
             # cmds.file(lr=ref)
     return unLoaded_ref_dic
 
+
+def export_anim_main(**kwargs):
+    pprint.pprint(kwargs.items())
+    if kwargs['project'].lower() == 'd_wh':
+        set_dw_h_env()
+    else:
+        set_env()
+
+    # シーンのオープン
+    cmds.file(kwargs['input_path'], o=True, f=True)
+
+    #  evaluateの設定
+    evaluate = kwargs['evaluate']
+    if evaluate != False:
+        if evaluate == 'DG':
+            cmds.evaluationManager(mode='off')
+        else:
+            cmds.evaluationManager(mode=evaluate)
+    #  cacheをハイド
+    top_nodes = cmds.ls(assemblies=True)
+    cache_nodes = cmds.ls(type='cacheFile')
+    hidden_objs = []
+    hidden_objs.extend(cmds.hide(top_nodes, rh=True))
+    hidden_objs.extend(cmds.hide(cache_nodes, rh=True))
+    ignore_attrs = []
+    if hidden_objs is not None:
+        for obj in hidden_objs:
+            ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
+
+    output_files = []
+    tg_nodes = []
+    node_and_attrs = []
+
+    frame_handle = kwargs['frame_handle']
+    publish_ver_anim_path = kwargs['publish_ver_anim_path']
+
+    sframe = cmds.playbackOptions(q=True, min=True) - float(frame_handle)
+    eframe = cmds.playbackOptions(q=True, max=True) + float(frame_handle)
+
+    if 'frame_range' in kwargs.keys():
+        frame_range = kwargs['frame_range']
+    else:
+        frame_range = [sframe, eframe]
+    if 'on_maya' in kwargs.keys():
+        frame_range = [sframe, sframe+1]
+
+    if kwargs['scene_timewarp'] == True or kwargs['scene_timewarp'] == 'True':
+        scene_timewarp = True
+    else:
+        scene_timewarp = False
+        
+    with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))) + '/sceneConf.txt', 'w') as f:
+        f.write(str(sframe)+'\n')
+        f.write(str(eframe)+'\n')
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))), "resolutionConf.txt"), "w") as f:
+        f.write(str(cmds.getAttr("defaultResolution.width"))+"\n")
+        f.write(str(cmds.getAttr("defaultResolution.height"))+"\n")
+
+    input_ns_list = kwargs['namespace'][0].replace(' ', '').rstrip(',').split(',')
+    regex_list = [i for i in kwargs['export_item']['anim'].replace(' ', '').replace('vertical_bar', '|').split(',') if not '.' in i]  # 通常のエクスポート対象
+    regex_attr_list = [i for i in kwargs['export_item']['anim'].split(',') if '.' in i]  # アトリビュートを直接指定
+
+    if kwargs['load_pref'] == True:
+        unload_ns_dic = get_unload_ns_dic()
+        tg_ns_list = get_tg_ns_list(unload_ns_dic.keys(), input_ns_list)
+        for tg_ns in tg_ns_list:
+            ref = unload_ns_dic[tg_ns]
+            cmds.file(lr=ref)
+
+    scene_ns_list = get_scene_ns_list()
+    tg_ns_list = get_tg_ns_list(scene_ns_list, input_ns_list)
+    if len(tg_ns_list) == 0:
+        print('Namespaceが見つかりませんでした。')
+        return False
+    tg_nodes = get_tg_nodes(tg_ns_list, regex_list)
+    for regex_attr in regex_attr_list:
+        tg_nodes.append(regex_attr.split('.')[0])
+
+    if len(tg_nodes) == 0:
+        print('(正規表現とマッチするオブジェクト)が見つかりませんでした。')
+
+    character_set = cmds.ls(type='character')
+    if len(character_set) != 0:
+        cmds.delete(character_set)
+
+    if scene_timewarp:
+        cmds.setAttr("time1.enableTimewarp", 0)
+    baseAnimationLayer = cmds.animLayer(q=True, r=True)
+    
+    if baseAnimationLayer != None:
+        animLayers = cmds.ls(type='animLayer')
+        for al in animLayers:
+            cmds.animLayer(al, e=True, sel=False)
+        cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
+    if scene_timewarp:
+        cmds.setAttr("time1.enableTimewarp", 1)
+    for tg_node in tg_nodes[:]:
+        if cmds.objExists(tg_node) == False:
+            tg_nodes.remove(tg_node)
+
+    attrs = getNoKeyAttributes(tg_nodes)
+    if len(node_and_attrs) != 0:
+        attrs.extend(getNoKeyAttributes(node_and_attrs))
+    for tg_ns in tg_ns_list:
+        for regex_obj_and_attr in regex_attr_list:
+            obj_and_attr = tg_ns+':' + regex_obj_and_attr
+            if cmds.objExists(obj_and_attr):
+                attrs.append(obj_and_attr)
+
+    if len(attrs) != 0:
+        attrs = list(set(attrs)-set(ignore_attrs))
+        cmds.setKeyframe(attrs, t=sframe)
+
+    attrs += getConstraintAttributes(tg_nodes)
+    attrs += getMotionPathAttributes(tg_nodes)
+    attrs += getAddDoubleLinearAttributes(tg_nodes)
+    attrs += getTransformConnectionAttributes(tg_nodes)
+    attrs += getExpression(tg_nodes)
+    attrs += getKeyAttributes(tg_nodes)
+    attrs += getAnimLayerConnectionAttributes(tg_nodes)
+    attrs += getPairBlendAttributes(tg_nodes)
+    attrs = list(set(attrs)-set(ignore_attrs))
+    unlockAttributes(attrs)
+
+    for node in tg_nodes:
+        if cmds.listConnections(node, s=True, type="constraint") is not None:
+            attrs.extend(
+                list(set(cmds.listConnections(node, s=True, type="constraint"))))
+    
+    # SceneTimeWarp
+    if scene_timewarp:
+        time_set_list = []
+        time_value_set_list = []
+
+        cmds.setAttr("time1.enableTimewarp", 1)
+
+        step_value = kwargs['step_value']
+        _frame = sframe
+        while True:
+            cmds.currentTime(_frame)
+            warp_time = cmds.getAttr("time1.outTime", time=_frame)
+            time_set_list.append([_frame, warp_time])
+            _frame += step_value
+            if _frame > eframe:
+                break
+
+        cmds.setAttr("time1.enableTimewarp", 1)
+        for time_set in time_set_list:
+            t = time_set[0]
+            warp_time = time_set[1]
+            cmds.currentTime(t)
+            for attr in attrs:
+                try:
+                    value = cmds.getAttr(attr)
+                    print(t, attr, value)
+                    time_value_set_list.append([t, attr, value])
+                except Exception as e:
+                    print(e)
+        cmds.setAttr("time1.enableTimewarp", 0)
+        
+        for attr in attrs:
+            cmds.keyTangent(attr, edit=True, itt="linear", ott="linear")
+
+        for time_list in time_value_set_list:
+            attr = time_list[1]
+            try:
+                source_attrs = cmds.listConnections(attr, d=False, s=True, p=True)
+                if source_attrs is not None:
+                    for source in source_attrs:
+                        # if source.split('.')[-1]!='output':
+                        cmds.disconnectAttr(source, attr)
+            except Exception as e:
+                print(e)
+
+        for time_list in time_value_set_list:
+            frame = time_list[0]
+            attr = time_list[1]
+            value = time_list[2]
+            cmds.currentTime(frame)
+            print(frame, attr, value)
+            try:
+                cmds.setAttr(attr, value)
+                cmds.setKeyframe(attr, v=value, t=frame)
+            except Exception as e:
+                print(e)
+                # pass
+    # 通常のベイク
+    else:
+        attrs = list(set(attrs)-set(ignore_attrs))
+        for obj_and_attr in attrs:
+            if cmds.objExists(obj_and_attr) == True:
+                cmds.select(obj_and_attr, add=True)
+        # print(sframe, eframe)
+        _attrs = []
+        for attr in attrs[:]:
+            if not '.visiblity' in attr:
+                _attrs.append(attr)
+        cmds.select(_attrs)
+        # cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True)
+        cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True, ral=True)
+
+    for obj in hidden_objs:
+        try:
+            dst_obj = '{}.visibility'.format(obj.split('|')[-1])
+            src_obj = cmds.listConnections(dst_obj, p=True)[0]
+            cmds.disconnectAttr(src_obj, dst_obj)
+        except Exception as e:
+            print(e)
+    try:
+        cmds.showHidden(hidden_objs)
+    except:
+        pass
+    print('###scene_ns_list####################')
+    pprint.pprint(scene_ns_list)
+    print('###tg_ns_list#######################')
+    pprint.pprint(tg_ns_list)
+    print('###tg_nodes########################')
+    pprint.pprint(tg_nodes)
+    print('####################################')
+    for ns in tg_ns_list:
+        pick_nodes = []
+        pick_node_and_attrs = []
+        for node in tg_nodes:
+            if 'Geo.' in node:
+                continue
+            if 'geo.' in node:
+                continue
+            if 'GEO.' in node:
+                continue
+            if ns+':' in node:
+                pick_nodes.append(node)
+        for node in pick_node_and_attrs:
+            if ns + ':' in node:
+                pick_node_and_attrs.append(node)
+
+        if len(pick_nodes) != 0 or len(pick_node_and_attrs) != 0:
+            argsdic = {}
+            argsdic['is_filter'] = True
+            argsdic['anim_file_name'] = 'anim_'+ns+'.ma'
+            argsdic['publish_ver_anim_path'] = kwargs['publish_ver_anim_path']
+            argsdic['pick_nodes'] = pick_nodes
+            argsdic['pick_node_and_attrs'] = pick_node_and_attrs
+            argsdic['frame_range'] = frame_range
+            argsdic['scene_timewarp'] = kwargs['scene_timewarp']
+            argsdic['is_check_constraint'] = True
+            argsdic['is_check_anim_curve'] = True
+            ndPyLibAnimIOExportContain.ndPyLibAnimIOExportContain_main(**argsdic)
+    return output_files
 
 
 def ndPyLibExportAnim_caller(args):

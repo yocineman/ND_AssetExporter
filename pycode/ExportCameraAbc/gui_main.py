@@ -1,6 +1,6 @@
 # coding: utf-8
 # ------------------------------
-_version_ = "0.1.0"
+_version_ = "0.3.0"
 _author_ = "Kei Ueda"
 # ------------------------------
 import os
@@ -48,15 +48,20 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
         self.set_window_pos()
         self.setWindowTitle('{} {}'.format(TOOLNAME, _version_))
 
-        self.ui.export_btn.clicked.connect(self.export_btn_clciked)
+        self.ui.export_btn.clicked.connect(self.export_btn_clicked)
         self.ui.open_exp_folder_btn.clicked.connect(self.open_exp_folder_btn_clicked)
+        self.ui.camera_refresh_btn.clicked.connect(self.set_camera_list)
         self.instance_export_camera_abc()
+        self.set_camera_list()
         self.ui.show()
 
-    def export_btn_clciked(self):
+    def export_btn_clicked(self):
         remain_cam = self.ui.ramain_cam_chk.isChecked()
+        tg_cam_list = []
+        for cam in self.ui.camera_list.selectedItems():
+            tg_cam_list.append(cam.text())
 
-        self.InstanceExportCameraAbc.export(remain_cam, self.get_ext_type())
+        self.InstanceExportCameraAbc.export(remain_cam, self.get_ext_type(), tg_cam_list)
 
     def get_ext_type(self):
         self.ext_type = self.ui.ext_group.checkedButton().text().split('_exp')[0]
@@ -75,6 +80,16 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
     def instance_export_camera_abc(self):
         self.InstanceExportCameraAbc = export_camera_abc_main.ExportCameraAbc()
 
+    def set_camera_list(self):
+        self.ui.camera_list.clear()
+        if not cmds.ls(type='camera'):
+            print('camera not found')
+        for cam_shape in cmds.ls(type='camera'):
+            if not cmds.getAttr('{}.orthographic'.format(cam_shape)):
+                cam = cmds.listRelatives(cam_shape, p=True)[0]
+                if cam == 'persp':
+                    continue
+                self.ui.camera_list.addItem(cam)
 
     def close_exists_window(self):
         ptr = omUI.MQtUtil.mainWindow()

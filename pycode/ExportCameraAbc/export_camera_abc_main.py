@@ -10,7 +10,7 @@ from maya_lib import ndPyLibExportCam;reload(ndPyLibExportCam)
 import maya.cmds as cmds
 
 class ExportCameraAbc(object):
-    def __init__(self):
+    def __init__(self, cam_list=None):
         current_scene_name = cmds.file(q=True, sn=True)
         self.file_name = os.path.basename(current_scene_name).split('.')[0]
         if 'work' in current_scene_name:
@@ -26,10 +26,16 @@ class ExportCameraAbc(object):
         self.cam_scale = 0
         self.frame_hundle = 5
         self.frame_range = False
+        self.tg_cam_list = cam_list
 
-        self.ma_cam_path = os.path.join(self.output_base, 'ma','{}.ma'.format(self.file_name)).replace('\\', '/')
-        self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.abc'.format(self.file_name)).replace('\\', '/')
-        self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.fbx'.format(self.file_name)).replace('\\', '/')
+        # self.ma_cam_path = os.path.join(self.output_base, 'ma','{}.ma'.format(self.file_name)).replace('\\', '/')
+        # self.abc_cam_path = os.path.join(self.output_base, 'abc','{}.abc'.format(self.file_name)).replace('\\', '/')
+        # self.fbx_cam_path = os.path.join(self.output_base, 'fbx','{}.fbx'.format(self.file_name)).replace('\\', '/')
+
+        self.ma_cam_path = os.path.join(self.output_base, 'ma', self.file_name, 'cam.ma').replace('\\', '/')
+        self.abc_cam_path = os.path.join(self.output_base, 'abc', self.file_name, 'cam.abc').replace('\\', '/')
+        self.fbx_cam_path = os.path.join(self.output_base, 'fbx', self.file_name, 'cam.fbx').replace('\\', '/')
+
 
     def get_ext_dir(self, ext_type='all'):
         if ext_type == 'all':
@@ -43,8 +49,7 @@ class ExportCameraAbc(object):
         return self.exp_dir
 
 
-
-    def export(self, remain_cam=False, ext_type='all'):
+    def export(self, remain_cam=False, ext_type='all', tg_cam_list=None):
         try:
             if cmds.getAttr('time1.enableTimewarp') and cmds.listConnections('time1.timewarpIn_Raw') == True:
                 scene_timewarp = True
@@ -65,7 +70,10 @@ class ExportCameraAbc(object):
             'remain_cam':  remain_cam,
             'ma_cam_path': self.ma_cam_path,
             'abc_cam_path': self.abc_cam_path,
-            'fbx_cam_path': self.fbx_cam_path
+            'fbx_cam_path': self.fbx_cam_path,
+            'project': os.environ['PROJ'],
+            'step_value': 1.0,
+            'tg_cam_list': tg_cam_list,
         }
         ndPyLibExportCam.export_cam_main(info_dic)
 
