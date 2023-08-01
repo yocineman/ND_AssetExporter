@@ -64,7 +64,6 @@ def open_folder(path):
     subprocess.call("explorer {}".format(path.replace("/", "\\")))
 
 
-
 def check_newest_ver(char_dir):
     next_ver = 0
     while(1):

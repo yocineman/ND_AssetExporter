@@ -45,7 +45,6 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
         # print '[nd] Not use filterCurve\n'
         pass
 
-    # inFileName = inFileName.replace(":","_")
     fileName = inFileName.split(":")[-1]
     filePathName = inDirPath + '/' + fileName
     filePathNamex = os.path.dirname(filePathName)
@@ -59,7 +58,7 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
             s = retNodes[i*2+1]
             sn = retNodes[i*2].split(':')[0]
             info['asset'] = sn
-            info['ver'] = 'v6.0.0'
+            info['date'] = cmds.date()
             info['tool'] = 'ND_AssetExporter'
             addInfoAttr(s, info)
 
@@ -67,7 +66,6 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
 
     for i in range(int(len(retNodes)/2)):
         cmd = 'connectAttr -f \"' + retNodes[i*2+1] + '.output\" \":' + retNodes[i*2] + '\";\n'
-        # cmd = 'connectAttr \"' + retNodes[i*2+1] + '.output\" \":' + inPfxInfo[1] + NS[pfxSw] + ":".join(node.split(":")[-2:]) + '\" -f ;\n'
         addCmd.append(cmd)
 
     try:
@@ -91,8 +89,6 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
     org = inDirPath + '/' + fileName
     tmp = inDirPath + '/' + tmpFile
 
-    # print "org:{}".format(org)
-    # print "tmp:{}".format(tmp)
     os.remove(org)
     os.rename(tmp, org)
 

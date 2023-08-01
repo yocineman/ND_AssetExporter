@@ -51,11 +51,11 @@ def set_dw_h_env():
     os.environ["MTOA_SCRIPT_PATH"] = "Y:/users/env/arnold/mtoa/2020_MtoA_5211/scripts;Y:/users/env/arnold/mtoa/2020_MtoA_5211/scripts/mtoa/mel"
     os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = "Y:/users/env/arnold/mtoa/2020_MtoA_5211/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/resources;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/resources;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/resources;Y:/users/env/maya/2019/tools/nimbleTools/resources;C:/Program Files/Rokoko Motion Library/Maya/2020/resources;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/resources;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/resources;Y:/users/env/maya/2020/modules/medic/resources;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/resources;C:/Program Files/Allegorithmic/Substance in Maya/2020/resources;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/resources;Y:/users/env/maya/scripts/zync-maya/resources;"
     os.environ["MAYA_PRESET_PATH"] = "P:/Project/d_wh/Library/users/k_ueda/maya/2020/presets;Y:/users/env/maya/2020/presets;Y:/users/env/arnold/mtoa/2020_MtoA_5211/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/presets;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/presets;Y:/users/env/maya/2019/tools/nimbleTools/presets;C:/Program Files/Rokoko Motion Library/Maya/2020/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/presets;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/presets;Y:/users/env/maya/2020/modules/medic/presets;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/presets;C:/Program Files/Allegorithmic/Substance in Maya/2020/presets;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/presets;Y:/users/env/maya/scripts/zync-maya/presets"
-
     try:
         cmds.loadPlugin('mtoa')
     except:
         pass
+
 
 def set_env():
     # arnold
@@ -79,8 +79,6 @@ def set_env():
         cmds.loadPlugin('mtoa')
     except:
         pass
-
-
 
 
 def Euler_filter(obj_list):
@@ -126,7 +124,6 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list
 
     if scene_time_warp == True:
         for i in range(len(to_cam)):
-
             time_set_list = []
             time_value_set_list = []
             shape_value_set_list = []

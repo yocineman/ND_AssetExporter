@@ -5,7 +5,7 @@ import yaml
 import shell_lib.util_exporter as util_exporter
 import batch
 import pprint
-def back_starter_main(**kwargs):
+def exporter_bridge_main(**kwargs):
     argsdic = kwargs
     input_path = argsdic['input_path']
     asset_name = argsdic['asset_name']
@@ -202,4 +202,4 @@ if __name__ == '__main__':
     str_dict = ''.join(argslist)
     import pprint
     pprint.pprint(yaml.load(str_dict))
-    back_starter_main(**yaml.load(str_dict))
+    exporter_bridge_main(**yaml.load(str_dict))

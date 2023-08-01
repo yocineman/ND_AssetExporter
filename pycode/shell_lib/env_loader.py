@@ -1,18 +1,9 @@
 # -*- coding: utf-8 -*-
-
 #------------------------------
-
-__version__ = "0.0.1"
-__copyright__ = "Copyright (C) 2016, N-Design"
-__author__ = "Masato Hirabayashi"
-__credits__ = ["Masato Hirabayashi"]
-#------------------------------
-
 import sys
 import os
 sys.path.append('Y:/tool/ND_Tools/python')
 sys.path.append('Y:/users/env/maya/scripts/Python/site-packages')
-
 import ND_appEnv.lib.util.env_io as util_env
 
 #------------------------------

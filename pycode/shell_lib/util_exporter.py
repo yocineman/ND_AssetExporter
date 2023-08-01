@@ -33,7 +33,6 @@ if EXPORTER_PATH.split('/')[-2] == 'dev':
 else:
     TOOLNAME = 'ND_AssetExporter'
 
-# ND_TOOL_PATH = "Y:/tool/ND_Tools/DCC/ND_AssetExporter_dev/pycode"
 try:
     import PySide.QtCore as QtCore
     import PySide.QtGui as QtGui
@@ -41,32 +40,11 @@ try:
     from PySide.QtGui import *
     from PySide.QtUiTools import QUiLoader
 except:
-    # import PySide6.QtCore as QtCore
-    # import PySide6.QtGui as QtGui
-    # from PySide6.QtCore import *
-    # from PySide6.QtGui import *
-    # from PySide6.QtWidgets import *
-    # from PySide6.QtUiTools import QUiLoader
     from PySide2.QtCore import *
     from PySide2.QtGui import *
     from PySide2.QtUiTools import QUiLoader
 
 import subprocess
-# import shotgun_api3
-
-def symlink(source, link_name):
-    import os
-    os_symlink = getattr(os, "symlink", None)
-    if callable(os_symlink):
-        os_symlink(source, link_name)
-    else:
-        import ctypes
-        csl = ctypes.windll.kernel32.CreateSymbolicLinkW
-        csl.argtypes = (ctypes.c_wchar_p, ctypes.c_wchar_p, ctypes.c_uint32)
-        csl.restype = ctypes.c_ubyte
-        flags = 1 if os.path.isdir(source) else 0
-        if csl(link_name, source, flags) == 0:
-            raise ctypes.WinError()
 
 
 def get_vers(folder_path):
@@ -78,7 +56,7 @@ def get_vers(folder_path):
             vers.append(_file)
     return vers
 
-
+# Pathをパースして各種出力先を取得するクラス
 class outputPathConf(object):
     def __init__(self, input_path, export_type=None, debug=False):
         self.input_path = input_path.replace('\\', '/')
@@ -106,7 +84,6 @@ class outputPathConf(object):
             self.shot_path = self.shot_path + path_parts+'/'
             if path_parts == self.shot:
                 break
-
 
     def set_char(self, char):
         self._publish_char_path = os.path.join(self.shot_path, 'publish', self.root_dir, char)
@@ -173,9 +150,7 @@ class outputPathConf(object):
             print(current_file_path)
 
             if os.path.isdir(ver_file_path):
-                # shutil.copytree(self.publish_ver_path, current_file_path, dirs_exist_ok=True)
                 try:
-                    # shutil.copytree(ver_file_path, current_file_path)
                     distutils.dir_util.copy_tree(ver_file_path, current_file_path)
                 except Exception as e:
                     try:
@@ -185,12 +160,9 @@ class outputPathConf(object):
 
             else:
                 try:
-                    # shutil.copy2(ver_file_path, current_file_path)
                     distutils.file_util.copy_file(ver_file_path, current_file_path)
                 except Exception as e:
                     try:
-                        print("##")
-                        print(e)
                         shutil.copytree(self.publish_ver_path, current_file_path, dirs_exist_ok=True)
                     except:
                         print('copy failed.')
@@ -293,6 +265,7 @@ class outputPathConf(object):
         #publish_current_cam_path  = ...publish/char_set/{char_name}/current  /cam
     '''
 
+#  Pathをパースして各種情報を取得するクラス
 class ProjectInfo():
     def __init__(self, url):
         import ND_lib.util.path as util_path
@@ -303,6 +276,7 @@ class ProjectInfo():
         self.shot = url_parsedict['shot']
         self.sequence = url_parsedict['sequence']
         self.shot_code = url_parsedict['shot_code']
+
     def get_camera_rig_info(self):
         project_conf = util_path.get_conf_dic(self.project_name.lower())
         try:
@@ -313,10 +287,12 @@ class ProjectInfo():
             self.camera_rig_export = False
         return self.camera_rig_export
 
+
+#  Deadline用クラス
 class DeadlineMod():
     def __init__(self, **kwargs):
         #jobFile
-        self.target_py = "Y:/tool/ND_Tools/DCC/{}/pycode/back_starter.py".format(TOOLNAME)
+        self.target_py = "Y:/tool/ND_Tools/DCC/{}/pycode/exporter_bridge.py".format(TOOLNAME)
         #infoFile
         self.argsdict = kwargs
         # self.executer = r"C:\Users\k_ueda\AppData\Local\Programs\Python\Python310\python.exe"
@@ -350,7 +326,6 @@ class DeadlineMod():
         info_dict["ShellExecute"] = False
         info_dict["SingleFramesOnly"] = False
         info_dict["StartupDirectory"] = self.stg_dir
-
         return info_dict
 
     def file_maker(self, file_type, file_number):
@@ -393,6 +368,7 @@ class DeadlineMod():
         return jobid
 
 
+#  Deadlineにジョブを投げる
 def submit_to_deadlineJobs(jobs, farm="Deadline", version="10"):
     arg_file_path = '{}/args.txt'.format(util_env.env_temp)
     submit_text = "-SubmitMultipleJobs"
@@ -409,6 +385,7 @@ def submit_to_deadlineJobs(jobs, farm="Deadline", version="10"):
     return lines_iterator
 
 
+#  GUI用
 class ExporterTableModel(QAbstractTableModel):
     def __init__(
             self, table_data, headers=[],
@@ -576,7 +553,6 @@ def tabledata_builder(headers, convert_dic, target_assets):
                         td_row.append("abc_anim")
                         anim_item = target_asset["sg_anim_export_list"]
                         abc_item = target_asset["sg_abc_export_list"]
-                        # td_row.append("{{anim:{}, abc:{}}})".format(anim_item, abc_item))
                         export_item_dic = {}
                         export_item_dic['anim']=anim_item
                         export_item_dic['abc'] =abc_item
@@ -587,12 +563,10 @@ def tabledata_builder(headers, convert_dic, target_assets):
                         # td_row.append('{Empty!}')
                     anim_item = target_asset["sg_anim_export_list"]
                     abc_item = target_asset["sg_abc_export_list"]
-                    # td_row.append("{{anim:{}, abc:{}}})".format(anim_item, abc_item))
                     export_item_dic = {}
                     export_item_dic['anim']=anim_item
                     export_item_dic['abc'] =abc_item
                     td_row.append(yaml.safe_dump(export_item_dic))
-                    # td_row.append("{{anim:{}, abc:{}}}".format(anim_item, abc_item))
                     continue
                 if target_asset[sg_code] is None:
                     td_row.append("{Empty!}")
@@ -618,17 +592,15 @@ def add_camera_row(headers_item, tabledata, camera_rig_export):
     return tabledata
 
 def execExporter_maya(**kwargs):
-    import back_starter
-    reload(back_starter)
-    back_starter.back_starter(kwargs=kwargs["kwargs"])
+    import exporter_bridge
+    reload(exporter_bridge)
+    exporter_bridge.exporter_bridge(kwargs=kwargs["kwargs"])
 
 def is_arnold(project):
     import yaml
     project_name = project
     toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
-    # if project_name == 'D_WH':
-    #     project_name = 'd_wh_old'
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project_name, app_launcher_path)
     f = open(project_app_launcher, "r")
     data = yaml.load(f)
@@ -687,25 +659,20 @@ class SGProjectClass(object):
         return sp_ls
 
     def get_target_asset_list(self):
+        '''
+        shotからアセットを取得する
+        '''
         keying_dict = self.get_keying_dict('Shot', 'code')
         import pprint
         pprint.pprint(keying_dict)
         try:
             shot = self.ProjectInfoClass.shot
-            print(shot)
             target_asset_list = keying_dict[shot]['assets']
         except:
             shot = self.ProjectInfoClass.shot_code
-            print(shot)
             target_asset_list = keying_dict[shot]['assets']
         return target_asset_list
 
     def get_all_asset_dic(self):
         asset_dic = self.get_keying_dict('Asset', 'code')
         return asset_dic
-
-if __name__ == '__main__':
-    py_file = sys.argv[0]
-    argsdic = yaml.safe_load(sys.argv[1])
-    execExporter(argsdic)
-    sys.exit()

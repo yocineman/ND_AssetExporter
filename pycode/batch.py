@@ -53,7 +53,7 @@ def maya_version(project, ver_override=False):
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
     f.close()
-
+    #------------------------------------
     ryear = 2022
     for dcc in dcc_tools:
         for version in data["launch_%s" % dcc]["versions"]:
@@ -66,21 +66,21 @@ def maya_version(project, ver_override=False):
         maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ver_override))
     return  maya_exe
 
+
 # ------------------------------------
-# Anim
+#  Anim
 # ------------------------------------
 def animExport(**kwargs):
     env_load(kwargs['project'])
     mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
     unique_order = (
-        # 'from maya_lib.mayaBasic import *;'
         'from maya_lib.ndPyLibExportAnim import export_anim_main;'
         'export_anim_main(**{})'.format(kwargs)
     )
-    # cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch)
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     print(cmd)
     subprocess.call(cmd, shell=True, env=os.environ)
+
 
 def animAttach(**kwargs):
     env_load(kwargs['project'])
@@ -114,9 +114,8 @@ def animReplace(**kwargs):
     cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch)
     subprocess.call(cmd, shell=True, env=os.environ)
 
-
 # ------------------------------------
-# Abc
+#  Abc
 # ------------------------------------
 def abcExport(**kwargs):
     env_load(kwargs['project'])
@@ -162,7 +161,7 @@ def abcReplace(**kwargs):
     subprocess.call(cmd, shell=True)
 
 # ------------------------------------
-# Abc&Anim
+#  Abc&Anim
 # ------------------------------------
 def abcAnimAttach(**kwargs):
     env_load(kwargs['project'])
@@ -205,7 +204,7 @@ def abcAnimReplace(**kwargs):
 
 
 # ------------------------------------
-# Cam
+#  Cam
 # ------------------------------------
 def camExport(**kwargs):
     env_load(kwargs['project'])
@@ -218,7 +217,7 @@ def camExport(**kwargs):
 
 
 # ------------------------------------
-# Ass
+#  Ass
 # ------------------------------------
 def assExport(**kwargs):
     mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
