@@ -6,38 +6,40 @@ import os
 
 def ndPyLibAnimIOExportContain_main(**kwargs):
     isFilterCurve = kwargs['is_filter']
-    inPfxInfo = 3
     inDirPath = kwargs['publish_ver_anim_path']
     inFileName = kwargs['anim_file_name']
-    inForNodes = kwargs['pick_nodes']
-    inForNodesAttr = kwargs['pick_node_and_attrs']
+    pickNodes = kwargs['pick_nodes']
+    pickNodesAttr = kwargs['pick_node_and_attrs']
     isCheckAnimCurve = kwargs['is_check_anim_curve']
     isCheckConstraint = kwargs['is_check_constraint']
-    retNodes = []
+    tg_nodes = []
     addCmd = []
 
     NS = ['', '_', ':', '']
     pfxSw = 3
     tmpFile = 'ndExportAnimCurveTmp.ma'
 
-    retNodes = ndPyLibAnimGetAnimNodeAndAttr(inForNodes, 0, isCheckAnimCurve, isCheckConstraint)
-    if len(inForNodesAttr)!=0:
-        retNodes += ndPyLibAnimGetAnimNodeAndAttr(inForNodesAttr, 0, isCheckAnimCurve, isCheckConstraint)
+    tg_nodes = ndPyLibAnimGetAnimNodeAndAttr(pickNodes, 0, isCheckAnimCurve, isCheckConstraint)
+    if len(pickNodesAttr)!=0:
+        tg_nodes += ndPyLibAnimGetAnimNodeAndAttr(pickNodesAttr, 0, isCheckAnimCurve, isCheckConstraint)
 
-    if len(retNodes) <= 0:
+    if len(tg_nodes) <= 0:
         return
-
+    print('##PickNodes##')
+    print(pickNodes)
+    print('##tg_nodes##')
+    print(tg_nodes)
     cmds.select(cl=True)
-    for i in range(int(len(retNodes)/2)):
-        if cmds.objExists(retNodes[i*2+1]):
-            buf = retNodes[i*2+1].split(':')
-            if len(buf) == 2:
-                try:
-                    rn = cmds.rename(retNodes[i*2+1], buf[1])
-                except:
-                    rn = retNodes[i*2+1]
-                retNodes[i*2+1] = rn
-            cmds.select(retNodes[i*2+1], add=True)
+    for i in range(int(len(tg_nodes)/2)):
+        if cmds.objExists(tg_nodes[i*2+1]):
+            buf = tg_nodes[i*2+1].split(':')
+            # if len(buf) == 2:
+            #     try: #retnodeをリネームしている
+            #         rn = cmds.rename(tg_nodes[i*2+1], buf[1])
+            #     except:
+            #         rn = tg_nodes[i*2+1]
+            #     tg_nodes[i*2+1] = rn
+            cmds.select(tg_nodes[i*2+1], add=True)
 
     if isFilterCurve:
         cmds.filterCurve()
@@ -53,10 +55,10 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
         os.makedirs(filePathNamex)
 
     info = {}
-    for i in range(int(len(retNodes)/2)):
-        if cmds.objExists(retNodes[i*2+1])==1:
-            s = retNodes[i*2+1]
-            sn = retNodes[i*2].split(':')[0]
+    for i in range(int(len(tg_nodes)/2)):
+        if cmds.objExists(tg_nodes[i*2+1])==1:
+            s = tg_nodes[i*2+1]
+            sn = tg_nodes[i*2].split(':')[0]
             info['asset'] = sn
             info['date'] = cmds.date()
             info['tool'] = 'ND_AssetExporter'
@@ -64,8 +66,15 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
 
     cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0)
 
-    for i in range(int(len(retNodes)/2)):
-        cmd = 'connectAttr -f \"' + retNodes[i*2+1] + '.output\" \":' + retNodes[i*2] + '\";\n'
+    for i in range(int(len(tg_nodes)/2)):
+        from_node = tg_nodes[i*2+1]
+        to_node = cmds.ls(tg_nodes[i*2], long=True)[0]
+        ns = to_node.split(':')[-2].split('|')[-1]
+        _node = ''
+        for _part in to_node.split('|'):
+            if ns in _part:
+                _node += '|:' + _part
+        cmd = 'connectAttr -f \"' + tg_nodes[i*2+1] + '.output\" \"' + _node + '\";\n'
         addCmd.append(cmd)
 
     try:

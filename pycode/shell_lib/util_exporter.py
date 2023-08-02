@@ -569,7 +569,10 @@ def tabledata_builder(headers, convert_dic, target_assets):
                     td_row.append(yaml.safe_dump(export_item_dic))
                     continue
                 if target_asset[sg_code] is None:
-                    td_row.append("{Empty!}")
+                    if sg_code == 'sg_top_node':
+                        td_row.append('') # top_nodeは空でもいい
+                    else:
+                        td_row.append("{Empty!}")
                 else:
                     td_row.append(target_asset[sg_code].replace("\n", ""))
 

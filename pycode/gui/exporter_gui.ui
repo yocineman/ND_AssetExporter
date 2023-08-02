@@ -647,6 +647,13 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
                      <widget class="QComboBox" name="grouplist"/>
                     </item>
                     <item>
+                     <widget class="QPushButton" name="open_sg_asset_dir_button">
+                      <property name="text">
+                       <string>Open Shotgrid Asset</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
                      <widget class="QPushButton" name="open_publish_dir_button">
                       <property name="text">
                        <string>Open Publish Dirs</string>

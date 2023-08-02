@@ -362,7 +362,6 @@ def get_unload_ns_dic():
             continue
         try:
             if cmds.referenceQuery(ref, isLoaded=True):
-                # print(ref)
                 pass
             else:
                 ref_path = cmds.referenceQuery(ref, filename=True)
@@ -370,7 +369,6 @@ def get_unload_ns_dic():
                 unLoaded_ref_dic[ref_ns] = ref
         except Exception as e:
             print(e)
-            # cmds.file(lr=ref)
     return unLoaded_ref_dic
 
 
@@ -432,7 +430,7 @@ def export_anim_main(**kwargs):
         f.write(str(cmds.getAttr("defaultResolution.height"))+"\n")
 
     input_ns_list = kwargs['namespace'][0].replace(' ', '').rstrip(',').split(',')
-    regex_list = [i for i in kwargs['export_item']['anim'].replace(' ', '').replace('vertical_bar', '|').split(',') if not '.' in i]  # 通常のエクスポート対象
+    regex_list = [i for i in kwargs['export_item']['anim'].replace(' ', '').replace('vertical_bar', '\|').split(',') if not '.' in i]  # 通常のエクスポート対象
     regex_attr_list = [i for i in kwargs['export_item']['anim'].split(',') if '.' in i]  # アトリビュートを直接指定
 
     if kwargs['load_pref'] == True:
@@ -565,7 +563,6 @@ def export_anim_main(**kwargs):
         for obj_and_attr in attrs:
             if cmds.objExists(obj_and_attr) == True:
                 cmds.select(obj_and_attr, add=True)
-        # print(sframe, eframe)
         _attrs = []
         for attr in attrs[:]:
             if not '.visiblity' in attr:

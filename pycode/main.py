@@ -15,7 +15,7 @@ try:
 except:
     pass
 # ------------------------------
-__version__ = '8.5.5'
+__version__ = '9.0.0'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(
@@ -392,8 +392,6 @@ class GUI(QMainWindow):
     def export_main(self, mode):
         self.ui.stack_area.setCurrentIndex(1)
         self.ui.repaint()
-
-        self.get_ui_value()
         
         # Submit用
         file_number = 1
@@ -406,7 +404,7 @@ class GUI(QMainWindow):
                 continue
 
             row_items = self.tabledata[table_row]
-            asset_name = row_items[1]
+            self.asset_name = row_items[1]
             self.namespace = row_items[2]
             self.export_type = row_items[3]
             self.export_item = row_items[4]
@@ -421,7 +419,7 @@ class GUI(QMainWindow):
             #  LocalExport
             if mode == 'Local':
                 #  集計ログ用
-                log_name = 'log_' + USERNAME + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') + asset_name + '.txt'
+                log_name = 'log_' + USERNAME + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') +self.asset_name + '.txt'
                 log_path = LOGDIR + '\\' + log_name
                 current_dir = EXPORTER_PATH + '/pycode'
                 if not os.path.exists(LOGDIR):
@@ -440,7 +438,7 @@ class GUI(QMainWindow):
                 dt_now = datetime.datetime.now()
                 print(dt_now)
                 self.log_txt = self.log_txt + \
-                    '{} ; start time {}\n'.format(asset_name, dt_now)
+                    '{} ; start time {}\n'.format(self.asset_name, dt_now)
                 while True:
                     if len(threading.enumerate()) == 1:
                         break
