@@ -22,10 +22,6 @@ def set_dw_h_env():
 def set_env():
     # arnold
     sys.path.append('Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts')
-    try:
-        import arnold
-    except:
-        pass
     # scripts
     scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts'
     os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path

@@ -337,14 +337,12 @@ def export_cam_main(kwargs):
     if cams is None:
         return
 
-    if cmds.objExists('cam_grp'):
-        cmds.delete('cam_grp')
-    cmds.group(em=True, n='cam_grp')
+    cam_grp = cmds.group(em=True, n='cam_grp')
     bake_cams = []
     for i in range(len(cams)):
         from_cam = cams[i][1]
         to_cam = cams[i][0]
-        cmds.parent(to_cam,'cam_grp')
+        cmds.parent(to_cam,cam_grp)
         cmds.rename(to_cam, from_cam.split("|")[-1])
         bake_cams.append(to_cam)
     try:
