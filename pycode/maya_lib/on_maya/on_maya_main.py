@@ -2,13 +2,17 @@
 import sys, os
 import yaml
 import maya.cmds as cmds
+try:
+    from importlib import reload
+except:
+    pass
 sys.path.append(r"Y:\tool\ND_Tools\DCC")
 sys.path.append(r"Y:\tool\ND_Tools\DCC\ND_AssetExporter\pycode")
 sys.path.append(r"Y:\tool\ND_Tools\DCC\ND_AssetExporter\pycode\maya")
 import ND_AssetExporter.pycode.shell_lib.util_exporter as util_exporter
 # reload(util_exporter)
 try:
-    from import_lib import *
+    from import_lib import reload
 except:
     pass
 
