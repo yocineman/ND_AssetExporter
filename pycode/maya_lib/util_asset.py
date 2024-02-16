@@ -151,8 +151,6 @@ if __name__ == "__main__":
 
     asset_code_list = util_asset.ls_asset_code(util_asset.ls_asset_class())
     AssetClass_dict = util_asset.get_asset_class_dict()
-    import pprint
-    pprint.pprint(AssetClass_dict)
 
 
     # export_path = "C:/Users/k_ueda/Desktop/work"

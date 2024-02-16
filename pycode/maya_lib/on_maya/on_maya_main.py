@@ -147,8 +147,6 @@ if __name__ == "__main__":
 
     asset_code_list = on_maya_main.ls_asset_code(on_maya_main.ls_asset_class())
     AssetClass_dict = on_maya_main.get_asset_class_dict()
-    import pprint
-    pprint.pprint(AssetClass_dict)
 
     # export_path = "C:/Users/k_ueda/Desktop/work"
     # export_path = 'P:/Project/RAM1/shots/ep022/s2227/c008/publish/cache/alembic/s2227c008_anm_v004_old_asset'
