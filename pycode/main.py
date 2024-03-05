@@ -114,7 +114,7 @@ class GUI(QMainWindow):
         self.priority = PRIORITY
         self.group = GROUP
 
-        maya_version_list = ['2023', '2022', '2020', '2019', '2017', '2016', '2015']
+        maya_version_list = ['2023', '2022', '2020', '2019', '2018', '2017', '2016', '2015']
         for maya_version in maya_version_list:
             self.ui.maya_version_comboBox.addItem(maya_version)
 
