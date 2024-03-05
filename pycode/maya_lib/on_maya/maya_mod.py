@@ -28,7 +28,7 @@ def getKeyAttributes(nodes):
                     attrs.append(n+'.'+attr)
     return attrs
 
- 
+
 def bake_timewarp(objects):
     time_value_set_list = []
     cmds.setAttr("time1.enableTimewarp", 0)
@@ -76,7 +76,7 @@ def bake_timewarp(objects):
 
     '''
     import sys
-    sys.path.append(r'Y\tool\ND_Tools\DCC\ND_AssetExporter')
+    sys.path.append(r'Y\\tool\\ND_Tools\\DCC\\ND_AssetExporter')
     import pycode.maya_lib.on_maya.maya_mod as maya_mod
 
     key_attrs = []
@@ -88,4 +88,3 @@ def bake_timewarp(objects):
 
     maya_mod.bake_timewarp(key_attrs)
     '''
-

@@ -2,13 +2,17 @@
 import sys, os
 import yaml
 import maya.cmds as cmds
+try:
+    from importlib import reload
+except:
+    pass
 sys.path.append(r"Y:\tool\ND_Tools\DCC")
 sys.path.append(r"Y:\tool\ND_Tools\DCC\ND_AssetExporter\pycode")
 sys.path.append(r"Y:\tool\ND_Tools\DCC\ND_AssetExporter\pycode\maya")
 import ND_AssetExporter.pycode.shell_lib.util_exporter as util_exporter
 # reload(util_exporter)
 try:
-    from import_lib import *
+    from import_lib import reload
 except:
     pass
 
@@ -143,8 +147,6 @@ if __name__ == "__main__":
 
     asset_code_list = on_maya_main.ls_asset_code(on_maya_main.ls_asset_class())
     AssetClass_dict = on_maya_main.get_asset_class_dict()
-    import pprint
-    pprint.pprint(AssetClass_dict)
 
     # export_path = "C:/Users/k_ueda/Desktop/work"
     # export_path = 'P:/Project/RAM1/shots/ep022/s2227/c008/publish/cache/alembic/s2227c008_anm_v004_old_asset'

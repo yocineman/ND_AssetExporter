@@ -666,8 +666,6 @@ class SGProjectClass(object):
         shotからアセットを取得する
         '''
         keying_dict = self.get_keying_dict('Shot', 'code')
-        import pprint
-        pprint.pprint(keying_dict)
         try:
             shot = self.ProjectInfoClass.shot
             target_asset_list = keying_dict[shot]['assets']

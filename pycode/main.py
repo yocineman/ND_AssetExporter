@@ -154,6 +154,7 @@ class GUI(QMainWindow):
             self.evaluate_chk_stateChange)
         self.ui.log_list_btn.clicked.connect(self.log_list_btn_clicked)
         self.ui.log_return_btn.clicked.connect(self.log_return_btn_clicked)
+        self.ui.help_listup_button.clicked.connect(self.help_listup_button_clicked)
 
     def camscale_override_chk_stateChange(self):
         state = self.ui.frame_step_override_chk.isChecked()
@@ -283,8 +284,7 @@ class GUI(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        url = ('https://1drv.ms/u/s!AkJLtWzwLLlNbXHU7lisMfz-7fc?wd=target%28StandAlone.one%7CFD7E5D89-F2FB-4F4F-8357-66B56ECEA707%2FND_AssetExporter%7C890D36DE-BBC3-40AC-AA1D-D0E9EBF66FEB%2F%29'
-               'onenote:https://d.docs.live.net/4db92cf06cb54b42/ドキュメント/NTools/StandAlone.one#ND_AssetExporter&section-id={FD7E5D89-F2FB-4F4F-8357-66B56ECEA707}&page-id={890D36DE-BBC3-40AC-AA1D-D0E9EBF66FEB}&end')
+        url = ('https://onedrive.live.com/redir?resid=58BD60C626427A2A%21105&authkey=%21AMSN23DVAc9fKa0&page=Edit&wd=target%28StandAlone.one%7Cfd7e5d89-f2fb-4f4f-8357-66b56ecea707%2FND_AssetExporter%7C890d36de-bbc3-40ac-aa1d-d0e9ebf66feb%2F%29&wdorigin=703')
         webbrowser.open_new_tab(url)
 
     def evaluate_chk_stateChange(self):
@@ -554,7 +554,23 @@ class GUI(QMainWindow):
         with open(output_file, mode='w') as f:
             f.write('path =  \'{}\'\n'.format(self.input_path))
 
-
+    def help_listup_button_clicked(self):
+        help_txt = (
+                    u"Asset Pageに\n"
+                    u" • AssetPath  -  アセットのパス\n"
+                    u" • Export Type   -  abc or anim\n"
+                    u"  Abc の場合\n"
+                    u"    ○ ABC Export List  -  Exportの対象(abc_setなど)\n"
+                    u"    ○ TopNode  -  トップノード(rootなど)\n"
+                    u"  Animの場合\n"
+                    u"    ○ Anim Export List  -  Exportの対象(ctrl_setsなど)\n"
+                    u" • Namespace  -  そのアセットを検索する正規表現(Object1、Object2だったらObject[0-9]*$と記述する\n"
+                    u"   [0-9]* 0～9の0回以上の繰り返し、すなわちナンバリングに相当\n"
+                    u"   $ 終端記号\n"
+                    u"   を入力\n"
+                    u"Shot pageに当該ShotのAssetを登録\n")
+        #popupで表示
+        QMessageBox.information(self, u'要点', help_txt)
 
 def thread_main(**kwargs):
     argsdic = json.dumps(kwargs['argsdic'], ensure_ascii=False)

@@ -6,8 +6,6 @@ except:
     pass
 
 def main():
-    root_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(root_dir)
-    from ExportCameraAbc import gui_main
+    from .ExportCameraAbc import gui_main
     reload(gui_main)
     gui_main.runs()

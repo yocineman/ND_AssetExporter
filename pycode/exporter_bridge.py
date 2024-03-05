@@ -200,6 +200,4 @@ if __name__ == '__main__':
     argslist.pop(0) # 先頭はpyファイルなので
     # argsdic = yaml.safe_load(argslist[0])
     str_dict = ''.join(argslist)
-    import pprint
-    pprint.pprint(yaml.load(str_dict))
     exporter_bridge_main(**yaml.load(str_dict))
