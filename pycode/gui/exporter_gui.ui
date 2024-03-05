@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>986</width>
-    <height>802</height>
+    <height>866</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -394,6 +394,13 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="help_listup_button">
+        <property name="text">
+         <string>SGページの簡易ヘルプ</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
