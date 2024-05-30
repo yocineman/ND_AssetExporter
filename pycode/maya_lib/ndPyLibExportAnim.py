@@ -33,10 +33,10 @@ def set_env():
     mod_path = 'Y:/users/env/maya/2022/mod'
     # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
     os.environ['MAYA_MODULE_PATH'] = mod_path
-    try:
-        cmds.loadPlugin('mtoa')
-    except:
-        pass
+    # path
+    os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/bin'
+    # try:
+    cmds.loadPlugin('mtoa')
 
 
 def eulerfilter(attr_list):

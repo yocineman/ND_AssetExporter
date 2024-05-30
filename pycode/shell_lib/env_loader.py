@@ -42,6 +42,12 @@ def run(args, **kwargs):
     #プロジェクト名からShotgunの設定を取得する
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
 
+    if not os.path.exists(project_app_launcher.replace('/', '\\')):
+        project_app_launcher = "Y:\\tool\\ND_Tools\\shotgun\\ND_sgtoolkit_{}\\config\\env\\includes\\app_launchers.yml".format(args.lower())
+        if not os.path.exists(project_app_launcher):
+            return None
+        # project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
+
 
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)

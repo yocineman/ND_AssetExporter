@@ -33,8 +33,12 @@ def env_load(project):
     import shell_lib.env_loader
     shell_lib.env_loader.run(project, fork=True)
 
-    #python3も2で実行されるように
+    # python3も2で実行されるように
     os.environ['MAYA_PYTHON_VERSION']='2'
+
+
+def set_arnold_env():
+    os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
 
 
 def maya_version(project, ver_override=False):
@@ -50,6 +54,10 @@ def maya_version(project, ver_override=False):
     dcc_tools = ["maya", "nuke", "nukex"]
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
     #------------------------------------
+    if not os.path.exists(project_app_launcher):
+        print("Error: %s does not exist" % project_app_launcher)
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
+        return maya_exe
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
     f.close()
@@ -72,6 +80,7 @@ def maya_version(project, ver_override=False):
 # ------------------------------------
 def animExport(**kwargs):
     env_load(kwargs['project'])
+    set_arnold_env()
     mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
     unique_order = (
         'from maya_lib.ndPyLibExportAnim import export_anim_main;'
@@ -145,6 +154,8 @@ def abcAttach(**kwargs):
             'attachABC(\'{}\', \'{}\', selHierarchy);'.format(abc_ver_path, namespace) +
             'saveAs(\'{}\')'.format(ma_ver_path))
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    print("####abcAttach####")
+    print(cmd)
     subprocess.call(cmd, shell=True)
 
 
@@ -158,6 +169,8 @@ def abcReplace(**kwargs):
             'replaceABCPath(\'{}\');'.format(abc_current_path) +
             'save();')
     cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch)
+    print("####abcReplace####")
+    print(cmd)
     subprocess.call(cmd, shell=True)
 
 # ------------------------------------

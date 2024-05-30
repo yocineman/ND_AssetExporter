@@ -284,7 +284,7 @@ class GUI(QMainWindow):
 
     def help_button_clicked(self):
         import webbrowser
-        url = ('https://onedrive.live.com/redir?resid=58BD60C626427A2A%21105&authkey=%21AMSN23DVAc9fKa0&page=Edit&wd=target%28StandAlone.one%7Cfd7e5d89-f2fb-4f4f-8357-66b56ecea707%2FND_AssetExporter%7C890d36de-bbc3-40ac-aa1d-d0e9ebf66feb%2F%29&wdorigin=703')
+        url = ('https://otakendesigncojp.sharepoint.com/sites/RigDevelopment/_layouts/15/Doc.aspx?sourcedoc={9ec34422-5bff-42ef-8c06-da416db63df4}&action=edit&wd=target%28StandAlone.one%7Cfd7e5d89-f2fb-4f4f-8357-66b56ecea707%2FND_AssetExporter%7Cbe67cba1-eb34-4cfd-a8fc-c795a4f2bfbb%2F%29&wdorigin=703')
         webbrowser.open_new_tab(url)
 
     def evaluate_chk_stateChange(self):
@@ -379,9 +379,9 @@ class GUI(QMainWindow):
             groups.sort()
             pools.sort()
             _setComboBoxList(self.ui.grouplist, groups)
-            _setComboBoxValue(self.ui.grouplist, 'mem032')
-            if util_exporter.is_arnold(self.project) is True:
-                _setComboBoxValue(self.ui.grouplist, 'mem064')
+            # _setComboBoxValue(self.ui.grouplist, 'mem032')
+            # if util_exporter.is_arnold(self.project) is True:
+            _setComboBoxValue(self.ui.grouplist, 'mem064')
             _setComboBoxList(self.ui.poollist, pools)
             _setComboBoxValue(self.ui.poollist, self.project, 'normal')
         elif NoDeadlineMode is True:
