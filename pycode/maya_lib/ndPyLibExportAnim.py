@@ -1,10 +1,12 @@
 # coding:utf-8
+import pprint
+import os, sys
 
 import maya.cmds as cmds
 import maya.mel as mel
+sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
+
 import pymel.core as pm
-import pprint
-import os,sys
 import re
 try:
     from importlib import reload
@@ -21,22 +23,25 @@ def set_dw_h_env():
 
 def set_env():
     # arnold
-    sys.path.append('Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts')
+    sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts')
     # scripts
-    scripts_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/scripts'
+    scripts_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts'
     os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
     os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
     # plug-in
-    plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/plug-ins'
+    plugin_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/plug-ins'
     os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
     # mod
-    mod_path = 'Y:/users/env/maya/2022/mod'
+    mod_path = 'Y:/users/env/maya/2023/mod'
     # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
     os.environ['MAYA_MODULE_PATH'] = mod_path
     # path
-    os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/2022_MtoA_5133/bin'
+    os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/bin'
     # try:
-    cmds.loadPlugin('mtoa')
+    try:
+        cmds.loadPlugin('mtoa')
+    except:
+        pass
 
 
 def eulerfilter(attr_list):

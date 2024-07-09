@@ -31,14 +31,13 @@ def env_load(project):
         if path in sys.path: continue
         sys.path.append(path)
     import shell_lib.env_loader
-    shell_lib.env_loader.run(project, fork=True)
+    # shell_lib.env_loader.run(project, fork=True)
+    maya_ver = shell_lib.env_loader.set_arnold_env(project)
 
     # python3も2で実行されるように
     os.environ['MAYA_PYTHON_VERSION']='2'
-
-
-def set_arnold_env():
     os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
+    return maya_ver
 
 
 def maya_version(project, ver_override=False):
@@ -56,7 +55,7 @@ def maya_version(project, ver_override=False):
     #------------------------------------
     if not os.path.exists(project_app_launcher):
         print("Error: %s does not exist" % project_app_launcher)
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe'
         return maya_exe
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
@@ -79,9 +78,8 @@ def maya_version(project, ver_override=False):
 #  Anim
 # ------------------------------------
 def animExport(**kwargs):
-    env_load(kwargs['project'])
-    set_arnold_env()
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     unique_order = (
         'from maya_lib.ndPyLibExportAnim import export_anim_main;'
         'export_anim_main(**{})'.format(kwargs)
@@ -92,8 +90,8 @@ def animExport(**kwargs):
 
 
 def animAttach(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     file_namespace = kwargs['file_namespace']
     ma_ver_path = kwargs['ma_ver_path']
     anim_ver_path = kwargs['anim_ver_path']
@@ -106,12 +104,13 @@ def animAttach(**kwargs):
         'loadAsset(\'{}\', \'{}_anim\');'.format(anim_ver_path, file_namespace) +
         'saveAs(\'{}\')'.format(ma_ver_path))
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    print(cmd)
     subprocess.call(cmd, shell=True, env=os.environ)
 
 
 def animReplace(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     ma_current_path = kwargs['ma_current_path']
     publish_current_anim_path = kwargs['anim_current_path']
     file_namespace = kwargs['file_namespace']
@@ -127,8 +126,8 @@ def animReplace(**kwargs):
 #  Abc
 # ------------------------------------
 def abcExport(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     unique_order = (
             'from ndPyLibExportAbc import ndPyLibExportAbc_caller;'
             'ndPyLibExportAbc_caller({})'.format(kwargs))
@@ -137,8 +136,8 @@ def abcExport(**kwargs):
 
 
 def abcAttach(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     asset_path = kwargs['asset_path']
     namespace = kwargs['file_namespace']
     top_node = namespace + ':' + kwargs['top_node']
@@ -160,8 +159,8 @@ def abcAttach(**kwargs):
 
 
 def abcReplace(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     ma_current_path = kwargs['ma_current_path']
     abc_current_path = kwargs['abc_current_path']
     unique_order = (
@@ -177,8 +176,8 @@ def abcReplace(**kwargs):
 #  Abc&Anim
 # ------------------------------------
 def abcAnimAttach(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     asset_path = kwargs['asset_path']
     namespace = kwargs['file_namespace']
     top_node = namespace + ':' + kwargs['top_node']
@@ -201,8 +200,8 @@ def abcAnimAttach(**kwargs):
 
 
 def abcAnimReplace(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     namespace = kwargs['file_namespace']
     ma_current_path = kwargs['ma_current_path']
     abc_current_path = kwargs['abc_current_path']
@@ -220,8 +219,8 @@ def abcAnimReplace(**kwargs):
 #  Cam
 # ------------------------------------
 def camExport(**kwargs):
-    env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], kwargs['maya_version'])
+    maya_ver = env_load(kwargs['project'])
+    mayaBatch = maya_version(kwargs['project'], maya_ver)
     unique_order = (
         'from ndPyLibExportCam import ndPylibExportCam_caller;'
         'ndPylibExportCam_caller(**{})'.format(kwargs))

@@ -295,7 +295,7 @@ def export_cam_main(kwargs):
     else:
         try:
             set_env()
-        excepet:
+        except:
             pass
     # シーンのオープン
     if not cmds.file(q=True, exists=True):

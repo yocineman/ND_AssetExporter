@@ -77,13 +77,21 @@ class outputPathConf(object):
             self.roll = dic['roll']
         except:
             self.roll = None
+        
         self.shot = dic['shot']
         self.sequence = dic['sequence']
+        seq_flg = False
+        if self.shot == self.sequence:
+            seq_flg = True
         self.shot_path = ''
         for path_parts in self.input_path.split('/'):
             self.shot_path = self.shot_path + path_parts+'/'
             if path_parts == self.shot:
-                break
+                if seq_flg == True:
+                    seq_flg = False
+                else:
+                    break
+       
 
     def set_char(self, char):
         self._publish_char_path = os.path.join(self.shot_path, 'publish', self.root_dir, char)
