@@ -52,20 +52,21 @@ def maya_version(project, ver_override=False):
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
     dcc_tools = ["maya", "nuke", "nukex"]
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
-    #------------------------------------
+    # ------------------------------------
     if not os.path.exists(project_app_launcher):
         print("Error: %s does not exist" % project_app_launcher)
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe'
+        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
+        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
         return maya_exe
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
     f.close()
-    #------------------------------------
+    # ------------------------------------
     ryear = 2022
     for dcc in dcc_tools:
         for version in data["launch_%s" % dcc]["versions"]:
             if dcc == 'maya':
-               ryear = version.replace('(','').split(')')[0]
+                ryear = version.replace('(','').split(')')[0]
     if ver_override == 'False' or ver_override == False:
         maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
         # maya_exe = 'C:\\Program Files\\Autodesk\\Maya2020\\bin\\maya.exe'

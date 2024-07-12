@@ -13,7 +13,7 @@ for path in ND_TOOL_PATH.split(';'):
     path = path.replace('\\','/')
     if path in sys.path: continue
     sys.path.append(path)
-#------------------------------------
+# ------------------------------------
 import ND_lib.util.path as util_path
 
 def getFiles (path):
@@ -66,42 +66,32 @@ def open_folder(path):
 
 
 class CharSetDirConf(object):
-    def __init__ (self, input_path):
+    def __init__(self, input_path):
         self.input_path = input_path
         path_dic = util_path.get_path_dic(input_path)
         shot_flag = False
         for k, v in path_dic.items():
-            if k == 'project_name':
+            if k == "project_name":
                 pro_name = v
-            elif k == 'shot':
+            elif k == "shot":
                 shot = v
                 shot_flag = True
-            elif k == 'sequence':
+            elif k == "sequence":
                 sequence = v
-            elif k == 'roll':
+            elif k == "roll":
                 roll = v
 
-        # shot_flag = False
-        shotpath = ''
-        for parse_path in input_path.split('/'):
-            if shot_flag == True:
-                if parse_path == shot:
-                    shotpath = shotpath + '/' + parse_path
-                    break
-                else:
-                    shotpath = shotpath + '/' + parse_path
-            else:
-                if parse_path == sequence:
-                    shotpath = shotpath + '/' + parse_path
-                    break
-                else:
-                    shotpath = shotpath + '/' + parse_path
+        shotpath = path_dic["publish_root"].replace("/publish", "")
+        shotpath = shotpath.replace("\\", "/")
 
-        shotpath = shotpath.strip('/')
         self.project = pro_name
         self.sequence = sequence
         self.shot = shot
-        self.shotpath  = shotpath
-        self.roll = roll
+        self.shotpath = shotpath
+        try:
+            self.roll = roll
+        except:
+            self.roll = None
 
-        self.charsetpath = os.path.join(self.shotpath, 'publish', 'charSet').replace('\\', '/')
+        # self.charsetpath = os.path.join(self.shotpath, 'publish', 'charSet').replace('\\', '/')
+        self.charsetpath = (path_dic["publish_root"] + "/charSet").replace("\\", "/")

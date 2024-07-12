@@ -108,7 +108,7 @@ def search_cam():
 
 
 def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list):
-    if tg_cam_list is None or tg_cam_list is 'None':
+    if tg_cam_list is None or tg_cam_list == 'None':
         cams = search_cam()
     else:
         cams = tg_cam_list
@@ -255,6 +255,8 @@ def get_tg_ns_list(scene_ns_list, input_ns_list):
 def export_ma(ma_path):
     if not os.path.exists(os.path.dirname(ma_path)):
         os.makedirs(os.path.dirname(ma_path))
+    # delete unkonwn nodes
+    cmds.delete(cmds.ls(type='unknown'))
     try:
         cmds.file(ma_path, force=True, options='v=0', typ='mayaAscii', pr=True, es=True, f=True)
     except Exception as e:
@@ -290,6 +292,10 @@ def export_abc(abc_path, sframe, eframe):
 
 
 def export_cam_main(kwargs):
+    print('------export_cam_main------')
+    import pprint
+    pprint.pprint(kwargs)
+    print('---------------------------')
     if kwargs['project'].lower() == 'd_wh':
         set_dw_h_env()
     else:

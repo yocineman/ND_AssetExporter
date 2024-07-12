@@ -115,10 +115,13 @@ def set_arnold_env(project_name):
     sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
     # scripts
     scripts_path = 'Y:/users/env/arnold/mtoa/{}_MtoA_{}/scripts'.format(maya_ver, arnold_ver)
-    # os.environ["PYTHONPATH"] = (
-    #     scripts_path
-    #     + ";C:/Program Files/Autodesk/Maya{}/Python/lib/site-packages".format(maya_ver)
-    # )
+    if os.environ.get("PYTHONPATH"):
+        os.environ["PYTHONPATH"] = os.environ["PYTHONPATH"] + ";" + scripts_path
+    else:
+        os.environ["PYTHONPATH"] = (
+            scripts_path
+            + ";C:/Program Files/Autodesk/Maya{}/Python/lib/site-packages".format(maya_ver)
+        )
 
     os.environ['MAYA_SCRIPT_PATH'] = scripts_path
     # plug-in
@@ -126,7 +129,7 @@ def set_arnold_env(project_name):
     # os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
     os.environ['MAYA_PLUG_IN_PATH'] = plugin_path
     # mod
-    mod_path = 'Y:/users/env/maya/2022/mod'
+    mod_path = "Y:/users/env/maya/2023/mod;Y:/users/env/arnold/mtoa/2023_MtoA_5133"
     # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
     os.environ['MAYA_MODULE_PATH'] = mod_path
     # path

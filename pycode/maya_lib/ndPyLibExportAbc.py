@@ -181,8 +181,8 @@ def export_abc_main(**kwargs):
         if len(tg_nodes) == 0:
             continue
         top_node =  tg_ns + ":" + kwargs['top_node']
-        if not cmds.objExists(top_node):
-            continue
+        # if not cmds.objExists(top_node):
+        #     continue
         # abc_file_name = 'abc_'+tg_ns+'.abc'
         abc_file_name = tg_ns+'.abc'
         abc_file_path = kwargs['publish_ver_abc_path']+'/'+abc_file_name
