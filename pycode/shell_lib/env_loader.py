@@ -47,10 +47,15 @@ def run(args, **kwargs):
             return None
         # project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
 
-    f = open(project_app_launcher, "r")
-    data = yaml.safe_load(f)
+    try:
+        f = open(project_app_launcher, "r")
+        data = yaml.safe_load(f)
 
-    f.close()
+        f.close()
+    except:
+        print("#####################")
+        print("Error: %s" % project_app_launcher)
+        print("#####################")
 
     for dcc in dcc_tools:
         for version in data["launch_%s" % dcc]["versions"]:

@@ -27,8 +27,10 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
         return
     print('##PickNodes##')
     print(pickNodes)
+    print('dev')
     print('##tg_nodes##')
-    print(tg_nodes)
+    # print(tg_nodes)
+    print("check, ", isFilterCurve)
     cmds.select(cl=True)
     for i in range(int(len(tg_nodes)/2)):
         if cmds.objExists(tg_nodes[i*2+1]):
@@ -40,7 +42,7 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
             #         rn = tg_nodes[i*2+1]
             #     tg_nodes[i*2+1] = rn
             cmds.select(tg_nodes[i*2+1], add=True)
-
+    print("state1")
     if isFilterCurve:
         cmds.filterCurve()
     else:
@@ -52,6 +54,7 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
     filePathNamex = os.path.dirname(filePathName)
 
     if not os.path.exists(filePathNamex):
+        print('##Create Dir##')
         os.makedirs(filePathNamex)
 
     info = {}
@@ -63,8 +66,9 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
             info['date'] = cmds.date()
             info['tool'] = 'ND_AssetExporter'
             addInfoAttr(s, info)
-
+    print('##Anim Export Start##')
     cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0)
+    print('##Anim Export End##')
 
     for i in range(int(len(tg_nodes)/2)):
         from_node = tg_nodes[i*2+1]
@@ -91,6 +95,7 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
                 writeFileID.write(line)
             line = readFileID.readline()
     except Exception as e:
+        print("###############Error: ", e)
         print(e)
     finally:
         readFileID.close()

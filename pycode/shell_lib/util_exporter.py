@@ -612,10 +612,21 @@ def is_arnold(project):
     project_name = project
     toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
-    project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project_name, app_launcher_path)
-    f = open(project_app_launcher, "r")
-    data = yaml.load(f)
-    f.close()
+    if not os.path.exists("%s\\ND_sgtoolkit_%s" % (toolkit_path, project_name)):
+        project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project_name, app_launcher_path)
+    else:
+        project_app_launcher = "Y:\\tool\\ND_Tools\\shotgun\\ND_sgtoolkit_{}\\config\\env\\includes\\app_launchers.yml".format(project_name)
+    try:        
+        f = open(project_app_launcher, "r")
+        data = yaml.load(f)
+        f.close()
+    except Exception as e:
+        print("#####################")
+        print("Error: %s" % project_app_launcher)
+        print("util_exporter.py: is_arnold")
+        print("#####################")
+        return False
+        
     for version in data["launch_maya"]["versions"]:
         if "(_MtoA_)" in version:
             return True

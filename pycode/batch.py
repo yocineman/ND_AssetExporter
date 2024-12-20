@@ -17,6 +17,7 @@ def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None):
     if mayafile is not None:
         cmd.append('-file')
         cmd.append(mayafile)
+    cmd.append('-batch')
     cmd.append('-command')
     cmd.append('python(\"{}\")'.format(maya_cmd.replace(';', '\;').replace('\'', '\\\'')))
     return cmd
@@ -35,8 +36,8 @@ def env_load(project):
     maya_ver = shell_lib.env_loader.set_arnold_env(project)
 
     # python3も2で実行されるように
-    os.environ['MAYA_PYTHON_VERSION']='2'
-    os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
+    # os.environ['MAYA_PYTHON_VERSION']='2'
+    # os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
     return maya_ver
 
 
@@ -55,8 +56,9 @@ def maya_version(project, ver_override=False):
     # ------------------------------------
     if not os.path.exists(project_app_launcher):
         print("Error: %s does not exist" % project_app_launcher)
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
-        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2020\\bin\\mayabatch.exe"
+        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
+        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
         return maya_exe
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
@@ -68,10 +70,10 @@ def maya_version(project, ver_override=False):
             if dcc == 'maya':
                 ryear = version.replace('(','').split(')')[0]
     if ver_override == 'False' or ver_override == False:
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
-        # maya_exe = 'C:\\Program Files\\Autodesk\\Maya2020\\bin\\maya.exe'
+        # maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2020\\bin\\maya.exe'
     else:
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ver_override))
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayah.exe'.format(str(ver_override))
     return  maya_exe
 
 
@@ -87,12 +89,14 @@ def animExport(**kwargs):
     )
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     print(cmd)
-    subprocess.call(cmd, shell=True, env=os.environ)
+    # subprocess.call(cmd, shell=True, env=os.environ)
+    subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def animAttach(**kwargs):
     maya_ver = env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], maya_ver)
+    # mayaBatch = maya_version(kwargs['project'], maya_ver)
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
     file_namespace = kwargs['file_namespace']
     ma_ver_path = kwargs['ma_ver_path']
     anim_ver_path = kwargs['anim_ver_path']
@@ -106,7 +110,7 @@ def animAttach(**kwargs):
         'saveAs(\'{}\')'.format(ma_ver_path))
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     print(cmd)
-    subprocess.call(cmd, shell=True, env=os.environ)
+    subprocess.call(cmd, shell=False, env=os.environ)
 
 
 def animReplace(**kwargs):

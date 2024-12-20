@@ -3,7 +3,8 @@
 import os,sys
 import yaml
 import shell_lib.util_exporter as util_exporter
-import batch
+sys.path.append('Y:/tool/ND_Tools/DCC')  
+import dev.Standalone.ND_AssetExporter.pycode.batch as batch
 import pprint
 def exporter_bridge_main(**kwargs):
     argsdic = kwargs
@@ -28,8 +29,12 @@ def exporter_bridge_main(**kwargs):
     argsdic['publish_char_path'] = opc.publish_char_path
     if export_type == 'anim':
         argsdic['publish_ver_anim_path'] = opc.publish_ver_anim_path
+        print('--anim Export Start---')
         batch.animExport(**argsdic)
+        print('--anim Export End---')
         if override == True:  # animの出力のみ
+            print('Output directry: {}'.format(opc.publish_ver_path.replace('/','\\')))
+            print("override_shotpath is True, end")
             return
         anim_files = os.listdir(opc.publish_ver_anim_path)
         if len(anim_files)==0:
@@ -38,6 +43,7 @@ def exporter_bridge_main(**kwargs):
             return
         output_set_list = []
         for anim_file in anim_files:
+            print("attach: {}".format(anim_file))
             file_namespace = anim_file.replace('anim_', '').replace('.ma', '')
             ma_file = file_namespace + '.ma'
             argsdic['file_namespace'] = file_namespace
