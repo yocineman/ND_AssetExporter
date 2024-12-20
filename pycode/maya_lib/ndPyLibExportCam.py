@@ -378,7 +378,17 @@ def export_cam_main(kwargs):
     if 'remain_cam' in kwargs.keys():
         if kwargs['remain_cam'] == False:
             for i in range(len(bake_cams)):
-                cmds.delete(bake_cams[i])
+                #cameraを削除する referenceの場合はreferenceを削除する
+                try:
+                    cmds.delete(bake_cams[i])
+                except:
+                    #referenceの場合
+                    try:
+                        cmds.file(rm=cmds.referenceQuery(bake_cams[i], f=True))
+                    except Exception as e:
+                        print(e)
+                
+                
 
     if batch_mode:
         for obj in hidden_objs:
