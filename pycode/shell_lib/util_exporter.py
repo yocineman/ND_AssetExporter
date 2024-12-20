@@ -189,7 +189,7 @@ class outputPathConf(object):
         # その後currentの空ならcharから削除
         current_files = os.listdir(self.publish_current_path)
         if len(current_files)==0:
-            shutil.rmtree(self.publish_char_path)
+            shutil.rmtree(self.publish_current_path)
 
 
     def overrideShotpath(self, shotpath):
