@@ -16,7 +16,8 @@ def exporter_bridge_main(**kwargs):
         argsdic['anim_item'] = argsdic['export_item']['anim']
         argsdic['abc_item'] = argsdic["export_item"]['abc']
 
-    if 'override_shotpath' in argsdic.keys():
+    # if 'override_shotpath' in argsdic.keys():
+    if argsdic.get('override_shotpath') is True:
         override = True
     else:
         override = False
