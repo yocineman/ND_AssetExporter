@@ -27,18 +27,19 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
         return
     print('##PickNodes##')
     print(pickNodes)
+    print("not dev")
     print('##tg_nodes##')
     print(tg_nodes)
     cmds.select(cl=True)
     for i in range(int(len(tg_nodes)/2)):
         if cmds.objExists(tg_nodes[i*2+1]):
             buf = tg_nodes[i*2+1].split(':')
-            # if len(buf) == 2:
-            #     try: #retnodeをリネームしている
-            #         rn = cmds.rename(tg_nodes[i*2+1], buf[1])
-            #     except:
-            #         rn = tg_nodes[i*2+1]
-            #     tg_nodes[i*2+1] = rn
+            if len(buf) == 2:
+                try: #retnodeをリネームしている
+                    rn = cmds.rename(tg_nodes[i*2+1], buf[1])
+                except:
+                    rn = tg_nodes[i*2+1]
+                tg_nodes[i*2+1] = rn
             cmds.select(tg_nodes[i*2+1], add=True)
 
     if isFilterCurve:
@@ -50,6 +51,8 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
     fileName = inFileName.split(":")[-1]
     filePathName = inDirPath + '/' + fileName
     filePathNamex = os.path.dirname(filePathName)
+    
+    print("state2")
 
     if not os.path.exists(filePathNamex):
         os.makedirs(filePathNamex)
@@ -63,6 +66,8 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
             info['date'] = cmds.date()
             info['tool'] = 'ND_AssetExporter'
             addInfoAttr(s, info)
+            
+    print("export AnimCurve")
 
     cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0)
 
@@ -98,8 +103,10 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
     org = inDirPath + '/' + fileName
     tmp = inDirPath + '/' + tmpFile
 
+    print("os.remove(org)")
     os.remove(org)
     os.rename(tmp, org)
+    return
 
 
 def addInfoAttr(node, info):

@@ -55,7 +55,7 @@ def maya_version(project, ver_override=False):
     # ------------------------------------
     if not os.path.exists(project_app_launcher):
         print("Error: %s does not exist" % project_app_launcher)
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
+        maya_exe = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
         # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
         return maya_exe
     f = open(project_app_launcher, "r")
@@ -138,7 +138,8 @@ def abcExport(**kwargs):
 
 def abcAttach(**kwargs):
     maya_ver = env_load(kwargs['project'])
-    mayaBatch = maya_version(kwargs['project'], maya_ver)
+    # mayaBatch = maya_version(kwargs['project'], maya_ver)
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
     asset_path = kwargs['asset_path']
     namespace = kwargs['file_namespace']
     top_node = namespace + ':' + kwargs['top_node']

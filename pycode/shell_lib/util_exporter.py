@@ -189,7 +189,7 @@ class outputPathConf(object):
         # その後currentの空ならcharから削除
         current_files = os.listdir(self.publish_current_path)
         if len(current_files)==0:
-            shutil.rmtree(self.publish_char_path)
+            shutil.rmtree(self.publish_current_path)
 
 
     def overrideShotpath(self, shotpath):
@@ -613,12 +613,13 @@ def is_arnold(project):
     toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project_name, app_launcher_path)
-    f = open(project_app_launcher, "r")
-    data = yaml.load(f)
-    f.close()
-    for version in data["launch_maya"]["versions"]:
-        if "(_MtoA_)" in version:
-            return True
+    if os.path.exists(project_app_launcher) == False:
+        f = open(project_app_launcher, "r")
+        data = yaml.load(f)
+        f.close()
+        for version in data["launch_maya"]["versions"]:
+            if "(_MtoA_)" in version:
+                return True
     return False
 
 

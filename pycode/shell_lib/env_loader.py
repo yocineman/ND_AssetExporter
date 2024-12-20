@@ -46,11 +46,12 @@ def run(args, **kwargs):
         if not os.path.exists(project_app_launcher):
             return None
         # project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, args.lower(), app_launcher_path)
-
-    f = open(project_app_launcher, "r")
-    data = yaml.safe_load(f)
-
-    f.close()
+    try:
+        f = open(project_app_launcher, "r")
+        data = yaml.safe_load(f)
+        f.close()
+    except Exception as e:
+        print(e)
 
     for dcc in dcc_tools:
         for version in data["launch_%s" % dcc]["versions"]:
