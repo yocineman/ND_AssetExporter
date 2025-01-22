@@ -27,20 +27,19 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
         return
     print('##PickNodes##')
     print(pickNodes)
-    print('dev')
     print('##tg_nodes##')
-    # print(tg_nodes)
+    print(tg_nodes)
     print("check, ", isFilterCurve)
     cmds.select(cl=True)
     for i in range(int(len(tg_nodes)/2)):
         if cmds.objExists(tg_nodes[i*2+1]):
             buf = tg_nodes[i*2+1].split(':')
-            # if len(buf) == 2:
-            #     try: #retnodeをリネームしている
-            #         rn = cmds.rename(tg_nodes[i*2+1], buf[1])
-            #     except:
-            #         rn = tg_nodes[i*2+1]
-            #     tg_nodes[i*2+1] = rn
+            if len(buf) == 2:
+                try: #retnodeをリネームしている
+                    rn = cmds.rename(tg_nodes[i*2+1], buf[1])
+                except:
+                    rn = tg_nodes[i*2+1]
+                tg_nodes[i*2+1] = rn
             cmds.select(tg_nodes[i*2+1], add=True)
     print("state1")
     if isFilterCurve:
@@ -67,7 +66,15 @@ def ndPyLibAnimIOExportContain_main(**kwargs):
             info['tool'] = 'ND_AssetExporter'
             addInfoAttr(s, info)
     print('##Anim Export Start##')
-    cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0)
+    unknown = cmds.ls(type='unknown')
+    if unknown:
+        cmds.delete(unknown) 
+    try:
+        cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0, )
+    except Exception as e:
+        print("###############Error: ", e)
+        print(e)
+    # cmds.file(filePathName, f=True, es=True, typ='mayaAscii', ch=0, chn=0, exp=0, con=0, sh=0, force=1)
     print('##Anim Export End##')
 
     for i in range(int(len(tg_nodes)/2)):
