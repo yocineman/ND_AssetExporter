@@ -149,6 +149,10 @@ def export_abc_main(**kwargs):
                 pm.addAttr(eachShape,dataType="stringArray",longName=shaderAttributeName)
             pm.setAttr(eachShape+"."+shaderAttributeName,dictAttributes[eachShape]["shader"])
 
+    # euler filter
+    Euler_filter(getAllNodes('', kwargs['abc_item']))w
+
+
     for tg_ns in tg_ns_list:
         print(tg_ns, kwargs['abc_item'])
         print(getAllNodes(tg_ns, kwargs['abc_item']))

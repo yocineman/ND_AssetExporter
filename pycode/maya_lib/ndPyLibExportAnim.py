@@ -571,7 +571,7 @@ def export_anim_main(**kwargs):
         cmds.select(_attrs)
         # cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True)
         cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True, ral=True)
-
+    eulerfilter(attrs)
     for obj in hidden_objs:
         try:
             dst_obj = '{}.visibility'.format(obj.split('|')[-1])
