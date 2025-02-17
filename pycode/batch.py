@@ -53,11 +53,12 @@ def maya_version(project, ver_override=False):
     app_launcher_path = "config\\env\\includes\\app_launchers.yml"
     dcc_tools = ["maya", "nuke", "nukex"]
     project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (toolkit_path, project.lower(), app_launcher_path)
+    # project_app_launcher = "Y:\\tool\\ND_Tools\\python\\ND_appEnv\\projects\\{}.json".format(project)
     # ------------------------------------
     if not os.path.exists(project_app_launcher):
         print("Error: %s does not exist" % project_app_launcher)
-        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2020\\bin\\mayabatch.exe"
         maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
         return maya_exe
     f = open(project_app_launcher, "r")
     data = yaml.safe_load(f)
@@ -70,7 +71,7 @@ def maya_version(project, ver_override=False):
                 ryear = version.replace('(','').split(')')[0]
     if ver_override == 'False' or ver_override == False:
         # maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2020\\bin\\maya.exe'
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe'
     else:
         maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayah.exe'.format(str(ver_override))
     return  maya_exe
@@ -229,15 +230,15 @@ def camExport(**kwargs):
     unique_order = (
         'from ndPyLibExportCam import ndPylibExportCam_caller;'
         'ndPylibExportCam_caller(**{})'.format(kwargs))
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
-    subprocess.call(cmd, shell=True)
+    cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'],mayaBatch=mayaBatch)
+    subprocess.call(cmd, shell=True, env=os.environ,stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 # ------------------------------------
 #  Ass
 # ------------------------------------
 def assExport(**kwargs):
-    mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
+    mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\maya.exe'
     unique_order = (
             'from maya_lib.ndPyLibExportAss import export_ass_main;'
             'export_ass_main(**{})'.format(kwargs))
@@ -246,7 +247,7 @@ def assExport(**kwargs):
 
 
 def assAttach(**kwargs):
-    mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
+    mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\maya.exe'
     unique_order = (
             'from maya_lib.ndPyLibAttachAss import attach_ass_main;'
             'attach_ass_main(**{})'.format(kwargs))
@@ -256,7 +257,7 @@ def assAttach(**kwargs):
 
 
 def assReplace(**kwargs):
-    mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe'
+    mayaBatch = 'C:\\Program Files\\Autodesk\\Maya2022\\bin\\maya.exe'
     unique_order = (
             'from maya_lib.ndPyLibReplaceAss import replace_ass_main;'
             'replace_ass_main(**{})'.format(kwargs))

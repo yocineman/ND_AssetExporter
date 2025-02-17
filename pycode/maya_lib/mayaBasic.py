@@ -71,7 +71,7 @@ def attachABC(abcPath,namespace,hierarchyList):
         if os.path.exists(outputFile) == False:
             return
         with open(outputFile, 'r') as fp:
-
+            yeti_obj = fp.readline()
             inyeticasch = fp.readline()
             outyeticasch = fp.readline()
 
@@ -79,8 +79,10 @@ def attachABC(abcPath,namespace,hierarchyList):
             print(outyeticasch.rstrip('\n'))
 
             print(namespace+':pgYetiMaya'+namespace+'Shape.cacheFileName')
-            cmds.setAttr(namespace+':pgYetiMaya'+namespace+'Shape.cacheFileName', inyeticasch.rstrip('\n'), type='string')
-            cmds.setAttr(namespace+':pgYetiMaya'+namespace+'Shape.outputCacheFileName', outyeticasch.rstrip('\n'), type='string')
+            # cmds.setAttr(namespace+':pgYetiMaya'+namespace+'Shape.cacheFileName', inyeticasch.rstrip('\n'), type='string')
+            # cmds.setAttr(namespace+':pgYetiMaya'+namespace+'Shape.outputCacheFileName', outyeticasch.rstrip('\n'), type='string')
+            cmds.setAttr(yeti_obj+'.cacheFileName', inyeticasch.rstrip('\n'), type='string')
+            cmds.setAttr(yeti_obj+'.outputCacheFileName', outyeticasch.rstrip('\n'), type='string')
     except Exception as e:
         print(e)
 

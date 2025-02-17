@@ -140,7 +140,7 @@ def getConstraintAttributes(nodes):
         if const is None:
             continue
         for i in range(0, len(const), 2):
-            attrs.append(const[i])
+            attrs.append(const[i])            
     return attrs
 
 
@@ -161,6 +161,9 @@ def getPairBlendAttributes(nodes):
                 attrs.append(const[i])
     return attrs
 
+
+def getCo(nodes):
+    
 
 def getMotionPathAttributes(nodes):
     attrs = []
@@ -394,13 +397,11 @@ def export_anim_main(**kwargs):
     top_nodes = cmds.ls(assemblies=True)
     cache_nodes = cmds.ls(type='cacheFile')
     hidden_objs = []
-    # hidden_objs.extend(cmds.hide(top_nodes, rh=True))
     hidden_objs.extend(cmds.hide(cache_nodes, rh=True))
     ignore_attrs = []
     if hidden_objs is not None:
         for obj in hidden_objs:
             ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
-
     output_files = []
     tg_nodes = []
     node_and_attrs = []
@@ -441,26 +442,33 @@ def export_anim_main(**kwargs):
             ref = unload_ns_dic[tg_ns]
             cmds.file(lr=ref)
 
+    # ネームスペースの取得
     scene_ns_list = get_scene_ns_list()
     tg_ns_list = get_tg_ns_list(scene_ns_list, input_ns_list)
     if len(tg_ns_list) == 0:
+        print('---------------------------------')
         print('Namespaceが見つかりませんでした。')
+        print('---------------------------------')
         return False
+
+    # ターゲットノード一覧の取得
     tg_nodes = get_tg_nodes(tg_ns_list, regex_list)
     for regex_attr in regex_attr_list:
         tg_nodes.append(regex_attr.split('.')[0])
-
     if len(tg_nodes) == 0:
+        print('---------------------------------')
         print('(正規表現とマッチするオブジェクト)が見つかりませんでした。')
+        print('---------------------------------')
 
+    # キャラクターセットの削除
     character_set = cmds.ls(type='character')
     if len(character_set) != 0:
         cmds.delete(character_set)
 
+    # シーンタイムワープの設定
     if scene_timewarp:
         cmds.setAttr("time1.enableTimewarp", 0)
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
-    
     if baseAnimationLayer != None:
         animLayers = cmds.ls(type='animLayer')
         for al in animLayers:
@@ -468,10 +476,8 @@ def export_anim_main(**kwargs):
         cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
     if scene_timewarp:
         cmds.setAttr("time1.enableTimewarp", 1)
-    for tg_node in tg_nodes[:]:
-        if cmds.objExists(tg_node) == False:
-            tg_nodes.remove(tg_node)
-
+        
+    # アトリビュート直接指定
     attrs = getNoKeyAttributes(tg_nodes)
     if len(node_and_attrs) != 0:
         attrs.extend(getNoKeyAttributes(node_and_attrs))
@@ -481,10 +487,12 @@ def export_anim_main(**kwargs):
             if cmds.objExists(obj_and_attr):
                 attrs.append(obj_and_attr)
 
+    # アトリビュートの開始フレームにキーフレームを打つ
     if len(attrs) != 0:
         attrs = list(set(attrs)-set(ignore_attrs))
         cmds.setKeyframe(attrs, t=sframe)
 
+    # 各種アトリビュートを取得
     attrs += getConstraintAttributes(tg_nodes)
     attrs += getMotionPathAttributes(tg_nodes)
     attrs += getAddDoubleLinearAttributes(tg_nodes)
@@ -495,14 +503,9 @@ def export_anim_main(**kwargs):
     attrs += getPairBlendAttributes(tg_nodes)
     attrs = list(set(attrs)-set(ignore_attrs))
     unlockAttributes(attrs)
-
-    for node in tg_nodes:
-        if cmds.listConnections(node, s=True, type="constraint") is not None:
-            attrs.extend(
-                list(set(cmds.listConnections(node, s=True, type="constraint"))))
+    eulerfilter(attrs)
     
-    # SceneTimeWarp
-    if scene_timewarp:
+    if scene_timewarp: # SceneTimeWarpのベイク
         time_set_list = []
         time_value_set_list = []
 
@@ -557,10 +560,8 @@ def export_anim_main(**kwargs):
                 cmds.setKeyframe(attr, v=value, t=frame)
             except Exception as e:
                 print(e)
-                # pass
-    # 通常のベイク
-    else:
-        attrs = list(set(attrs)-set(ignore_attrs))
+                  
+    else:    # 通常のベイク
         for obj_and_attr in attrs:
             if cmds.objExists(obj_and_attr) == True:
                 cmds.select(obj_and_attr, add=True)
@@ -569,9 +570,10 @@ def export_anim_main(**kwargs):
             if not '.visiblity' in attr:
                 _attrs.append(attr)
         cmds.select(_attrs)
-        # cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True)
         cmds.bakeResults(tg_nodes, t=(sframe, eframe), dic=True, sm=True, ral=True)
+
     eulerfilter(attrs)
+
     for obj in hidden_objs:
         try:
             dst_obj = '{}.visibility'.format(obj.split('|')[-1])
@@ -583,6 +585,7 @@ def export_anim_main(**kwargs):
         cmds.showHidden(hidden_objs)
     except:
         pass
+    
     for ns in tg_ns_list:
         pick_nodes = []
         pick_node_and_attrs = []
@@ -619,17 +622,19 @@ def ndPyLibExportAnim_caller(args):
     print("ndPylibExportAnim End")
 
 
-def test_caller():
-    kwargs = {}
-    kwargs['scene_timewarp'] = False
-    kwargs['publish_ver_anim_path'] = 'P:/Project/D_WH/shots/ep0/000000/00000/publish/test_charSet/KatarsNml/v006/anim'
-    kwargs['export_item'] = {'anim': 'rig_set,main,mainA,mainB,mainC,eyeAimLeft_cnt,eyeAimRight_cnt,eyeAimAll_cnt', 'abc': None}
-    # kwargs['export_item'] = {'anim': 'ctrl_set', 'abc': None}
-    kwargs['namespace'] = ['KatarsNml_RigProxy']
-    # kwargs['evaluate'] = 'DG'
-    kwargs['evaluate'] = 'parallel'
-    kwargs['debug'] = False
-    kwargs['frame_handle'] = 1
-    kwargs['load_pref'] = False
-    ndPyLibExportAnim_caller(kwargs)
-# test_caller()
+if __name__ == '__main__':
+
+    def test_caller():
+        kwargs = {}
+        kwargs['scene_timewarp'] = False
+        kwargs['publish_ver_anim_path'] = 'P:/Project/D_WH/shots/ep0/000000/00000/publish/test_charSet/KatarsNml/v006/anim'
+        kwargs['export_item'] = {'anim': 'rig_set,main,mainA,mainB,mainC,eyeAimLeft_cnt,eyeAimRight_cnt,eyeAimAll_cnt', 'abc': None}
+        # kwargs['export_item'] = {'anim': 'ctrl_set', 'abc': None}
+        kwargs['namespace'] = ['KatarsNml_RigProxy']
+        # kwargs['evaluate'] = 'DG'
+        kwargs['evaluate'] = 'parallel'
+        kwargs['debug'] = False
+        kwargs['frame_handle'] = 1
+        kwargs['load_pref'] = False
+        ndPyLibExportAnim_caller(kwargs)
+    test_caller()

@@ -97,8 +97,8 @@ def load_sg_info(project_name):
         [["projects", "in", project]],
         ["sg_status", "code", "windows_args"],
     )
-    maya_ver = 2020
-    arnold_ver = 0
+    maya_ver = 2023
+    arnold_ver = 531
     for sg_data in sg_data_list:
         if "Maya" in sg_data["code"]:
             if sg_data["windows_args"] is None or len(sg_data["windows_args"].split(" ")) < 3:
@@ -133,11 +133,17 @@ def set_arnold_env(project_name):
     plugin_path = 'Y:/users/env/arnold/mtoa/{}_MtoA_{}/plug-ins'.format(maya_ver, arnold_ver)
     # os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
     os.environ['MAYA_PLUG_IN_PATH'] = plugin_path
+    os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'] + ";" + "C:/Program Files/Autodesk/Maya{}/bin/plug-ins/fbx/plug-ins".format(maya_ver)
     # mod
-    mod_path = "Y:/users/env/maya/2023/mod;Y:/users/env/arnold/mtoa/2023_MtoA_5133"
+    mod_path = "Y:/users/env/maya/2023/mod;Y:/users/env/arnold/mtoa/2023_MtoA_531"
     # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
     os.environ['MAYA_MODULE_PATH'] = mod_path
     # path
     os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/{}_MtoA_{}/bin'.format(maya_ver, arnold_ver)
     os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
+    _yeti = "Y:\\users\\env\\maya\\tools\\Yeti-v4.2.6_Maya2023-windows"
+    os.environ["MAYA_MODULE_PATH"] = os.environ["MAYA_MODULE_PATH"] + ";" + _yeti
+    os.environ["MAYA_PLUG_IN_PATH"] = os.environ["MAYA_PLUG_IN_PATH"] + ";" + _yeti + "\\plug-ins"
+    os.environ["MAYA_SCRIPT_PATH"] = os.environ["MAYA_SCRIPT_PATH"] + ";" + _yeti + "\\scripts"
+    
     return maya_ver

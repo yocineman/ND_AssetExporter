@@ -90,27 +90,20 @@ def export_abc_main(**kwargs):
     tg_nodes_dic = {}
     if 'add_attr' in kwargs.keys():
         import pymel.core as pm
-        #キーがシェイプ名、値がそのシェイプのフェースアトリビュート値のリストのペアである辞書を宣言
         dictAttributes = {}
         context = "/mat/"
         for eachSG in pm.ls(type="shadingEngine"):
             if eachSG.split(':')[0] not in scene_ns_list:
                 continue
             members = pm.sets(eachSG,q=True,nodesOnly=False)
-            #SGにオブジェクト/コンポーネントが割り当てられていなければスキップする
             if len(members)==0:
                 continue
-            #SGにシェーダが割り当てられていなければスキップする。
-            #SGのaiSurfaceShaderの入力コネクタがArnoldで優先されるサーフェスシェーダ。なければsurfaceShaderの入力コネクタのサーフェスシェーダが使用される。
             shader = (pm.listConnections(eachSG+".aiSurfaceShader",p=False,c=False,s=True,d=False) or [""])[0]
             if shader == "":
                 shader = (pm.listConnections(eachSG+".surfaceShader",p=False,c=False,s=True,d=False) or [""])[0]
             if shader == "":
                 continue
             shaderName = shader.name()
-            #オブジェクトレベルの割り当てなのかコンポーネントレベルの割り当てなのかに基づいて処理を分岐させる。
-            #オブジェクトレベルの場合は、すべてのフェースの数だけのサイズのリストを用意して、リストのすべてのアイテムにシェーダ名を書き込む
-            #コンポーネントレベルの場合は、そのフェースのインデックスにシェーダ名の情報を書き込む
             for eachMember in members:
                 #SGがオブジェクトに紐付けられている場合の処理
                 if type(eachMember) == pm.nodetypes.Mesh:
@@ -150,25 +143,55 @@ def export_abc_main(**kwargs):
             pm.setAttr(eachShape+"."+shaderAttributeName,dictAttributes[eachShape]["shader"])
 
     # euler filter
-    Euler_filter(getAllNodes('', kwargs['abc_item']))w
-
+    Euler_filter(getAllNodes('', kwargs['abc_item']))
 
     for tg_ns in tg_ns_list:
         print(tg_ns, kwargs['abc_item'])
         print(getAllNodes(tg_ns, kwargs['abc_item']))
         tg_nodes_dic[tg_ns] = getAllNodes(tg_ns, kwargs['abc_item'])
-        yeti_objs = cmds.ls(tg_ns+':yetiSet')
-        if len(yeti_objs) != 0:
-            inyeticasch = cmds.getAttr(tg_ns+":pgYetiMaya"+tg_ns+"Shape.cacheFileName")
-            outyeticasch = cmds.getAttr(tg_ns+":pgYetiMaya"+tg_ns+"Shape.outputCacheFileName")
+        yeti_set = cmds.ls(tg_ns+':yetiSet')
+        if len(yeti_set) != 0:
+            yeti_objs = cmds.sets(tg_ns+':yetiSet', q=True)
+        else:
+            yeti_objs = []
+        # if len(yeti_objs) != 0:
+        #     inyeticasch = cmds.getAttr(tg_ns+":pgYetiMaya"+tg_ns+"Shape.cacheFileName")
+        #     outyeticasch = cmds.getAttr(tg_ns+":pgYetiMaya"+tg_ns+"Shape.outputCacheFileName")
+        #     yeti_path = os.path.join(kwargs['publish_char_path'],'yetimem.txt')
+        #     try:
+        #         with open(yeti_path, 'w') as fp:
+        #             fp.write(inyeticasch)
+        #             fp.write('\n')
+        #             fp.write(outyeticasch)
+        #     except Exception as e:
+        #         print(e)
+        yeti_list = []
+        for yeti_obj in yeti_objs:
+            print(yeti_obj)
+            inyeticasch = cmds.getAttr(yeti_obj+".cacheFileName")
+            outyeticasch = cmds.getAttr(yeti_obj+".outputCacheFileName")
             yeti_path = os.path.join(kwargs['publish_char_path'],'yetimem.txt')
             try:
                 with open(yeti_path, 'w') as fp:
-                    fp.write(inyeticasch)
-                    fp.write('\n')
-                    fp.write(outyeticasch)
-            except:
-                pass
+                    # fp.write(yeti_obj)
+                    # fp.write('\n')
+                    # fp.write(inyeticasch)
+                    # fp.write('\n')
+                    # fp.write(outyeticasch)
+                    yeti_list.append(yeti_obj)
+                    yeti_list.append(inyeticasch)
+                    yeti_list.append(outyeticasch)
+            except Exception as e:
+                print(e)
+        if len(yeti_list) != 0:
+            yeti_path = os.path.join(kwargs['publish_char_path'],'yetimem.txt')
+            try:
+                with open(yeti_path, 'w') as fp:
+                    for line in yeti_list:
+                        fp.write(line)
+                        fp.write('\n')
+            except Exception as e:
+                print(e)
 
     if not cmds.pluginInfo('AbcExport', q=True, l=True):
         if '_TMP_VER' in os.environ.keys():
@@ -181,13 +204,13 @@ def export_abc_main(**kwargs):
         # os.environ["_TMP_VER"] = os.environ["_TMP_VER"]+";"+plugin_path
         cmds.loadPlugin('AbcExport')
 
+    cache_nodes = cmds.ls(type='cacheFile')
+    cmds.hide(cache_nodes)
+
     for tg_ns, tg_nodes in tg_nodes_dic.items():
         if len(tg_nodes) == 0:
             continue
         top_node =  tg_ns + ":" + kwargs['top_node']
-        # if not cmds.objExists(top_node):
-        #     continue
-        # abc_file_name = 'abc_'+tg_ns+'.abc'
         abc_file_name = tg_ns+'.abc'
         abc_file_path = kwargs['publish_ver_abc_path']+'/'+abc_file_name
 
@@ -219,25 +242,6 @@ def export_abc_main(**kwargs):
 def ndPyLibExportAbc_caller(args):
     export_abc_main(**args)
 
-# def ndPyLibExportAbc2(args):
-#     argsdic = args
-#     outputPath = argsdic['abcOutput']
-#     namespaceList = argsdic['namespace']
-#     try:
-#         step_value = argsdic['step_value']
-#     except KeyError:
-#         step_value = 1.0
-#     framehandle = argsdic['framehandle']
-#     frameRange = argsdic['framerange']
-#     regexArgs = argsdic['export_item']
-#     if "add_attr" in argsdic.keys():
-#         add_attr = argsdic['add_attr']
-#     else:
-#         add_attr = None
-#     _exportAbc2(
-#         outputPath, namespaceList,
-#         regexArgs, step_value,
-#         framehandle, frameRange, add_attr)
 
 '''
 {'abc_check': False,
@@ -263,3 +267,27 @@ def ndPyLibExportAbc_caller(args):
  'step_value': False,
  'top_node': 'root'}
 '''
+
+# scene timewarp        :  False
+# publish_ver_abc_path :  P:/Project/mem2/shots/roll05/s141G/c004/publish/test_charSet/001_LXMAR/v002/abc
+# export_item           :  {'anim': None, 'abc': 'ABCset'}
+# namespace             :  ['[_A-Za-z]*LXMAR[0-9]*_RigRH']
+# abc_item:  ABCset
+
+
+if __name__ == '__main__':
+    args = {
+        'scene_timewarp': False,
+        'publish_ver_abc_path': 'P:/Project/mem2/shots/roll05/s141G/c004/publish/test_charSet/001_LXMAR/v002/abc',
+        'export_item': {'anim': None, 'abc': 'ABCset'},
+        'namespace': ['[_A-Za-z]*LXMAR[0-9]*_RigRH'],
+        'abc_item': 'ABCset',
+        'input_path': 'P:/Project/mem2/shots/roll05/s141G/c004/work/test/s141Gc004_anm_v001.ma',
+        'frame_range': False,
+        'frame_handle': False,
+        'top_node': 'root',
+        'step_value': False,
+        'publish_char_path': r'P:\Project\mem2\shots\roll05\s141G\c004\publish\test_charSet\001_LXMAR'
+        }
+    ndPyLibExportAbc_caller(args)
+    
