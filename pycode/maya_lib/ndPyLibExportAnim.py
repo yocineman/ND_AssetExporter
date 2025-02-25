@@ -160,9 +160,6 @@ def getPairBlendAttributes(nodes):
             for i in range(0, len(const), 2):
                 attrs.append(const[i])
     return attrs
-
-
-def getCo(nodes):
     
 
 def getMotionPathAttributes(nodes):
