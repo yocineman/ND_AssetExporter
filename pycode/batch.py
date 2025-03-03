@@ -6,7 +6,7 @@ import yaml
 
 onpath = os.path.dirname(os.path.abspath(__file__)).replace('\\','/')
 
-def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None):
+def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
     maya_cmd = (
         "import sys;"+
         "sys.path.append(\'{}/maya_lib\');".format(onpath)+
@@ -16,10 +16,12 @@ def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None):
     cmd = [mayaBatch]
     if mayafile is not None:
         cmd.append('-file')
-        cmd.append(mayafile)
-    cmd.append('-batch')
+        cmd.append(mayafile.replace('\\', '/'))
+    if is_exe is not True:
+        cmd.append('-batch')
     cmd.append('-command')
-    cmd.append('python(\"{}\")'.format(maya_cmd.replace(';', '\;').replace('\'', '\\\'')))
+    cmd.append('python(\"{}\")'.format(maya_cmd.replace(';', '\;').replace('\'', '\'')))
+    cmd.append
     return cmd
 
 
@@ -71,9 +73,9 @@ def maya_version(project, ver_override=False):
                 ryear = version.replace('(','').split(')')[0]
     if ver_override == 'False' or ver_override == False:
         # maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe'
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe'
     else:
-        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayah.exe'.format(str(ver_override))
+        maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\maya.exe'.format(str(ver_override))
     return  maya_exe
 
 
@@ -108,7 +110,7 @@ def animAttach(**kwargs):
         'loadAsset(\'{}\', \'{}\');'.format(asset_path, file_namespace) +
         'loadAsset(\'{}\', \'{}_anim\');'.format(anim_ver_path, file_namespace) +
         'saveAs(\'{}\')'.format(ma_ver_path))
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print(cmd)
     subprocess.call(cmd, shell=False, env=os.environ)
 
@@ -124,7 +126,7 @@ def animReplace(**kwargs):
         'replaceAsset(\'{}\', \'{}_anim\');'.format(publish_current_anim_path, file_namespace) +
         'save();'
     )
-    cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     subprocess.call(cmd, shell=True, env=os.environ)
 
 # ------------------------------------
@@ -158,7 +160,7 @@ def abcAttach(**kwargs):
             'selHierarchy=cmds.ls(\'{}\', dag=True);'.format(top_node) +
             'attachABC(\'{}\', \'{}\', selHierarchy);'.format(abc_ver_path, namespace) +
             'saveAs(\'{}\')'.format(ma_ver_path))
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print("####abcAttach####")
     print(cmd)
     subprocess.call(cmd, shell=True)
@@ -173,7 +175,7 @@ def abcReplace(**kwargs):
             'from maya_lib.mayaBasic import *;'
             'replaceABCPath(\'{}\');'.format(abc_current_path) +
             'save();')
-    cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print("####abcReplace####")
     print(cmd)
     subprocess.call(cmd, shell=True)
@@ -201,7 +203,7 @@ def abcAnimAttach(**kwargs):
             'loadAsset(\'{}\', \'{}_anim\');'.format(anim_ver_path, namespace) +
             'saveAs(\'{}\');'.format(ma_ver_path))
 
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     subprocess.call(cmd, shell=True)
 
 
@@ -217,7 +219,7 @@ def abcAnimReplace(**kwargs):
             'replaceABCPath(\'{}\');'.format(abc_current_path) +
             'replaceAsset(\'{}\', \'{}_anim\');'.format(anim_current_path, namespace) +
             'save();')
-    cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayafile=ma_current_path, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     subprocess.call(cmd, shell=True)
 
 
@@ -242,7 +244,7 @@ def assExport(**kwargs):
     unique_order = (
             'from maya_lib.ndPyLibExportAss import export_ass_main;'
             'export_ass_main(**{})'.format(kwargs))
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     subprocess.call(cmd,  shell=True)
 
 
@@ -251,7 +253,7 @@ def assAttach(**kwargs):
     unique_order = (
             'from maya_lib.ndPyLibAttachAss import attach_ass_main;'
             'attach_ass_main(**{})'.format(kwargs))
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print(cmd)
     subprocess.call(cmd,  shell=True)
 
@@ -261,6 +263,6 @@ def assReplace(**kwargs):
     unique_order = (
             'from maya_lib.ndPyLibReplaceAss import replace_ass_main;'
             'replace_ass_main(**{})'.format(kwargs))
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print(cmd)
     subprocess.call(cmd,shell=True)

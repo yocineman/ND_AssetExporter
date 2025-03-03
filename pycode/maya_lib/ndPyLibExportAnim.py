@@ -47,6 +47,8 @@ def set_env():
 def eulerfilter(attr_list):
     for attr in attr_list:
         try:
+            if attr.rstrip('.output') == '':
+                continue
             anim_cv = map(lambda x: x.rstrip('.output'), attr)
             anim_cv = filter(lambda x: cmds.nodeType(x) in [
                              'animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
@@ -380,17 +382,14 @@ def export_anim_main(**kwargs):
     else:
         set_env()
 
-    # シーンのオープン
     cmds.file(kwargs['input_path'], o=True, f=True)
 
-    #  evaluateの設定
     evaluate = kwargs['evaluate']
     if evaluate != False:
         if evaluate == 'DG':
             cmds.evaluationManager(mode='off')
         else:
             cmds.evaluationManager(mode=evaluate)
-    #  cacheをハイド
     top_nodes = cmds.ls(assemblies=True)
     cache_nodes = cmds.ls(type='cacheFile')
     hidden_objs = []
@@ -439,7 +438,6 @@ def export_anim_main(**kwargs):
             ref = unload_ns_dic[tg_ns]
             cmds.file(lr=ref)
 
-    # ネームスペースの取得
     scene_ns_list = get_scene_ns_list()
     tg_ns_list = get_tg_ns_list(scene_ns_list, input_ns_list)
     if len(tg_ns_list) == 0:
@@ -448,7 +446,6 @@ def export_anim_main(**kwargs):
         print('---------------------------------')
         return False
 
-    # ターゲットノード一覧の取得
     tg_nodes = get_tg_nodes(tg_ns_list, regex_list)
     for regex_attr in regex_attr_list:
         tg_nodes.append(regex_attr.split('.')[0])
@@ -457,12 +454,10 @@ def export_anim_main(**kwargs):
         print('(正規表現とマッチするオブジェクト)が見つかりませんでした。')
         print('---------------------------------')
 
-    # キャラクターセットの削除
     character_set = cmds.ls(type='character')
     if len(character_set) != 0:
         cmds.delete(character_set)
 
-    # シーンタイムワープの設定
     if scene_timewarp:
         cmds.setAttr("time1.enableTimewarp", 0)
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
@@ -474,7 +469,6 @@ def export_anim_main(**kwargs):
     if scene_timewarp:
         cmds.setAttr("time1.enableTimewarp", 1)
         
-    # アトリビュート直接指定
     attrs = getNoKeyAttributes(tg_nodes)
     if len(node_and_attrs) != 0:
         attrs.extend(getNoKeyAttributes(node_and_attrs))
@@ -484,12 +478,10 @@ def export_anim_main(**kwargs):
             if cmds.objExists(obj_and_attr):
                 attrs.append(obj_and_attr)
 
-    # アトリビュートの開始フレームにキーフレームを打つ
     if len(attrs) != 0:
         attrs = list(set(attrs)-set(ignore_attrs))
         cmds.setKeyframe(attrs, t=sframe)
 
-    # 各種アトリビュートを取得
     attrs += getConstraintAttributes(tg_nodes)
     attrs += getMotionPathAttributes(tg_nodes)
     attrs += getAddDoubleLinearAttributes(tg_nodes)
@@ -502,7 +494,7 @@ def export_anim_main(**kwargs):
     unlockAttributes(attrs)
     eulerfilter(attrs)
     
-    if scene_timewarp: # SceneTimeWarpのベイク
+    if scene_timewarp: 
         time_set_list = []
         time_value_set_list = []
 
@@ -558,7 +550,7 @@ def export_anim_main(**kwargs):
             except Exception as e:
                 print(e)
                   
-    else:    # 通常のベイク
+    else:  
         for obj_and_attr in attrs:
             if cmds.objExists(obj_and_attr) == True:
                 cmds.select(obj_and_attr, add=True)

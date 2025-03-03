@@ -430,6 +430,7 @@ class GUI(QMainWindow):
                 thread_args['argsdic'] = argsdic
                 thread_args['log_path'] = log_path
                 thread_args['current_dir'] = current_dir
+                argsdic['log_path'] = log_path.replace('\\', '/')
                 export_thread = threading.Thread(
                     target=thread_main, kwargs=thread_args)
                 export_thread.start()
@@ -505,6 +506,10 @@ class GUI(QMainWindow):
             evaluate = self.ui.evaluate_combo.currentText()
         else:
             evaluate = False
+        if self.ui.exe_chk.isChecked():
+            is_exe = True
+        else:
+            is_exe = False
 
         argsdic = {
                 'asset_name': self.asset_name,
@@ -530,7 +535,8 @@ class GUI(QMainWindow):
                 'load_pref': self.ui.force_load_preference_chk.isChecked(),
                 'maya_version': maya_version,
                 'log_shape': self.ui.log_shape_chk.isChecked(),
-                'tg_cam_list': None}
+                'tg_cam_list': None,
+                'is_exe': is_exe,}
         return argsdic
 
     def load_user_info(self):
@@ -580,16 +586,15 @@ def thread_main(**kwargs):
     py_path = r'{}\pycode\exporter_bridge.py'.format(EXPORTER_PATH)
     import pprint
     pprint.pprint(kwargs)
-    with open(log_path, 'w')as f:
-        try:
-            proc = subprocess.Popen(
-                [python, py_path, argsdic], shell=True, stdout=f, cwd=current_dir)
-            proc.wait()
-        except Exception as e:
-            print(e)
-    if kwargs['argsdic']['log_shape'] == True:
-        from shell_lib import log_shaper
-        log_shaper.main(log_path)
+    try:
+        proc = subprocess.Popen(
+            [python, py_path, argsdic], shell=True, cwd=current_dir)
+        proc.wait()
+    except Exception as e:
+        print(e)
+    # if kwargs['argsdic']['log_shape'] == True:
+    #     from shell_lib import log_shaper
+            # log_shaper.main(log_path)
     return
 
 
