@@ -1,7 +1,7 @@
 #coding:utf-8
 import maya.cmds as cmds
 
-def scene_timewarp_remover_main():
+def manual_bake_remover_main():
     # sceneTimewarpはOn
     cmds.setAttr('time1.enableTimewarp', 1)
     # select All
@@ -28,4 +28,4 @@ def scene_timewarp_remover_main():
 
 
 if __name__ == '__main__':
-    scene_timewarp_remover_main()
+    manual_bake_remover_main()

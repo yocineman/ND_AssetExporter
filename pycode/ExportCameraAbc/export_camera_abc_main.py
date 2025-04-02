@@ -52,11 +52,11 @@ class ExportCameraAbc(object):
     def export(self, remain_cam=False, ext_type='all', tg_cam_list=None):
         try:
             if cmds.getAttr('time1.enableTimewarp') and cmds.listConnections('time1.timewarpIn_Raw') == True:
-                scene_timewarp = True
+                manual_bake = True
             else:
-                scene_timewarp = False
+                manual_bake = False
         except:
-            scene_timewarp = True
+            manual_bake = True
         self.get_ext_dir(ext_type)
 
         info_dic = {
@@ -65,7 +65,7 @@ class ExportCameraAbc(object):
             'cam_scale': self.cam_scale,
             'frame_handle': self.frame_hundle,
             'frame_range': self.frame_range,
-            'scene_timewarp': scene_timewarp,
+            'manual_bake': manual_bake,
             'ext_type': ext_type,
             'remain_cam':  remain_cam,
             'ma_cam_path': self.ma_cam_path,

@@ -62,7 +62,7 @@ class AssetClass():
             'step_value': 1.0,
             'frame_range': False,
             'frame_handle': 0,
-            'scene_timewarp': False}
+            'manual_bake': False}
 
         if add_attr is not None:
             argsdic['add_attr'] = add_attr

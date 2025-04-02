@@ -59,7 +59,7 @@ def getAllNodes(namespace, _regexArgs):
 def export_abc_main(**kwargs):
     print("ndPylibExportABC Start")
     print('##export_anim_main args#############')
-    print('scene timewarp        : ', kwargs['scene_timewarp'])
+    print('scene timewarp        : ', kwargs['manual_bake'])
     print('publish_ver_abc_path : ', kwargs['publish_ver_abc_path'])
     print('export_item           : ', kwargs['export_item'])
     print('namespace             : ', kwargs['namespace'])
@@ -261,7 +261,7 @@ def ndPyLibExportAbc_caller(args):
  'pool': '',
  'priority': '50',
  'project': 'RAM1',
- 'scene_timewarp': False,
+ 'manual_bake': False,
  'sequence': 's2227',
  'shot': 'c008',
  'step_value': False,
@@ -277,7 +277,7 @@ def ndPyLibExportAbc_caller(args):
 
 if __name__ == '__main__':
     args = {
-        'scene_timewarp': False,
+        'manual_bake': False,
         'publish_ver_abc_path': 'P:/Project/mem2/shots/roll05/s141G/c004/publish/test_charSet/001_LXMAR/v002/abc',
         'export_item': {'anim': None, 'abc': 'ABCset'},
         'namespace': ['[_A-Za-z]*LXMAR[0-9]*_RigRH'],

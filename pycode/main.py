@@ -392,7 +392,7 @@ class GUI(QMainWindow):
     def export_main(self, mode):
         self.ui.stack_area.setCurrentIndex(1)
         self.ui.repaint()
-        
+
         # Submit用
         file_number = 1
         jobfiles_list = []
@@ -475,7 +475,6 @@ class GUI(QMainWindow):
         util_exporter.ExporterTableModel(self.tabledata, self.headers, self.check_row, self.executed_row)
         print('===============Export End==================')
 
-
     def get_argsdic(self):
         if self.ui.cam_scale_override_chk.isChecked():
             cam_scale = float(self.ui.cam_scale_override_velue_line.text())
@@ -512,31 +511,34 @@ class GUI(QMainWindow):
             is_exe = False
 
         argsdic = {
-                'asset_name': self.asset_name,
-                'namespace': [self.namespace], # 複数可
-                'export_item': yaml.safe_load(self.export_item.replace('|', 'vertical_bar')),
-                'top_node': self.top_node,
-                'asset_path': self.asset_path,
-                'debug': self.ui.debug_chk.isChecked(),
-                'step_value': frame_step_override,
-                'export_type': self.export_type,
-                'project': self.project,
-                'frame_range': frame_range,
-                'frame_handle': frame_handle,
-                'cam_scale': cam_scale,
-                'input_path': str(self.input_path),
-                'shot': str(self.ui.shot_line.text()),
-                'sequence': str(self.ui.cut_line.text()),
-                'scene_timewarp': self.ui.scene_timewarp_check.isChecked(),
-                'evaluate': str(evaluate),
-                'priority': str(self.ui.priority.text()),
-                'pool': str(self.ui.poollist.currentText()),
-                'group': str(self.ui.grouplist.currentText()),
-                'load_pref': self.ui.force_load_preference_chk.isChecked(),
-                'maya_version': maya_version,
-                'log_shape': self.ui.log_shape_chk.isChecked(),
-                'tg_cam_list': None,
-                'is_exe': is_exe,}
+            "asset_name": self.asset_name,
+            "namespace": [self.namespace],  # 複数可
+            "export_item": yaml.safe_load(
+                self.export_item.replace("|", "vertical_bar")
+            ),
+            "top_node": self.top_node,
+            "asset_path": self.asset_path,
+            "debug": self.ui.debug_chk.isChecked(),
+            "step_value": frame_step_override,
+            "export_type": self.export_type,
+            "project": self.project,
+            "frame_range": frame_range,
+            "frame_handle": frame_handle,
+            "cam_scale": cam_scale,
+            "input_path": str(self.input_path),
+            "shot": str(self.ui.shot_line.text()),
+            "sequence": str(self.ui.cut_line.text()),
+            "manual_bake": self.ui.manual_bake_chk.isChecked(),
+            "evaluate": str(evaluate),
+            "priority": str(self.ui.priority.text()),
+            "pool": str(self.ui.poollist.currentText()),
+            "group": str(self.ui.grouplist.currentText()),
+            "load_pref": self.ui.force_load_preference_chk.isChecked(),
+            "maya_version": maya_version,
+            "log_shape": self.ui.log_shape_chk.isChecked(),
+            "tg_cam_list": None,
+            "is_exe": is_exe,
+        }
         return argsdic
 
     def load_user_info(self):
@@ -575,7 +577,7 @@ class GUI(QMainWindow):
                     u"   $ 終端記号\n"
                     u"   を入力\n"
                     u"Shot pageに当該ShotのAssetを登録\n")
-        #popupで表示
+        # popupで表示
         QMessageBox.information(self, u'要点', help_txt)
 
 def thread_main(**kwargs):

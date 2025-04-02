@@ -415,10 +415,10 @@ def export_anim_main(**kwargs):
     if 'on_maya' in kwargs.keys():
         frame_range = [sframe, sframe+1]
 
-    if kwargs['scene_timewarp'] == True or kwargs['scene_timewarp'] == 'True':
-        scene_timewarp = True
+    if kwargs['manual_bake'] == True or kwargs['manual_bake'] == 'True':
+        manual_bake = True
     else:
-        scene_timewarp = False
+        manual_bake = False
         
     with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))) + '/sceneConf.txt', 'w') as f:
         f.write(str(sframe)+'\n')
@@ -458,7 +458,7 @@ def export_anim_main(**kwargs):
     if len(character_set) != 0:
         cmds.delete(character_set)
 
-    if scene_timewarp:
+    if manual_bake:
         cmds.setAttr("time1.enableTimewarp", 0)
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
     if baseAnimationLayer != None:
@@ -466,7 +466,7 @@ def export_anim_main(**kwargs):
         for al in animLayers:
             cmds.animLayer(al, e=True, sel=False)
         cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
-    if scene_timewarp:
+    if manual_bake:
         cmds.setAttr("time1.enableTimewarp", 1)
         
     attrs = getNoKeyAttributes(tg_nodes)
@@ -494,7 +494,7 @@ def export_anim_main(**kwargs):
     unlockAttributes(attrs)
     eulerfilter(attrs)
     
-    if scene_timewarp: 
+    if manual_bake: 
         time_set_list = []
         time_value_set_list = []
 
@@ -599,7 +599,7 @@ def export_anim_main(**kwargs):
             argsdic['pick_nodes'] = pick_nodes
             argsdic['pick_node_and_attrs'] = pick_node_and_attrs
             argsdic['frame_range'] = frame_range
-            argsdic['scene_timewarp'] = kwargs['scene_timewarp']
+            argsdic['manual_bake'] = kwargs['manual_bake']
             argsdic['is_check_constraint'] = True
             argsdic['is_check_anim_curve'] = True
             ndPyLibAnimIOExportContain.ndPyLibAnimIOExportContain_main(**argsdic)
@@ -615,7 +615,7 @@ if __name__ == '__main__':
 
     def test_caller():
         kwargs = {}
-        kwargs['scene_timewarp'] = False
+        kwargs['manual_bake'] = False
         kwargs['publish_ver_anim_path'] = 'P:/Project/D_WH/shots/ep0/000000/00000/publish/test_charSet/KatarsNml/v006/anim'
         kwargs['export_item'] = {'anim': 'rig_set,main,mainA,mainB,mainC,eyeAimLeft_cnt,eyeAimRight_cnt,eyeAimAll_cnt', 'abc': None}
         # kwargs['export_item'] = {'anim': 'ctrl_set', 'abc': None}

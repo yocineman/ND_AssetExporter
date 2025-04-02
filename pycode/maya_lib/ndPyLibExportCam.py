@@ -139,7 +139,7 @@ def search_cam():
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list):
+def bake_cam(sframe, eframe, cam_scale, manual_bake, step_value, tg_cam_list):
     if tg_cam_list is None or tg_cam_list == 'None':
         cams = search_cam()
     else:
@@ -154,7 +154,7 @@ def bake_cam(sframe, eframe, cam_scale, scene_time_warp, step_value, tg_cam_list
         to_cam.append(cmds.camera()[0])
         from_cam.append(cams[i])
 
-    if scene_time_warp == True:
+    if manual_bake == True:
         for i in range(len(to_cam)):
             time_set_list = []
             time_value_set_list = []
@@ -374,7 +374,7 @@ def export_cam_main(kwargs):
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
-    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['scene_timewarp'], kwargs['step_value'], kwargs['tg_cam_list'])
+    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['manual_bake'], kwargs['step_value'], kwargs['tg_cam_list'])
     if cams is None:
         return
 

@@ -547,6 +547,7 @@ def tabledata_builder(headers, convert_dic, target_assets):
     tabledata = []
     for target_asset in target_assets:
         td_row = ['']
+        is_empty = False
         for header in headers:
             if header != 'Export Item':
                 sg_code = convert_dic[header]
@@ -568,6 +569,7 @@ def tabledata_builder(headers, convert_dic, target_assets):
                         continue
                     else:
                         td_row.append('{Empty!}')
+                        is_empty = True
                         # td_row.append('{Empty!}')
                     anim_item = target_asset["sg_anim_export_list"]
                     abc_item = target_asset["sg_abc_export_list"]
@@ -583,8 +585,8 @@ def tabledata_builder(headers, convert_dic, target_assets):
                         td_row.append("{Empty!}")
                 else:
                     td_row.append(target_asset[sg_code].replace("\n", ""))
-
-        tabledata.append(td_row)
+        if is_empty == False:
+            tabledata.append(td_row)
     return tabledata
 
 def add_camera_row(headers_item, tabledata, camera_rig_export):
