@@ -53,8 +53,8 @@ def eulerfilter(attr_list):
             anim_cv = filter(lambda x: cmds.nodeType(x) in [
                              'animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
             cmds.filterCurve(anim_cv, f='euler')
-        except:
-            continue
+        except Exception as e:
+            print(e)
 
 
 def get_reference_file(obj):

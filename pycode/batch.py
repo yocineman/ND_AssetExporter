@@ -92,7 +92,7 @@ def animExport(**kwargs):
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
     print(cmd)
     # subprocess.call(cmd, shell=True, env=os.environ)
-    subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE, is_exe=kwargs['is_exe'])
 
 
 def animAttach(**kwargs):
@@ -138,7 +138,7 @@ def abcExport(**kwargs):
     unique_order = (
             'from ndPyLibExportAbc import ndPyLibExportAbc_caller;'
             'ndPyLibExportAbc_caller({})'.format(kwargs))
-    cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     subprocess.call(cmd, shell=True)
 
 
