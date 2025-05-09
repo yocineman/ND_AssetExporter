@@ -154,35 +154,14 @@ def export_abc_main(**kwargs):
             yeti_objs = cmds.sets(tg_ns+':yetiSet', q=True)
         else:
             yeti_objs = []
-        # if len(yeti_objs) != 0:
-        #     inyeticasch = cmds.getAttr(tg_ns+":pgYetiMaya"+tg_ns+"Shape.cacheFileName")
-        #     outyeticasch = cmds.getAttr(tg_ns+":pgYetiMaya"+tg_ns+"Shape.outputCacheFileName")
-        #     yeti_path = os.path.join(kwargs['publish_char_path'],'yetimem.txt')
-        #     try:
-        #         with open(yeti_path, 'w') as fp:
-        #             fp.write(inyeticasch)
-        #             fp.write('\n')
-        #             fp.write(outyeticasch)
-        #     except Exception as e:
-        #         print(e)
         yeti_list = []
         for yeti_obj in yeti_objs:
-            print(yeti_obj)
             inyeticasch = cmds.getAttr(yeti_obj+".cacheFileName")
             outyeticasch = cmds.getAttr(yeti_obj+".outputCacheFileName")
             yeti_path = os.path.join(kwargs['publish_char_path'],'yetimem.txt')
-            try:
-                with open(yeti_path, 'w') as fp:
-                    # fp.write(yeti_obj)
-                    # fp.write('\n')
-                    # fp.write(inyeticasch)
-                    # fp.write('\n')
-                    # fp.write(outyeticasch)
-                    yeti_list.append(yeti_obj)
-                    yeti_list.append(inyeticasch)
-                    yeti_list.append(outyeticasch)
-            except Exception as e:
-                print(e)
+            yeti_list.append(yeti_obj)
+            yeti_list.append(inyeticasch)
+            yeti_list.append(outyeticasch)
         if len(yeti_list) != 0:
             yeti_path = os.path.join(kwargs['publish_char_path'],'yetimem.txt')
             try:

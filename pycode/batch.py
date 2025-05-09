@@ -89,10 +89,10 @@ def animExport(**kwargs):
         'from maya_lib.ndPyLibExportAnim import export_anim_main;'
         'export_anim_main(**{})'.format(kwargs)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch)
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print(cmd)
     # subprocess.call(cmd, shell=True, env=os.environ)
-    subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE, is_exe=kwargs['is_exe'])
+    subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def animAttach(**kwargs):
