@@ -162,7 +162,7 @@ def getPairBlendAttributes(nodes):
             for i in range(0, len(const), 2):
                 attrs.append(const[i])
     return attrs
-    
+
 
 def getMotionPathAttributes(nodes):
     attrs = []
@@ -211,6 +211,16 @@ def getAnimLayerConnectionAttributes(nodes):
             attrs.append(pairblend[i])
     return attrs
 
+def getParentTransformAttributes(nodes):
+    attrs = []
+    for n in nodes:
+        pairblend = cmds.listConnections(
+            n, s=True, d=False, p=False, c=True)
+        if pairblend is None:
+            continue
+        for i in range(0, len(pairblend), 2):
+            attrs.append(pairblend[i])
+    return attrs
 
 def getAnimCurveAttributes(nodes):
     attrs = []
@@ -419,7 +429,7 @@ def export_anim_main(**kwargs):
         manual_bake = True
     else:
         manual_bake = False
-        
+
     with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))) + '/sceneConf.txt', 'w') as f:
         f.write(str(sframe)+'\n')
         f.write(str(eframe)+'\n')
@@ -468,7 +478,7 @@ def export_anim_main(**kwargs):
         cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
     if manual_bake:
         cmds.setAttr("time1.enableTimewarp", 1)
-        
+
     attrs = getNoKeyAttributes(tg_nodes)
     if len(node_and_attrs) != 0:
         attrs.extend(getNoKeyAttributes(node_and_attrs))
@@ -490,10 +500,11 @@ def export_anim_main(**kwargs):
     attrs += getKeyAttributes(tg_nodes)
     attrs += getAnimLayerConnectionAttributes(tg_nodes)
     attrs += getPairBlendAttributes(tg_nodes)
+    attrs += getParentTransformAttributes(tg_nodes)
     attrs = list(set(attrs)-set(ignore_attrs))
     unlockAttributes(attrs)
     eulerfilter(attrs)
-    
+
     if manual_bake: 
         time_set_list = []
         time_value_set_list = []
@@ -521,9 +532,9 @@ def export_anim_main(**kwargs):
                     time_value_set_list.append([t, attr, value])
                 except Exception as e:
                     print(e)
-                    
+
         cmds.setAttr("time1.enableTimewarp", 0)
-        
+
         for attr in attrs:
             cmds.keyTangent(attr, edit=True, itt="linear", ott="linear")
 
@@ -549,7 +560,7 @@ def export_anim_main(**kwargs):
                 cmds.setKeyframe(attr, v=value, t=frame)
             except Exception as e:
                 print(e)
-                  
+
     else:  
         for obj_and_attr in attrs:
             if cmds.objExists(obj_and_attr) == True:
@@ -574,7 +585,7 @@ def export_anim_main(**kwargs):
         cmds.showHidden(hidden_objs)
     except:
         pass
-    
+
     for ns in tg_ns_list:
         pick_nodes = []
         pick_node_and_attrs = []
