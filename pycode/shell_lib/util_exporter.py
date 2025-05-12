@@ -33,17 +33,19 @@ if EXPORTER_PATH.split('/')[-2] == 'dev':
 else:
     TOOLNAME = 'ND_AssetExporter'
 
-try:
-    import PySide.QtCore as QtCore
-    import PySide.QtGui as QtGui
-    from PySide.QtCore import *
-    from PySide.QtGui import *
-    from PySide.QtUiTools import QUiLoader
-except:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtUiTools import QUiLoader
 
+try:
+    import shiboken6 as shiboken
+    import PySide6.QtWidgets as QtWidgets
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6.QtGui import *
+    from PySide6.QtCore import *
+except:
+    import shiboken2 as shiboken
+    import PySide2.QtWidgets as QtWidgets
+    from PySide2.QtUiTools import QUiLoader
+    from PySide2.QtGui import *
+    from PySide2.QtCore import *
 import subprocess
 
 
