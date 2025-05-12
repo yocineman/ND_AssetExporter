@@ -15,26 +15,25 @@ try:
 except:
     pass
 # ------------------------------
-__version__ = '9.3.0'
+__version__ = '9.3.1'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))).replace('\\', '/')
 # ------------------------------
 
-
 try:
-    import PySide.QtCore as QtCore
-    import PySide.QtGui as QtGui
-    from PySide.QtCore import *
-    from PySide.QtGui import *
-    from PySide.QtUiTools import QUiLoader
+    import shiboken6 as shiboken
+    import PySide6.QtWidgets as QtWidgets
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6.QtGui import *
+    from PySide6.QtCore import *
 except:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
+    import shiboken2 as shiboken
+    import PySide2.QtWidgets as QtWidgets
     from PySide2.QtUiTools import QUiLoader
-# ------------------------------------
-
+    from PySide2.QtGui import *
+    from PySide2.QtCore import *
 
 try:
     import ND_Submitter.env as util_env

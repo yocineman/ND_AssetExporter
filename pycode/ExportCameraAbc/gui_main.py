@@ -17,11 +17,19 @@ reload(export_camera_abc_main)
 
 from maya import OpenMayaUI as omUI
 from maya.app.general.mayaMixin import MayaQWidgetBaseMixin
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtUiTools import QUiLoader
-import PySide2.QtWidgets as QtWidgets
-import shiboken2
+
+try:
+    import shiboken6 as shiboken
+    import PySide6.QtWidgets as QtWidgets
+    from PySide6.QtUiTools import QUiLoader
+    from PySide6.QtGui import *
+    from PySide6.QtCore import *
+except:
+    import shiboken2 as shiboken
+    import PySide2.QtWidgets as QtWidgets
+    from PySide2.QtUiTools import QUiLoader
+    from PySide2.QtGui import *
+    from PySide2.QtCore import *
 
 onpath = os.path.dirname(os.path.abspath(__file__))
 TOOLNAME = 'Export Camera as alembic'
@@ -94,7 +102,7 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
     def close_exists_window(self):
         ptr = omUI.MQtUtil.mainWindow()
         if ptr is not None:
-            child_list = shiboken2.wrapInstance(
+            child_list = shiboken.wrapInstance(
                 int(ptr), QtWidgets.QMainWindow).children()
             for c in child_list[:]:
                 if self.__class__.__name__ == c.__class__.__name__:
