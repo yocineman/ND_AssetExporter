@@ -29,11 +29,18 @@ try:
     from PySide6.QtGui import *
     from PySide6.QtCore import *
 except:
-    import shiboken2 as shiboken
-    import PySide2.QtWidgets as QtWidgets
-    from PySide2.QtUiTools import QUiLoader
-    from PySide2.QtGui import *
-    from PySide2.QtCore import *
+    try:
+        import shiboken2 as shiboken
+        import PySide2.QtWidgets as QtWidgets
+        from PySide2.QtUiTools import QUiLoader
+        from PySide2.QtGui import *
+        from PySide2.QtCore import *
+    except:
+        import shiboken
+        import PySide.QtGui as QtWidgets
+        from PySide.QtUiTools import QUiLoader
+        from PySide.QtGui import *
+        from PySide.QtCore import *
 
 try:
     import ND_Submitter.env as util_env
