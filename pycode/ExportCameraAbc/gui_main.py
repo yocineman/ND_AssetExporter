@@ -19,20 +19,17 @@ from maya import OpenMayaUI as omUI
 from maya.app.general.mayaMixin import MayaQWidgetBaseMixin
 
 try:
-    import shiboken6 as shiboken
     import PySide6.QtWidgets as QtWidgets
     from PySide6.QtUiTools import QUiLoader
     from PySide6.QtGui import *
     from PySide6.QtCore import *
 except:
     try:
-        import shiboken2 as shiboken
         import PySide2.QtWidgets as QtWidgets
         from PySide2.QtUiTools import QUiLoader
         from PySide2.QtGui import *
         from PySide2.QtCore import *
     except:
-        impport shiboken
         import PySide.QtGui as QtWidgets
         from PySide.QtUiTools import QUiLoader
         from PySide.QtGui import *
@@ -108,16 +105,17 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
                 self.ui.camera_list.addItem(cam)
 
     def close_exists_window(self):
-        ptr = omUI.MQtUtil.mainWindow()
-        if ptr is not None:
-            child_list = shiboken.wrapInstance(
-                int(ptr), QtWidgets.QMainWindow).children()
-            for c in child_list[:]:
-                if self.__class__.__name__ == c.__class__.__name__:
-                    try:
-                        c.close()
-                    except Exception as e:
-                        print(e)
+        # ptr = omUI.MQtUtil.mainWindow()
+        # if ptr is not None:
+        #     child_list = shiboken.wrapInstance(
+        #         int(ptr), QtWidgets.QMainWindow).children()
+        #     for c in child_list[:]:
+        #         if self.__class__.__name__ == c.__class__.__name__:
+        #             try:
+        #                 c.close()
+        #             except Exception as e:
+        #                 print(e)
+        pass
 
     def set_window_pos(self):
         try:
