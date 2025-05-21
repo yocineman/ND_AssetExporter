@@ -1,24 +1,22 @@
 # coding:utf-8
 import pprint
 import os, sys
-
-import maya.cmds as cmds
-import maya.mel as mel
-sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
-
-import pymel.core as pm
 import re
 try:
     from importlib import reload
 except:
     pass
+import maya.cmds as cmds
+import maya.mel as mel
+import pymel.core as pm
 
+sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
 sys.path.append(r"Y:\tool\ND_Tools\DCC\dev\standalone\ND_AssetExporter\pycode\maya_lib")
 import ndPyLibAnimIOExportContain; reload(ndPyLibAnimIOExportContain)
 
-def set_dw_h_env():
-    from .on_maya.project import dw_h_env
-    dw_h_env.main()
+# def set_dw_h_env():
+#     from .on_maya.project import dw_h_env
+#     dw_h_env.main()
 
 
 def set_env():
@@ -55,15 +53,6 @@ def eulerfilter(attr_list):
             cmds.filterCurve(anim_cv, f='euler')
         except Exception as e:
             print(e)
-
-
-def get_reference_file(obj):
-    return cmds.referenceQuery(obj, f=True)
-
-
-def reference_ma(ma, ns):
-    cmds.file(ma, i=True, ns=ns, force=True, pmt=True)
-    return ma
 
 
 def get_scene_ns_list():
@@ -133,7 +122,27 @@ def get_tg_nodes(ns_list, regex_list):
         result_nodes.extend(nodes)
     return list(set(result_nodes))
 
+def ls_muted_anim_layers():
+    """
+    シーン内のミュートされているアニメーションレイヤーをリストアップします。
+    """
+    muted_layers = []
 
+    # すべてのアニメーションレイヤーを取得
+    all_layers = cmds.ls(type="animLayer")
+    for x in all_layers:
+        print(x)
+
+    if all_layers:
+        for layer in all_layers:
+            # レイヤーがミュートされているかクエリ
+            is_muted = cmds.animLayer(layer, query=True, mute=True)
+            if is_muted:
+                muted_layers.append(layer)
+
+    return muted_layers
+
+# --------------------------------------------------------------------
 def getConstraintAttributes(nodes):
     attrs = []
     for n in nodes:
@@ -144,7 +153,6 @@ def getConstraintAttributes(nodes):
         for i in range(0, len(const), 2):
             attrs.append(const[i])            
     return attrs
-
 
 def getPairBlendAttributes(nodes):
     attrs = []
@@ -163,7 +171,6 @@ def getPairBlendAttributes(nodes):
                 attrs.append(const[i])
     return attrs
 
-
 def getMotionPathAttributes(nodes):
     attrs = []
     for n in nodes:
@@ -175,7 +182,6 @@ def getMotionPathAttributes(nodes):
             attrs.append(pairblend[i])
     return attrs
 
-
 def getAddDoubleLinearAttributes(nodes):
     attrs = []
     for n in nodes:
@@ -186,7 +192,6 @@ def getAddDoubleLinearAttributes(nodes):
         for i in range(0, len(pairblend), 2):
             attrs.append(pairblend[i])
     return attrs
-
 
 def getTransformConnectionAttributes(nodes):
     attrs = []
@@ -251,7 +256,6 @@ def getAnimCurveAttributes(nodes):
                 continue
     return attrs
 
-
 def getNoKeyAttributes(nodes):
     attrs = []
     for n in nodes:
@@ -265,7 +269,6 @@ def getNoKeyAttributes(nodes):
                 if cmds.listConnections(n+'.'+attr, s=True, d=False) is None:
                     attrs.append(n+'.'+attr)
     return attrs
-
 
 def getKeyAttributes(nodes):
     attrs = []
@@ -316,7 +319,7 @@ def getExpression(nodes):
         if cmds.objectType(n) == 'expression':
             attrs.append(n)
     return attrs
-
+# --------------------------------------------------------------------
 
 def replacePairBlendstoLocator(nodes, sframe, eframe):
     for node in nodes:
@@ -387,10 +390,10 @@ def get_unload_ns_dic():
 
 def export_anim_main(**kwargs):
     pprint.pprint(kwargs.items())
-    if kwargs['project'].lower() == 'd_wh':
-        set_dw_h_env()
-    else:
-        set_env()
+    # if kwargs['project'].lower() == 'd_wh':
+    #     set_dw_h_env()
+    # else:
+    set_env()
 
     cmds.file(kwargs['input_path'], o=True, f=True)
 
@@ -400,7 +403,15 @@ def export_anim_main(**kwargs):
             cmds.evaluationManager(mode='off')
         else:
             cmds.evaluationManager(mode=evaluate)
-    top_nodes = cmds.ls(assemblies=True)
+
+    #  mutelayer
+    mute_layers = ls_muted_anim_layers()
+    if mute_layers:
+        for mute_layer in mute_layers:
+            cmds.animLayer(mute_layer, edit=True, mute=False)
+            cmds.animLayer(mute_layer, edit=True, sel=False)
+            pm.delete(mute_layer)
+
     cache_nodes = cmds.ls(type='cacheFile')
     hidden_objs = []
     hidden_objs.extend(cmds.hide(cache_nodes, rh=True))
@@ -620,21 +631,3 @@ def export_anim_main(**kwargs):
 def ndPyLibExportAnim_caller(args):
     export_anim_main(**args)
     print("ndPylibExportAnim End")
-
-
-if __name__ == '__main__':
-
-    def test_caller():
-        kwargs = {}
-        kwargs['manual_bake'] = False
-        kwargs['publish_ver_anim_path'] = 'P:/Project/D_WH/shots/ep0/000000/00000/publish/test_charSet/KatarsNml/v006/anim'
-        kwargs['export_item'] = {'anim': 'rig_set,main,mainA,mainB,mainC,eyeAimLeft_cnt,eyeAimRight_cnt,eyeAimAll_cnt', 'abc': None}
-        # kwargs['export_item'] = {'anim': 'ctrl_set', 'abc': None}
-        kwargs['namespace'] = ['KatarsNml_RigProxy']
-        # kwargs['evaluate'] = 'DG'
-        kwargs['evaluate'] = 'parallel'
-        kwargs['debug'] = False
-        kwargs['frame_handle'] = 1
-        kwargs['load_pref'] = False
-        ndPyLibExportAnim_caller(kwargs)
-    test_caller()
