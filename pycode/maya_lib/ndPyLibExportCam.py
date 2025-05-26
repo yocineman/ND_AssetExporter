@@ -327,10 +327,10 @@ def export_cam_main(kwargs):
     # if kwargs['project'].lower() == 'd_wh':
     #     set_dw_h_env()
     # else:
-        try:
-            set_env()
-        except Exception as e:
-            print(e)
+    try:
+        set_env()
+    except Exception as e:
+        print(e)
     # シーンのオープン
     # if not cmds.file(q=True, exists=True):
     #     cmds.file(kwargs['input_path'], o=True, f=True)

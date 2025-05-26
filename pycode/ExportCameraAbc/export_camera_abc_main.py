@@ -6,7 +6,8 @@ try:
 except:
     pass
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from maya_lib import ndPyLibExportCam;reload(ndPyLibExportCam)
+from maya_lib import ndPyLibExportCam
+reload(ndPyLibExportCam)
 import maya.cmds as cmds
 
 class ExportCameraAbc(object):
