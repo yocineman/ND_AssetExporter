@@ -132,13 +132,22 @@ def animReplace(**kwargs):
 # ------------------------------------
 #  Abc
 # ------------------------------------
+# def abcExport(**kwargs):
+#     maya_ver = env_load(kwargs['project'])
+#     mayaBatch = maya_version(kwargs['project'], maya_ver)
+#     unique_order = (
+#             'from ndPyLibExportAbc import ndPyLibExportAbc_caller;'
+#             'ndPyLibExportAbc_caller({})'.format(kwargs))
+#     cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
+#     subprocess.call(cmd, shell=True)
+
 def abcExport(**kwargs):
     maya_ver = env_load(kwargs['project'])
     mayaBatch = maya_version(kwargs['project'], maya_ver)
-    unique_order = (
+    unique_order = ('import maya.cmds as cmds;cmds.file(\'{}\', f=True,o=True);'
             'from ndPyLibExportAbc import ndPyLibExportAbc_caller;'
-            'ndPyLibExportAbc_caller({})'.format(kwargs))
-    cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
+            'ndPyLibExportAbc_caller({})'.format(kwargs['input_path'] ,kwargs))
+    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     subprocess.call(cmd, shell=True)
 
 

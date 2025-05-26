@@ -85,7 +85,17 @@ def export_abc_main(**kwargs):
             print(input_ns, scene_ns, match)
             if match != None:
                 tg_ns_list.append(scene_ns)
-
+    print("scene_ns_list ###")
+    print(scene_ns_list)
+    print("--")
+    print("input_ns_list ###") 
+    print(input_ns_list)
+    print("--")
+    print("### tg_ns_list ###")
+    if len(tg_ns_list) == 0:
+        print("tg_ns_list is empty. Please check the namespace input.")
+    else:
+        print(tg_ns_list)
 
     tg_nodes_dic = {}
     if 'add_attr' in kwargs.keys():
