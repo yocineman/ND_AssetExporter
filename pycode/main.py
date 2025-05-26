@@ -46,7 +46,8 @@ except Exception as e:
 else:
     NoDeadlineMode = False
 
-PYPATH = 'Y:\\tool\\MISC\\Python2710_amd64_vs2010\\python.exe'
+# PYPATH = 'Y:\\tool\\MISC\\Python2710_amd64_vs2010\\python.exe'
+PYPATH = "Y:\\tool\\ND_Tools\\python\\bin\\Python39\\python.exe"
 
 # get username
 USERNAME = os.environ.get('USERNAME')

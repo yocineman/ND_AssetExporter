@@ -335,7 +335,8 @@ class DeadlineMod:
         # infoFile
         self.argsdict = kwargs
         # self.executer = r"C:\Users\k_ueda\AppData\Local\Programs\Python\Python310\python.exe"
-        self.executer = "Y:\\tool\\MISC\\Python2710_amd64_vs2010\\python.exe"
+        # self.executer = "Y:\\tool\\MISC\\Python2710_amd64_vs2010\\python.exe"
+        self.executer = "Y:/tool/ND_Tools/python/bin/Python39/python.exe"
         self.stg_dir = "Y:/tool/ND_Tools/DCC/Standalone/{}/pycode".format(TOOLNAME)
         self.tmp_dir = os.environ.get("TEMP", "E:/TEMP")
         self.job_dict = self.job_content()

@@ -3,6 +3,7 @@ import sys
 import os
 import subprocess
 import yaml
+import time
 
 onpath = os.path.dirname(os.path.abspath(__file__)).replace('\\','/')
 
@@ -92,7 +93,18 @@ def animExport(**kwargs):
     cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
     print(cmd)
     # subprocess.call(cmd, shell=True, env=os.environ)
-    subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.run(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']))
+    while True:
+        print("--process returncode: {}".format(proc.returncode)) 
+        if proc.returncode is not None:
+            print("###animExport###")
+            print(proc.stdout)
+            print(proc.stderr)
+            break
+        else:
+            print("Waiting for animExport to finish...")
+            time.sleep(1)
 
 
 def animAttach(**kwargs):
