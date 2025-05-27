@@ -7,6 +7,23 @@ import time
 
 onpath = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
 
+def set_env():
+    # arnold
+    sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts')
+    # scripts
+    scripts_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts'
+    os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
+    os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
+    # plug-in
+    plugin_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/plug-ins'
+    os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
+    # mod
+    mod_path = 'Y:/users/env/maya/2023/mod'
+    # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
+    os.environ['MAYA_MODULE_PATH'] = mod_path
+    # path
+    os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/bin'
+    # try:
 
 def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
     maya_cmd = (
@@ -94,6 +111,7 @@ def maya_version(project, ver_override=False):
 #  Anim
 # ------------------------------------
 def animExport(**kwargs):
+    set_env()
     maya_ver = env_load(kwargs["project"])
     mayaBatch = maya_version(kwargs["project"], maya_ver)
     unique_order = (
@@ -113,10 +131,12 @@ def animExport(**kwargs):
         capture_output=True,
         text=True,
     )
+    while proc.returncode is None:
+        time.sleep(0.1)
+    
     print("return code: {}".format(proc.returncode))
-    print("captured stdout: {}".format(proc.stdout))  # こんにちは
-    print("captured stderr: {}".format(proc.stderr))  # こんばんは
-
+    print("captured stdout: {}".format(proc.stdout))   
+    print("captured stderr: {}".format(proc.stderr))  
 
 def animAttach(**kwargs):
     maya_ver = env_load(kwargs["project"])

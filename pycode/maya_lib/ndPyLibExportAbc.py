@@ -225,7 +225,7 @@ def export_abc_main(**kwargs):
 
         print('AbcExport -j {}'.format(strAbc))
         mel.eval('AbcExport -verbose -j \"{}\"'.format(strAbc))
-        return
+    return
 
 
 def ndPyLibExportAbc_caller(args):
