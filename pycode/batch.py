@@ -9,11 +9,104 @@ import time
 onpath = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
 
 
+def set_env():
+    # arnold
+    sys.path.append("Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts")
+    # scripts
+    scripts_path = "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts"
+    if os.environ.get("PYTHONPATH") is None:
+        os.environ["PYTHONPATH"] = scripts_path
+    else:
+        os.environ["PYTHONPATH"] = (
+            scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
+        )
+    if os.environ.get("PYTHONPATH") is None:
+        os.environ["PYTHONPATH"] = scripts_path
+    else:
+        os.environ["PYTHONPATH"] = (
+            scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
+        )
+    # plug-in
+    if os.environ.get("MAYA_PLUG_IN_PATH") is None:
+        os.environ["MAYA_PLUG_IN_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins"
+        )
+    else:
+        os.environ["MAYA_PLUG_IN_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins;"
+            + os.environ["MAYA_PLUG_IN_PATH"].rstrip(";")
+        )
+    # mod
+    mod_path = "Y:/users/env/maya/2023/mod"
+    # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
+    if os.environ.get("MAYA_MODULE_PATH") is None:
+        os.environ["MAYA_MODULE_PATH"] = mod_path
+    else:
+        os.environ["MAYA_MODULE_PATH"] = (
+            mod_path + ";" + os.environ["MAYA_MODULE_PATH"].rstrip(";")
+        )
+    # path
+    if os.environ.get("PATH") not in os.environ:
+        os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/bin"
+    else:
+        os.environ["PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/bin;"
+            + os.environ["PATH"].rstrip(";")
+        )
+    # ARNOLD_PATH Y:/users/env/arnold/mtoa/2023_MtoA_5211
+    # ARNOLD_PLUGIN_PATH Y:/users/env/arnold/mtoa/2023_MtoA_5211/procedurals;Y:/users/env/arnold/mtoa/2023_MtoA_5211/shaders;Y:/users/env/arnold/mtoa/2023_MtoA_5211/shaders;Y:/users/env/arnold/mtoa/2023_MtoA_5211/procedurals
+    if os.environ.get("ARNOLD_PATH") is None:
+        os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531"
+    else:
+        os.environ["ARNOLD_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531;"
+            + os.environ["ARNOLD_PATH"].rstrip(";")
+        )
+    if os.environ.get("ARNOLD_PLUGIN_PATH") is None:
+        os.environ["ARNOLD_PLUGIN_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals"
+        )
+    else:
+        os.environ["ARNOLD_PLUGIN_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;"
+            + os.environ["ARNOLD_PLUGIN_PATH"].rstrip(";")
+        )
+    os.environ["MTOA_EXTENSIONS_PATH"] = (
+        "Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions"
+    )
+    os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/"
+    os.environ["MTOA_SCRIPT_PATH"] = (
+        "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;"
+        + "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
+    )
+    
+    # MAYA_PLUG_IN_RESOURCE_PATH Y:/users/env/arnold/mtoa/2023_MtoA_5211/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/bifrost/resources;C:/Program Files/Common Files/Autodesk/ApplicationPlugins/bifrost/Contents/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/MASH/resources;C:/Program Files/Autodesk/MayaUSD/Maya2023/0.20.0/mayausd/MayaUSD/plugin/adsk/resources;Y:/users/env/maya/2023/tools/nimbleTools/resources;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/fbx/resources;C:/Program Files/Side Effects Software/Houdini 20.5.584/engine/maya/maya2023/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/camd/resources;Y:/users/env/maya/Python3_7_x/2023/modules/medic/resources;C:/Program Files/Autodesk/Arnold/maya2023/resources;C:/Program Files/Allegorithmic/Adobe Substance 3D for Maya/2023/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/sweep/resources;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/vnn/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/xgen/resources;
+    # MAYA_PRESET_PATH P:/Project/2417_pgm9/Library/users/k_ueda/maya/2023/presets;Y:/users/env/maya/Python3_7_x/2023/presets;Y:/users/env/arnold/mtoa/2023_MtoA_5211/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/presets;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/bifrost/presets;C:/Program Files/Common Files/Autodesk/ApplicationPlugins/bifrost/Contents/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/MASH/presets;C:/Program Files/Autodesk/MayaUSD/Maya2023/0.20.0/mayausd/MayaUSD/plugin/adsk/presets;Y:/users/env/maya/2023/tools/nimbleTools/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/fbx/presets;C:/Program Files/Side Effects Software/Houdini 20.5.584/engine/maya/maya2023/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/camd/presets;Y:/users/env/maya/Python3_7_x/2023/modules/medic/presets;C:/Program Files/Autodesk/Arnold/maya2023/presets;C:/Program Files/Allegorithmic/Adobe Substance 3D for Maya/2023/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/sweep/presets;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/vnn/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/xgen/presets;
+    # MAYA_RENDER_DESC_PATH Y:/users/env/arnold/mtoa/2023_MtoA_5211;C:/Program Files/Autodesk/Arnold/maya2023
+    os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = ("Y:/users/env/arnold/mtoa/2023_MtoA_531/resources;"
+        "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources")
+    os.environ["MAYA_PRESET_PATH"] = ("P:/Project/2417_pgm9/Library/users/k_ueda/maya/2023/presets;"
+        "Y:/users/env/maya/Python3_7_x/2023/presets;"
+        "Y:/users/env/arnold/mtoa/2023_MtoA_531/presets;"
+        "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/presets;"
+    )
+    os.environ["MAYA_RENDER_DESC_PATH"] = ("Y:/users/env/arnold/mtoa/2023_MtoA_531;"
+        "C:/Program Files/Autodesk/Arnold/maya2023"
+    )  
+
+
 def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
     maya_cmd = (
         "import sys;"
         + "sys.path.append('{}/maya_lib');".format(onpath)
         + "sys.path.append('{}');".format(onpath)
+        + "sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts');"
     )
     maya_cmd = maya_cmd + unique_order
     cmd = [mayaBatch]
@@ -94,12 +187,12 @@ def maya_version(project, ver_override=False):
 #  Anim
 # ------------------------------------
 def animExport(**kwargs):
-    set_env()
+    print("###setn_env###")
     set_env()
     maya_ver = env_load(kwargs["project"])
     mayaBatch = maya_version(kwargs["project"], maya_ver)
     unique_order = (
-        "import maya.cmds as cmds;cmds.file('{}', f=True,o=True);"
+        "import maya.cmds as cmds;cmds.loadPlugin('mtoa');cmds.file('{}', f=True,o=True);"
         "from maya_lib.ndPyLibExportAnim import export_anim_main;"
         "export_anim_main(**{})".format(kwargs["input_path"], kwargs)
     )
@@ -160,12 +253,10 @@ def animExport(**kwargs):
     except Exception as e:
         # subprocess.run 自体が失敗した場合の例外処理
         print(f"ERROR during subprocess execution: {e}")
-    while proc.returncode is None:
-        time.sleep(0.1)
-    
     print("return code: {}".format(proc.returncode))
-    print("captured stdout: {}".format(proc.stdout))   
-    print("captured stderr: {}".format(proc.stderr))  
+    print("captured stdout: {}".format(proc.stdout))  # こんにちは
+    print("captured stderr: {}".format(proc.stderr))  # こんばんは
+
 
 def animAttach(**kwargs):
     maya_ver = env_load(kwargs["project"])
