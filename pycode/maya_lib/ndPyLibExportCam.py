@@ -425,6 +425,8 @@ def export_cam_main(kwargs):
             except Exception as e:
                 print(e)
         cmds.showHidden(hidden_objs)
+    
+    return
 
 def ndPylibExportCam_caller(**kwargs):
     export_cam_main(kwargs)

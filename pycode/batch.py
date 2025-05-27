@@ -5,7 +5,52 @@ import subprocess
 import yaml
 import time
 
+
 onpath = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
+def set_env():
+    # arnold
+    sys.path.append("Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts")
+    # scripts
+    scripts_path = "Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts"
+    if scripts_path not in sys.path:
+        sys.path.append(scripts_path)
+    if os.environ.get("PYTHONPATH") is None:
+        os.environ["PYTHONPATH"] =  scripts_path
+    else:
+        os.environ["PYTHONPATH"] = (
+            scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
+        )
+    if "PYTHONPATH" not in os.environ:
+        os.environ["PYTHONPATH"] = scripts_path
+    else:
+        os.environ["PYTHONPATH"] = (
+            scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
+        )
+    # plug-in
+    if "os.environ.get('MAYA_PLUG_IN_PATH')" not in os.environ:
+        os.environ["MAYA_PLUG_IN_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_5133/plug-ins"
+    else:
+        os.environ["MAYA_PLUG_IN_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_5133/plug-ins;"
+            + os.environ["MAYA_PLUG_IN_PATH"].rstrip(";")
+        )
+    # mod
+    mod_path = "Y:/users/env/maya/2023/mod"
+    # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
+    if "MAYA_MODULE_PATH" not in os.environ:
+        os.environ["MAYA_MODULE_PATH"] = mod_path
+    else:
+        os.environ["MAYA_MODULE_PATH"] = (
+            mod_path + ";" + os.environ["MAYA_MODULE_PATH"].rstrip(";")
+        )
+    # path
+    if "os.environ.get('PATH')" not in os.environ:
+        os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_5133/bin"
+    else:
+        os.environ["PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_5133/bin;"
+            + os.environ["PATH"].rstrip(";")
+        )
 
 
 def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
@@ -23,7 +68,6 @@ def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
         cmd.append("-batch")
     cmd.append("-command")
     cmd.append('python("{}")'.format(maya_cmd.replace(";", "\;").replace("'", "'")))
-    cmd.append
     return cmd
 
 
@@ -94,6 +138,7 @@ def maya_version(project, ver_override=False):
 #  Anim
 # ------------------------------------
 def animExport(**kwargs):
+    set_env()
     maya_ver = env_load(kwargs["project"])
     mayaBatch = maya_version(kwargs["project"], maya_ver)
     unique_order = (
@@ -105,14 +150,59 @@ def animExport(**kwargs):
     print(cmd)
     # subprocess.call(cmd, shell=True, env=os.environ)
     # subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    proc = subprocess.run(
-        cmd,
-        shell=True,
-        env=os.environ,
-        cwd=os.path.dirname(kwargs["input_path"]),
-        capture_output=True,
-        text=True,
-    )
+    # proc = subprocess.run(
+    #     cmd,
+    #     shell=True,
+    #     env=os.environ,
+    #     cwd=os.path.dirname(kwargs["input_path"]),
+    #     capture_output=True,
+    #     text=True,
+    # )
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            shell=True,
+            env=os.environ,
+            cwd=os.path.dirname(kwargs["input_path"]),
+            capture_output=True,  # stdoutとstderrを捕捉
+            text=True,  # テキストモードで捕捉
+            check=False,  # return codeが非ゼロでも例外を発生させない
+        )
+
+        # 捕捉した stdout をすぐに表示
+        print("--- Captured STDOUT ---")
+        print(proc.stdout)
+        print("--- End STDOUT ---")
+
+        # 捕捉した stderr をすぐに表示
+        print("--- Captured STDERR ---")
+        print(proc.stderr)
+        print("--- End STDERR ---")
+
+        # 追加デバッグ情報: return code
+        print(f"--- Process returned code: {proc.returncode} ---")
+
+        # 捕捉した出力をデバッグ用のログファイルにも書き出す
+        # ログファイルのパスは、Deadline Workerから書き込み可能な場所を指定
+        # 例: ジョブIDやタイムスタンプを使ってユニークなファイル名にする
+        log_dir = "Y:/users/deadlineuser/DCC_log/ND_AssetExporter"  # ログ出力パス
+        os.makedirs(log_dir, exist_ok=True)
+        log_file_path = os.path.join(log_dir, f"maya_batch_debug_log_{os.getpid()}.txt")
+
+        with open(log_file_path, "w", encoding="utf-8") as f:
+            f.write(
+                f"Command executed: {' '.join(cmd) if isinstance(cmd, list) else cmd}\n\n"
+            )
+            f.write("--- STDOUT ---\n")
+            f.write(proc.stdout)
+            f.write("\n--- STDERR ---\n")
+            f.write(proc.stderr)
+            f.write(f"\n--- Return Code: {proc.returncode} ---\n")
+
+    except Exception as e:
+        # subprocess.run 自体が失敗した場合の例外処理
+        print(f"ERROR during subprocess execution: {e}")
     print("return code: {}".format(proc.returncode))
     print("captured stdout: {}".format(proc.stdout))  # こんにちは
     print("captured stderr: {}".format(proc.stderr))  # こんばんは
