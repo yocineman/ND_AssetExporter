@@ -4,7 +4,7 @@ import os,sys
 import yaml
 import shell_lib.util_exporter as util_exporter
 sys.path.append('Y:/tool/ND_Tools/DCC')  
-import dev.Standalone.ND_AssetExporter.pycode.batch as batch
+import Standalone.ND_AssetExporter.pycode.batch as batch
 import pprint
 def exporter_bridge_main(**kwargs):
     argsdic = kwargs
