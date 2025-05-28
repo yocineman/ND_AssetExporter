@@ -12,6 +12,8 @@ import pymel.core as pm
 
 sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
 sys.path.append(r"Y:\tool\ND_Tools\DCC\dev\standalone\ND_AssetExporter\pycode\maya_lib")
+sys.path.append("Y:/users/env/maya/2023/mod")
+
 import ndPyLibAnimIOExportContain; reload(ndPyLibAnimIOExportContain)
 
 # def set_dw_h_env():

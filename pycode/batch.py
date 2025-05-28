@@ -46,7 +46,7 @@ def set_env():
             mod_path + ";" + os.environ["MAYA_MODULE_PATH"].rstrip(";")
         )
     # path
-    if os.environ.get("PATH") not in os.environ:
+    if os.environ.get("PATH") is None:
         os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/bin"
     else:
         os.environ["PATH"] = (
@@ -81,24 +81,30 @@ def set_env():
         "Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions"
     )
     os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/"
-    os.environ["MTOA_SCRIPT_PATH"] = (
-        "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;"
-        + "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
-    )
+    if os.environ.get("MTOA_SCRIPT_PATH") is None:
+        os.environ["MTOA_SCRIPT_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
+        )
+    else:
+        os.environ["MTOA_SCRIPT_PATH"] = (
+            "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;"
+            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
+        )
     
     # MAYA_PLUG_IN_RESOURCE_PATH Y:/users/env/arnold/mtoa/2023_MtoA_5211/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/bifrost/resources;C:/Program Files/Common Files/Autodesk/ApplicationPlugins/bifrost/Contents/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/MASH/resources;C:/Program Files/Autodesk/MayaUSD/Maya2023/0.20.0/mayausd/MayaUSD/plugin/adsk/resources;Y:/users/env/maya/2023/tools/nimbleTools/resources;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/fbx/resources;C:/Program Files/Side Effects Software/Houdini 20.5.584/engine/maya/maya2023/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/camd/resources;Y:/users/env/maya/Python3_7_x/2023/modules/medic/resources;C:/Program Files/Autodesk/Arnold/maya2023/resources;C:/Program Files/Allegorithmic/Adobe Substance 3D for Maya/2023/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/sweep/resources;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/vnn/resources;C:/Program Files/Autodesk/Maya2023/plug-ins/xgen/resources;
     # MAYA_PRESET_PATH P:/Project/2417_pgm9/Library/users/k_ueda/maya/2023/presets;Y:/users/env/maya/Python3_7_x/2023/presets;Y:/users/env/arnold/mtoa/2023_MtoA_5211/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/presets;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/bifrost/presets;C:/Program Files/Common Files/Autodesk/ApplicationPlugins/bifrost/Contents/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/MASH/presets;C:/Program Files/Autodesk/MayaUSD/Maya2023/0.20.0/mayausd/MayaUSD/plugin/adsk/presets;Y:/users/env/maya/2023/tools/nimbleTools/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/fbx/presets;C:/Program Files/Side Effects Software/Houdini 20.5.584/engine/maya/maya2023/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/camd/presets;Y:/users/env/maya/Python3_7_x/2023/modules/medic/presets;C:/Program Files/Autodesk/Arnold/maya2023/presets;C:/Program Files/Allegorithmic/Adobe Substance 3D for Maya/2023/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/sweep/presets;C:/Program Files/Autodesk/Bifrost/Maya2023/2.5.1.0/vnn/presets;C:/Program Files/Autodesk/Maya2023/plug-ins/xgen/presets;
     # MAYA_RENDER_DESC_PATH Y:/users/env/arnold/mtoa/2023_MtoA_5211;C:/Program Files/Autodesk/Arnold/maya2023
     os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = ("Y:/users/env/arnold/mtoa/2023_MtoA_531/resources;"
         "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources")
-    os.environ["MAYA_PRESET_PATH"] = ("P:/Project/2417_pgm9/Library/users/k_ueda/maya/2023/presets;"
-        "Y:/users/env/maya/Python3_7_x/2023/presets;"
-        "Y:/users/env/arnold/mtoa/2023_MtoA_531/presets;"
-        "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/presets;"
-    )
-    os.environ["MAYA_RENDER_DESC_PATH"] = ("Y:/users/env/arnold/mtoa/2023_MtoA_531;"
-        "C:/Program Files/Autodesk/Arnold/maya2023"
-    )  
+    # os.environ["MAYA_PRESET_PATH"] = ("P:/Project/2417_pgm9/Library/users/k_ueda/maya/2023/presets;"
+    #     "Y:/users/env/maya/Python3_7_x/2023/presets;"
+    #     "Y:/users/env/arnold/mtoa/2023_MtoA_531/presets;"
+    #     "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/presets;"
+    # )
+    # os.environ["MAYA_RENDER_DESC_PATH"] = ("Y:/users/env/arnold/mtoa/2023_MtoA_531;"
+    #     "C:/Program Files/Autodesk/Arnold/maya2023"
+    # )  
 
 
 def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
@@ -107,7 +113,9 @@ def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
         + "sys.path.append('{}/maya_lib');".format(onpath)
         + "sys.path.append('{}');".format(onpath)
         + "sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts');"
-    )
+        + "sys.path.append('C:/Program Files/Autodesk/Maya2023/Python/Lib/site-packages/maya/mel');"
+        + "sys.path.append('Y:/users/env/maya/2023/mod")
+    
     maya_cmd = maya_cmd + unique_order
     cmd = [mayaBatch]
     if mayafile is not None:
@@ -129,15 +137,15 @@ def env_load(project):
         if path in sys.path:
             continue
         sys.path.append(path)
-    import shell_lib.env_loader
+    # import shell_lib.env_loader
 
     # shell_lib.env_loader.run(project, fork=True)
-    maya_ver = shell_lib.env_loader.set_arnold_env(project)
+    # maya_ver = shell_lib.env_loader.set_arnold_env(project)
 
     # python3も2で実行されるように
     # os.environ['MAYA_PYTHON_VERSION']='2'
     # os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
-    return maya_ver
+    return 2023
 
 
 def maya_version(project, ver_override=False):
@@ -261,7 +269,7 @@ def animExport(**kwargs):
 def animAttach(**kwargs):
     maya_ver = env_load(kwargs["project"])
     # mayaBatch = maya_version(kwargs['project'], maya_ver)
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
     file_namespace = kwargs["file_namespace"]
     ma_ver_path = kwargs["ma_ver_path"]
     anim_ver_path = kwargs["anim_ver_path"]
