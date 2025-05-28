@@ -272,7 +272,7 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
          <string>manual bake</string>
         </property>
         <property name="checked">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>

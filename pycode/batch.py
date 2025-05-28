@@ -100,7 +100,7 @@ def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
         + "sys.path.append('{}');".format(onpath)
         + "sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts');"
         + "sys.path.append('C:/Program Files/Autodesk/Maya2023/Python/Lib/site-packages/maya/mel');"
-        + "sys.path.append('Y:/users/env/maya/2023/mod")
+        + "sys.path.append('Y:/users/env/maya/2023/mod');")
     
     maya_cmd = maya_cmd + unique_order
     cmd = [mayaBatch]
@@ -147,7 +147,7 @@ def maya_version(project, ver_override=False):
     # ------------------------------------
     if not os.path.exists(project_app_launcher):
         print("Error: %s does not exist" % project_app_launcher)
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
         # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
         return maya_exe
     f = open(project_app_launcher, "r")
@@ -161,9 +161,9 @@ def maya_version(project, ver_override=False):
                 ryear = version.replace("(", "").split(")")[0]
     if ver_override == "False" or ver_override == False:
         # maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
     else:
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya{}\\bin\\maya.exe".format(
+        maya_exe = "C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe".format(
             str(ver_override)
         )
     return maya_exe
@@ -315,7 +315,7 @@ def abcExport(**kwargs):
 def abcAttach(**kwargs):
     maya_ver = env_load(kwargs["project"])
     # mayaBatch = maya_version(kwargs['project'], maya_ver)
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
     asset_path = kwargs["asset_path"]
     namespace = kwargs["file_namespace"]
     top_node = namespace + ":" + kwargs["top_node"]
@@ -420,16 +420,18 @@ def camExport(**kwargs):
     cmd = maya_cmd_maker(
         unique_order, mayafile=kwargs["input_path"], mayaBatch=mayaBatch
     )
-    subprocess.call(
-        cmd, shell=True, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    # subprocess.call(
+    #     cmd, shell=True, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    # )
+    subprocess.run(cmd, shell=True)
+
 
 
 # ------------------------------------
 #  Ass
 # ------------------------------------
 def assExport(**kwargs):
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\maya.exe"
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
     unique_order = (
         "from maya_lib.ndPyLibExportAss import export_ass_main;"
         "export_ass_main(**{})".format(kwargs)
@@ -439,7 +441,7 @@ def assExport(**kwargs):
 
 
 def assAttach(**kwargs):
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\maya.exe"
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
     unique_order = (
         "from maya_lib.ndPyLibAttachAss import attach_ass_main;"
         "attach_ass_main(**{})".format(kwargs)
@@ -450,7 +452,7 @@ def assAttach(**kwargs):
 
 
 def assReplace(**kwargs):
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\maya.exe"
+    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
     unique_order = (
         "from maya_lib.ndPyLibReplaceAss import replace_ass_main;"
         "replace_ass_main(**{})".format(kwargs)
