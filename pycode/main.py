@@ -15,7 +15,7 @@ try:
 except:
     pass
 # ------------------------------
-__version__ = '9.5.0'
+__version__ = '10.0.0'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(
@@ -78,7 +78,6 @@ class GUI(QMainWindow):
         self.setWindowTitle('%s %s' % (self.WINDOW, __version__))
 
         self.input_path = ''
-        self.log_txt = ''
 
         # Shotgrid
         self.asset_fields = [
@@ -118,9 +117,6 @@ class GUI(QMainWindow):
         self.priority = PRIORITY
         self.group = GROUP
 
-        maya_version_list = ['2023', '2022', '2020', '2019', '2018', '2017', '2016', '2015']
-        for maya_version in maya_version_list:
-            self.ui.maya_version_comboBox.addItem(maya_version)
 
         self.selected_item = None
 
@@ -136,7 +132,6 @@ class GUI(QMainWindow):
         self.ui.custom_frame_range_chk.clicked.connect(
             self.custom_frame_range_chk)
         self.ui.frame_handle_chk.clicked.connect(self.frame_handle_chk_clicked)
-        self.ui.open_log_button.clicked.connect(self.open_log_button_clicked)
         self.ui.current_refresh_button.clicked.connect(
             self.current_refresh_button_clicked)
         self.ui.open_publish_dir_button.clicked.connect(
@@ -152,12 +147,8 @@ class GUI(QMainWindow):
         self.ui.export_local_btn.clicked.connect(self.export_local_btn_clicked)
         self.ui.export_submit_btn.clicked.connect(
             self.export_submit_btn_clicked)
-        self.ui.maya_version_chk.stateChanged.connect(
-            self.maya_version_check_stateChange)
         self.ui.evaluate_chk.stateChanged.connect(
             self.evaluate_chk_stateChange)
-        self.ui.log_list_btn.clicked.connect(self.log_list_btn_clicked)
-        self.ui.log_return_btn.clicked.connect(self.log_return_btn_clicked)
         self.ui.help_listup_button.clicked.connect(self.help_listup_button_clicked)
 
     def camscale_override_chk_stateChange(self):
@@ -225,14 +216,6 @@ class GUI(QMainWindow):
     def export_submit_btn_clicked(self):
         self.export_main(mode='Submit')
 
-    def open_log_button_clicked(self):
-        sakura = r'C:\Program Files (x86)\sakura\sakura.exe'
-        subprocess.Popen([sakura, self.last_log_path])
-
-    def maya_version_check_stateChange(self):
-        state = self.ui.maya_version_chk.isChecked()
-        self.ui.maya_version_comboBox.setEnabled(state)
-
     def contextMenu(self, point):
         print(point)
 
@@ -295,13 +278,6 @@ class GUI(QMainWindow):
         _state = self.ui.evaluate_chk.isChecked()
         self.ui.evaluate_combo.setEnabled(_state)
 
-    def log_list_btn_clicked(self):
-        self.log_table = []
-        self.log_model = util_exporter.LogTableModel(self.log_table, LOGDIR)
-        self.ui.log_table.setModel(self.log_model)
-        self.ui.stack_area.setCurrentIndex(2)
-
-    def log_return_btn_clicked(self):
         self.ui.stack_area.setCurrentIndex(0)
 
     def drop_func(self, urldata):
@@ -400,6 +376,9 @@ class GUI(QMainWindow):
         # Submit用
         file_number = 1
         jobfiles_list = []
+        
+        #  ログ初期化
+        self.log_txt = ''
 
         for table_row in range(len(self.tabledata)):
             if table_row in self.executed_row:
@@ -423,18 +402,12 @@ class GUI(QMainWindow):
             #  LocalExport
             if mode == 'Local':
                 #  集計ログ用
-                log_name = 'log_' + USERNAME + '_' + datetime.datetime.now().strftime('%Y%m%d_%H%M%S') +self.asset_name + '.txt'
-                log_path = LOGDIR + '\\' + log_name
                 current_dir = EXPORTER_PATH + '/pycode'
-                if not os.path.exists(LOGDIR):
-                    os.makedirs(LOGDIR)
                 self.ui.stack_area.setCurrentIndex(1)
                 # スレッドで実行
                 thread_args = {}
                 thread_args['argsdic'] = argsdic
-                thread_args['log_path'] = log_path
                 thread_args['current_dir'] = current_dir
-                argsdic['log_path'] = log_path.replace('\\', '/')
                 export_thread = threading.Thread(
                     target=thread_main, kwargs=thread_args)
                 export_thread.start()
@@ -459,8 +432,6 @@ class GUI(QMainWindow):
                         self.ui.repaint()
                     qApp.processEvents()
                 #  GUI用ログ出力
-                self.last_log_path = log_path
-                self.ui.open_log_button.setEnabled(True)
             #  Submit
             elif mode == 'Submit':
                 DLclass = util_exporter.DeadlineMod(**argsdic)
@@ -500,11 +471,6 @@ class GUI(QMainWindow):
         else:
             frame_step_override = 1.0
 
-        if self.ui.maya_version_chk.isChecked():
-            maya_version = self.ui.maya_version_comboBox.currentText()
-        else:
-            maya_version = False
-
         if self.ui.evaluate_chk.isChecked():
             evaluate = self.ui.evaluate_combo.currentText()
         else:
@@ -537,9 +503,6 @@ class GUI(QMainWindow):
             "priority": str(self.ui.priority.text()),
             "pool": str(self.ui.poollist.currentText()),
             "group": str(self.ui.grouplist.currentText()),
-            "load_pref": self.ui.force_load_preference_chk.isChecked(),
-            "maya_version": maya_version,
-            "log_shape": self.ui.log_shape_chk.isChecked(),
             "tg_cam_list": None,
             "is_exe": is_exe,
         }
@@ -586,7 +549,6 @@ class GUI(QMainWindow):
 
 def thread_main(**kwargs):
     argsdic = json.dumps(kwargs['argsdic'], ensure_ascii=False)
-    log_path = kwargs['log_path']
     current_dir = kwargs['current_dir']
     python = PYPATH
     py_path = r'{}\pycode\exporter_bridge.py'.format(EXPORTER_PATH)
@@ -598,9 +560,6 @@ def thread_main(**kwargs):
         proc.wait()
     except Exception as e:
         print(e)
-    # if kwargs['argsdic']['log_shape'] == True:
-    #     from shell_lib import log_shaper
-            # log_shaper.main(log_path)
     return
 
 

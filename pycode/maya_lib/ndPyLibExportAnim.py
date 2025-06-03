@@ -1,5 +1,4 @@
 # coding:utf-8
-import pprint
 import os, sys
 import re
 try:
@@ -11,14 +10,10 @@ import maya.mel as mel
 import pymel.core as pm
 
 sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
-sys.path.append(r"Y:\tool\ND_Tools\DCC\dev\standalone\ND_AssetExporter\pycode\maya_lib")
+sys.path.append("Y:/tool/ND_Tools/DCC/dev/standalone/ND_AssetExporter/pycode/maya_lib")
 sys.path.append("Y:/users/env/maya/2023/mod")
 
 import ndPyLibAnimIOExportContain; reload(ndPyLibAnimIOExportContain)
-
-# def set_dw_h_env():
-#     from .on_maya.project import dw_h_env
-#     dw_h_env.main()
 
 
 def set_env():
@@ -33,11 +28,9 @@ def set_env():
     os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
     # mod
     mod_path = 'Y:/users/env/maya/2023/mod'
-    # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
     os.environ['MAYA_MODULE_PATH'] = mod_path
     # path
     os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/bin'
-    # try:
     try:
         cmds.loadPlugin('mtoa')
     except:
@@ -52,9 +45,12 @@ def eulerfilter(attr_list):
             anim_cv = map(lambda x: x.rstrip('.output'), attr)
             anim_cv = filter(lambda x: cmds.nodeType(x) in [
                              'animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
+            if len(list(anim_cv))== 0:
+                continue
             cmds.filterCurve(anim_cv, f='euler')
+            print("EulerFilter Success: {}".format(attr))
         except Exception as e:
-            print(e)
+            pass
 
 
 def get_scene_ns_list():
@@ -121,7 +117,17 @@ def get_tg_nodes(ns_list, regex_list):
                 _nodes = get_rec_sets(node)
                 if _nodes != None:
                     nodes.extend(_nodes)
+            if 'Geo.' in node:
+                nodes.remove(node)
+                continue
+            if 'geo.' in node:
+                nodes.remove(node)
+                continue
+            if "GEO." in node:
+                nodes.remove(node)
+                continue
         result_nodes.extend(nodes)
+
     return list(set(result_nodes))
 
 def ls_muted_anim_layers():
@@ -361,17 +367,6 @@ def unlockAttributes(nodes):
                 pass
 
 
-def mergeAnimLayers():
-    mel.eval('source "C:/Program Files/Autodesk/Maya2020/scripts/others/performAnimLayerMerge.mel"'.format(pm.about(version=True)))
-    animLayers = cmds.ls(type='animLayer')
-    if animLayers:
-        try:
-            mel.eval('animLayerMerge {"%s"}' % '","'.join(animLayers))
-        except Exception as e:
-            pass
-    return
-
-
 def get_unload_ns_dic():
     unLoaded_ref_dic = {}
     refList = cmds.ls(type='reference')
@@ -391,10 +386,6 @@ def get_unload_ns_dic():
 
 
 def export_anim_main(**kwargs):
-    pprint.pprint(kwargs.items())
-    # if kwargs['project'].lower() == 'd_wh':
-    #     set_dw_h_env()
-    # else:
     set_env()
 
     cmds.file(kwargs['input_path'], o=True, f=True)
@@ -438,6 +429,8 @@ def export_anim_main(**kwargs):
     if 'on_maya' in kwargs.keys():
         frame_range = [sframe, sframe+1]
 
+    print("check kwargs type.")
+    print(type(kwargs['manual_bake']))
     if kwargs['manual_bake'] == True or kwargs['manual_bake'] == 'True':
         manual_bake = True
     else:
@@ -453,13 +446,6 @@ def export_anim_main(**kwargs):
     input_ns_list = kwargs['namespace'][0].replace(' ', '').rstrip(',').split(',')
     regex_list = [i for i in kwargs['export_item']['anim'].replace(' ', '').replace('vertical_bar', '\|').split(',') if not '.' in i]  # 通常のエクスポート対象
     regex_attr_list = [i for i in kwargs['export_item']['anim'].split(',') if '.' in i]  # アトリビュートを直接指定
-
-    if kwargs['load_pref'] == True:
-        unload_ns_dic = get_unload_ns_dic()
-        tg_ns_list = get_tg_ns_list(unload_ns_dic.keys(), input_ns_list)
-        for tg_ns in tg_ns_list:
-            ref = unload_ns_dic[tg_ns]
-            cmds.file(lr=ref)
 
     scene_ns_list = get_scene_ns_list()
     tg_ns_list = get_tg_ns_list(scene_ns_list, input_ns_list)
@@ -603,12 +589,6 @@ def export_anim_main(**kwargs):
         pick_nodes = []
         pick_node_and_attrs = []
         for node in tg_nodes:
-            if 'Geo.' in node:
-                continue
-            if 'geo.' in node:
-                continue
-            if 'GEO.' in node:
-                continue
             if ns+':' in node:
                 pick_nodes.append(node)
         for node in pick_node_and_attrs:

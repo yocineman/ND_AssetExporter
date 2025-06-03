@@ -4,8 +4,12 @@ import os,sys
 import yaml
 import shell_lib.util_exporter as util_exporter
 sys.path.append('Y:/tool/ND_Tools/DCC')  
-import Standalone.ND_AssetExporter.pycode.batch as batch
-import pprint
+# このファイルのパスにdevが含まれていれば
+if 'dev' not in os.path.dirname(__file__).split('/'):
+    import dev.Standalone.ND_AssetExporter.pycode.batch as batch
+else:
+    import Standalone.ND_AssetExporter.pycode.batch as batch
+
 def exporter_bridge_main(**kwargs):
     argsdic = kwargs
     input_path = argsdic['input_path']

@@ -177,17 +177,17 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
        </widget>
       </item>
       <item>
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+       <widget class="QCheckBox" name="manual_bake_chk">
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
         </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
+        <property name="text">
+         <string>manual bake</string>
         </property>
-       </spacer>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="custom_frame_range_chk">
@@ -264,46 +264,6 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_7">
       <item>
-       <widget class="QCheckBox" name="manual_bake_chk">
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="text">
-         <string>manual bake</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="force_load_preference_chk">
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="text">
-         <string>force import preference file</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="maya_version_chk">
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="text">
-         <string>maya version</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="maya_version_comboBox">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -337,19 +297,6 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
       <property name="bottomMargin">
        <number>12</number>
       </property>
-      <item>
-       <widget class="QCheckBox" name="log_shape_chk">
-        <property name="layoutDirection">
-         <enum>Qt::RightToLeft</enum>
-        </property>
-        <property name="text">
-         <string>log shape</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QCheckBox" name="evaluate_chk">
         <property name="layoutDirection">
@@ -674,23 +621,6 @@ QScrollBar::handle::horizontal {background:  rgb(90, 90, 90);}
                      <widget class="QPushButton" name="open_publish_dir_button">
                       <property name="text">
                        <string>Open Publish Dirs</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="open_log_button">
-                      <property name="enabled">
-                       <bool>false</bool>
-                      </property>
-                      <property name="text">
-                       <string>Open Log</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="log_list_btn">
-                      <property name="text">
-                       <string>Log List ⇛</string>
                       </property>
                      </widget>
                     </item>

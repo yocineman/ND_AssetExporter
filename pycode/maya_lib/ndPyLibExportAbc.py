@@ -5,6 +5,7 @@ import re
 
 import maya.cmds as cmds
 import maya.mel as mel
+import pymel.core as pm
 
 def getNamespace():
     namespaces = cmds.namespaceInfo(lon=True, r=True)
@@ -20,11 +21,12 @@ def Euler_filter(obj_list):
         anim_cv = map(lambda x: x.rstrip('.output'), anim_cv)
         try:
             anim_cv = filter(lambda x: cmds.nodeType(x) in ['animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
+            if len(list(anim_cv)) == 0:
+                continue
             cmds.filterCurve(anim_cv, f='euler')
+            print('# Euler Filter Success: '+obj+' #')
         except:
-            print('# Euler FilterFailed: '+obj+' #')
             continue
-        print('# Euler Filter Success: '+obj+' #')
 
 
 def getAllNodes(namespace, _regexArgs):
@@ -43,6 +45,8 @@ def getAllNodes(namespace, _regexArgs):
         regexN = regexN + regex
         try:
             objs = cmds.ls(regexN, type='transform')
+            # 後ろ５文字がShapeならば除外
+            objs = [obj for obj in objs if not obj.endswith('Shape')]
             objSets = cmds.sets(regexN, q=True)
         except:
             continue
@@ -85,6 +89,7 @@ def export_abc_main(**kwargs):
             print(input_ns, scene_ns, match)
             if match != None:
                 tg_ns_list.append(scene_ns)
+
     print("scene_ns_list ###")
     print(scene_ns_list)
     print("--")
@@ -99,7 +104,6 @@ def export_abc_main(**kwargs):
 
     tg_nodes_dic = {}
     if 'add_attr' in kwargs.keys():
-        import pymel.core as pm
         dictAttributes = {}
         context = "/mat/"
         for eachSG in pm.ls(type="shadingEngine"):
@@ -153,12 +157,13 @@ def export_abc_main(**kwargs):
             pm.setAttr(eachShape+"."+shaderAttributeName,dictAttributes[eachShape]["shader"])
 
     # euler filter
-    Euler_filter(getAllNodes('', kwargs['abc_item']))
 
     for tg_ns in tg_ns_list:
         print(tg_ns, kwargs['abc_item'])
         print(getAllNodes(tg_ns, kwargs['abc_item']))
-        tg_nodes_dic[tg_ns] = getAllNodes(tg_ns, kwargs['abc_item'])
+        all_nodes = getAllNodes(tg_ns, kwargs['abc_item'])
+        Euler_filter(all_nodes)
+        tg_nodes_dic[tg_ns] = all_nodes
         yeti_set = cmds.ls(tg_ns+':yetiSet')
         if len(yeti_set) != 0:
             yeti_objs = cmds.sets(tg_ns+':yetiSet', q=True)
@@ -183,13 +188,7 @@ def export_abc_main(**kwargs):
                 print(e)
 
     if not cmds.pluginInfo('AbcExport', q=True, l=True):
-        if '_TMP_VER' in os.environ.keys():
-            maya_ver = os.environ["_TMP_VER"]
-        else:
-            info = cmds.about(version=True)
-            maya_ver = info.split(" ")[0]
-            os.environ['_TMP_VER'] = maya_ver
-        plugin_path = "C:/Program Files/Autodesk/Maya{}/bin/plug-ins".format(maya_ver)
+        plugin_path = "C:/Program Files/Autodesk/Maya2023/bin/plug-ins"
         # os.environ["_TMP_VER"] = os.environ["_TMP_VER"]+";"+plugin_path
         cmds.loadPlugin('AbcExport')
 
@@ -230,38 +229,6 @@ def export_abc_main(**kwargs):
 
 def ndPyLibExportAbc_caller(args):
     export_abc_main(**args)
-
-
-'''
-{'abc_check': False,
- 'abc_item': 'abc_Root',
- 'anim_item': 'ctrl_set, root',
- 'asset_name': 'NursedesseiDragon',
- 'asset_path': 'P:/Project/RAM1/assets/chara/Nursedessei/NursedesseiDragon/publish/Setup/RH/maya/current/NursedesseiDragon_Rig_RH.mb',
- 'cam_scale': False,
- 'debug': True,
- 'export_item': {'abc': 'abc_Root', 'anim': 'ctrl_set, root'},
- 'export_type': 'abc',
- 'frame_handle': False,
- 'frame_range': False,
- 'group': '',
- 'input_path': 'P:/Project/RAM1/shots/ep022/s2227/c008/work/k_ueda/s2227c008_anm_v006.ma',
- 'namespace': 'NursedesseiDragon[0-9]*$',
- 'pool': '',
- 'priority': '50',
- 'project': 'RAM1',
- 'manual_bake': False,
- 'sequence': 's2227',
- 'shot': 'c008',
- 'step_value': False,
- 'top_node': 'root'}
-'''
-
-# scene timewarp        :  False
-# publish_ver_abc_path :  P:/Project/mem2/shots/roll05/s141G/c004/publish/test_charSet/001_LXMAR/v002/abc
-# export_item           :  {'anim': None, 'abc': 'ABCset'}
-# namespace             :  ['[_A-Za-z]*LXMAR[0-9]*_RigRH']
-# abc_item:  ABCset
 
 
 if __name__ == '__main__':

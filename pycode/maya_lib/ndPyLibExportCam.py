@@ -17,111 +17,23 @@ def unlock_current_layer():
         pass
 
 
-# def set_dw_h_env():
-#     # 環境変数の設定
-#     # arnold
-#     sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts')
-#     try:
-#         import arnold
-#     except:
-#         pass
-#     # scripts
-#     scripts_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts'
-#     os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
-#     os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
-#     # plug-in
-#     plugin_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins'
-#     os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
-#     # mod
-#     mod_path = 'Y:/users/env/maya/2020/mod'
-#     # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
-#     os.environ['MAYA_MODULE_PATH'] = mod_path
-#     os.environ["PYTHONPATH"] = "P:/Project/D_WH/Library/Tool/maya/scripts/python;Z:/DeadlineRepository10/api/python/Deadline;Y:/tool/ND_Tools/shotgun/ND_sgtoolkit_d_wh/install/core/python;Y:/tool/ND_Tools/shotgun/ND_sgtoolkit_d_wh/install/app_store/tk-maya/v0.11.3/startup;P:/Project/d_wh/Library/users/k_ueda/maya/scripts;Y:/users/env/maya/share/nStup;Y:/users/env/maya/share/tpro;Y:/users/env/maya/share/nDef;Y:/users/env/maya/share/nDev;Y:/users/env/maya/share/nBB;Y:/users/env/maya/share/nDyn;Y:/users/env/maya/share/nShd;Y:/users/env/maya/share/nSelect;Y:/users/env/maya/share/nUtil;Y:/users/env/maya/share/nRend;Y:/users/env/maya/share/startup;Y:/users/env/maya/share/nMod;Y:/users/env/maya/share/nAnim;Y:/users/k_ueda/maya/guren2;Y:/pub/Tools/numpy-unoptimized-1.7.1.win-amd64-py2.7/Lib/site-packages;Y:/users/env/maya/scripts/Python/site-packages;Y:/users/env/maya/share/nAnim/studiolibrary/src;Y:/users/env/maya/share/nAnim/studiolibrary/src/mutils;Y:/users/env/maya/share/nAnim/studiolibrary/src/studiolibrary;Y:/users/env/maya/share/nAnim/studiolibrary/src/studiolibrarymaya;Y:/users/env/maya/share/nAnim/studiolibrary/src/studioqt;Y:/users/env/maya/share/nAnim/studiolibrary/src/studiovendor;Y:/tool/ND_Tools/DCC/ND_AssetExporter/pycode/maya_lib/OnMayaTool;Y:/users/env/maya/scripts;Y:/users/env/maya/2020/scripts;P:/Project/d_wh/Library/users/k_ueda/maya/2020/scripts;Y:/users/env/maya/2020/scripts/python;Y:/pub/Tools/JCGS_Projects/ndesign_base/lib;Y:/tool/MISC/Python2710_amd64_vs2010/Lib/site-packages-new;C:/Program Files/Autodesk/Maya2020/Python/Lib/site-packages;P:/Project/D_WH/Library/Tool/maya;P:/Project/D_WH/Library/Tool/maya/scripts;Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/scripts;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/scripts;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/scripts;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/scripts;Y:/users/env/maya/2019/tools/nimbleTools/scripts;C:/Program Files/Rokoko Motion Library/Maya/2020/scripts;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/scripts;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/scripts;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/scripts;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/scripts;Y:/users/env/maya/2020/modules/medic/scripts;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/scripts;C:/Program Files/Allegorithmic/Substance in Maya/2020/scripts;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/scripts;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/scripts;Y:/users/env/maya/scripts/zync-maya/scripts;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/python/site-packages;Y:/users/env/maya/2020/modules/medic/py"
-#     os.environ["XBMLANGPATH"] = "Y:/users/env/maya/share/nAnim/maya-keyframe-reduction/icons;P:/Project/d_wh/Library/users/k_ueda/maya/2020/prefs/icons;Y:/users/env/maya/2020/prefs/icons;Y:/users/env/maya/2020/mentalray/icons;Y:/users/env/maya/2020/tools/shaveHaircut/maya2009/presets/attrPresets/shaveHair;Y:/users/env/arnold/mtoa/2023_MtoA_531/icons;P:/Project/d_wh/Library/users/k_ueda/maya/prefs/icons;C:/Program Files/Autodesk/Maya2020/icons;C:/Program Files/Autodesk/Maya2020/app-defaults;C:/Program Files/Autodesk/Maya2020/icons/paintEffects;C:/Program Files/Autodesk/Maya2020/icons/fluidEffects;C:/Program Files/Autodesk/Maya2020/icons/hair;C:/Program Files/Autodesk/Maya2020/icons/cloth;C:/Program Files/Autodesk/Maya2020/icons/live;C:/Program Files/Autodesk/Maya2020/icons/fur;C:/Program Files/Autodesk/Maya2020/icons/muscle;C:/Program Files/Autodesk/Maya2020/icons/turtle;C:/Program Files/Autodesk/Maya2020/icons/FBX;C:/Program Files/Autodesk/Maya2020/icons/mayaHIK;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/icons;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/icons;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/icons;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/icons;Y:/users/env/maya/2019/tools/nimbleTools/icons;C:/Program Files/Rokoko Motion Library/Maya/2020/icons;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/icons;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/icons;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/icons;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/icons;Y:/users/env/maya/2020/modules/medic/icons;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/icons;C:/Program Files/Allegorithmic/Substance in Maya/2020/icons;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/icons;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/icons;Y:/users/env/maya/scripts/zync-maya/icons"
-#     os.environ["MAYA_PLUG_IN_PATH"] = "P:/Project/d_wh/Library/users/k_ueda/maya/2020/plug-ins;Y:/users/env/maya/2020/plug-ins;P:/Project/D_WH/Library/Tool/maya/plug-ins;Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins;P:/Project/d_wh/Library/users/k_ueda/maya/plug-ins;C:/Program Files/Autodesk/Maya2020/bin/plug-ins;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/plug-ins;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/plug-ins;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/plug-ins;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/plug-ins;Y:/users/env/maya/2019/tools/nimbleTools/plug-ins;C:/Program Files/Rokoko Motion Library/Maya/2020/plug-ins;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/plug-ins;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/plug-ins;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/plug-ins;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/plug-ins;Y:/users/env/maya/2020/modules/medic/plug-ins;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/plug-ins;C:/Program Files/Allegorithmic/Substance in Maya/2020/plug-ins;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/plug-ins;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/plug-ins;Y:/users/env/maya/scripts/zync-maya/plug-ins;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/plug-ins/win64-2020"
-#     os.environ["MAYA_PXR_PLUGINPATH_NAME"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/usd"
-#     os.environ["ARNOLD_PLUGIN_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals"
-#     os.environ["MAYA_RENDER_DESC_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531"
-#     os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/"
-#     os.environ["MAYA_CUSTOM_TEMPLATE_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/ui/templates"
-#     os.environ["PATH"] = "C:/Program Files/Autodesk/Maya2020/Python/Lib/site-packages/PySide2;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/ATF;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/ATF/alias;C:/Program Files/Autodesk/Maya2020/bin/Cg;C:/Program Files/Autodesk/Maya2020/bin;Y:/tool/MISC/Python2710_amd64_vs2010;C:/Program Files/Shotgun/Python/lib/site-packages/pywin32_system32;C:/Program Files/Shotgun/Python3/lib/site-packages/PySide2;C:/Program Files/Shotgun/Python3/lib/site-packages/pywin32_system32;C:/Program Files (x86)/Intel/iCLS Client/;C:/Program Files/Intel/iCLS Client/;C:/Windows/system32;C:/Windows;C:/Windows/System32/Wbem;C:/Windows/System32/WindowsPowerShell/v1.0/;C:/Windows/System32/OpenSSH/;C:/Program Files (x86)/Intel/Intel(R) Management Engine Components/DAL;C:/Program Files/Intel/Intel(R) Management Engine Components/DAL;C:/Program Files (x86)/Intel/Intel(R) Management Engine Components/IPT;C:/Program Files/Intel/Intel(R) Management Engine Components/IPT;C:/Program Files (x86)/QuickTime/QTSystem/;C:/Program Files/Git/cmd;C:/Users/k_ueda/AppData/Local/Microsoft/WindowsApps;C:/Users/k_ueda/AppData/Local/Programs/Microsoft VS Code/bin;%MAYA_LOCATION%/bin;Y:/users/env/maya/2020/dll;Y:/users/env/arnold/mtoa/2023_MtoA_531/bin;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/bin;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/bin;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/bin;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/../../../bin;Y:/users/env/maya/2020/modules/medic/bin;C:/Program Files/Allegorithmic/Substance in Maya/2020/lib;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/bin;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/bin"
-#     os.environ["MTOA_EXTENSIONS_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions;Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions"
-#     os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531"
-#     os.environ["MTOA_SCRIPT_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
-#     os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/resources;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/resources;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/resources;Y:/users/env/maya/2019/tools/nimbleTools/resources;C:/Program Files/Rokoko Motion Library/Maya/2020/resources;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/resources;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/resources;Y:/users/env/maya/2020/modules/medic/resources;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/resources;C:/Program Files/Allegorithmic/Substance in Maya/2020/resources;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/resources;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/resources;Y:/users/env/maya/scripts/zync-maya/resources;"
-#     os.environ["MAYA_PRESET_PATH"] = "P:/Project/d_wh/Library/users/k_ueda/maya/2020/presets;Y:/users/env/maya/2020/presets;Y:/users/env/arnold/mtoa/2023_MtoA_531/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/presets;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/presets;Y:/users/env/maya/2019/tools/nimbleTools/presets;C:/Program Files/Rokoko Motion Library/Maya/2020/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/presets;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/presets;Y:/users/env/maya/2020/modules/medic/presets;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/presets;C:/Program Files/Allegorithmic/Substance in Maya/2020/presets;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/presets;Y:/users/env/maya/scripts/zync-maya/presets"
-#     try:
-#         cmds.loadPlugin('mtoa')
-#     except:
-#         pass
-
-
-def set_env():
-    # arnold
-    sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts')
-    # try:
-    #     import arnold
-    # except:
-    #     pass
-    # # scripts
-    scripts_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts'
-    os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
-    os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
-    # # plug-in
-    # plugin_path = 'Y:/users/env/arnold/mtoa/2022_MtoA_531/plug-ins'
-    # os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
-    # # mod
-    # mod_path = 'Y:/users/env/maya/2022/mod'
-    # # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
-    # os.environ['MAYA_MODULE_PATH'] = mod_path
-    # try:
-    #     cmds.loadPlugin('mtoa')
-    # except:
-    # pass
-
-    # plug-in
-    maya_ver = 2023
-    arnold_ver = 531
-    plugin_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins'
-    # plug-in
-    plugin_path = 'Y:/users/env/arnold/mtoa/{}_MtoA_{}/plug-ins'.format(maya_ver, arnold_ver)
-
-    os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
-    # os.environ['MAYA_PLUG_IN_PATH'] = plugin_path
-    # mod
-    mod_path = "Y:/users/env/maya/2023/mod;Y:/users/env/arnold/mtoa/2023_MtoA_531"
-    # os.environ['MAYA_MODULE_PATH']  = os.environ['MAYA_MODULE_PATH'].rstrip(';') + ';' + mod_path
-    os.environ['MAYA_MODULE_PATH'] = mod_path
-    # path
-    os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/{}_MtoA_{}/bin'.format(maya_ver, arnold_ver)
-    os.environ["_MAYA_PYTHON_VER"] ="2_7_x"
-    _yeti = "Y:\\users\\env\\maya\\tools\\Yeti-v4.2.6_Maya2023-windows"
-    os.environ["MAYA_MODULE_PATH"] = os.environ["MAYA_MODULE_PATH"] + ";" + _yeti
-    os.environ["MAYA_PLUG_IN_PATH"] = os.environ["MAYA_PLUG_IN_PATH"] + ";" + _yeti + "\\plug-ins"
-    os.environ["MAYA_SCRIPT_PATH"] = os.environ["MAYA_SCRIPT_PATH"] + ";" + _yeti + "\\scripts"
-    os.environ["MTOA_EXTENSIONS_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions;Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions"
-    os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531"
-    os.environ["MTOA_SCRIPT_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
-    # os.environ["MAYA_PRESET_PATH"] = "P:/Project/d_wh/Library/users/k_ueda/maya/2020/presets;Y:/users/env/maya/2020/presets;Y:/users/env/arnold/mtoa/2023_MtoA_531/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/ATF/presets;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/bifrost/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/MASH/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaBonusTools-2018-2022/Contents/presets;Y:/users/env/maya/2019/tools/nimbleTools/presets;C:/Program Files/Rokoko Motion Library/Maya/2020/presets;C:/ProgramData/Autodesk/ApplicationPlugins/MayaScanner/Contents/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/fbx/presets;C:/Program Files/Side Effects Software/Houdini 19.5.493/engine/maya/maya2020/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/camd/presets;Y:/users/env/maya/2020/modules/medic/presets;Y:/users/env/maya/2017-x64/tools/Yeti-v2.2.10_Maya2017-windows64/presets;C:/Program Files/Allegorithmic/Substance in Maya/2020/presets;C:/Program Files/Autodesk/Bifrost/Maya2020/2.2.0.0/vnn/presets;C:/Program Files/Autodesk/Maya2020/plug-ins/xgen/presets;Y:/users/env/maya/scripts/zync-maya/presets"
-
-    try:
-        cmds.loadPlugin('mtoa')
-    except Exception as e:
-        print(e)
-
-
 def Euler_filter(obj_list):
-    xyz = ['.rotateX', '.rotateY', '.rotateZ']
+    xyz = [".rotateX", ".rotateY", ".rotateZ"]
     for obj in obj_list:
-        anim_cv = map(lambda x: cmds.connectionInfo(obj+x, sfd=True), xyz)
-        anim_cv = map(lambda x: x.rstrip('.output'), anim_cv)
+        anim_cv = map(lambda x: cmds.connectionInfo(obj + x, sfd=True), xyz)
+        anim_cv = map(lambda x: x.rstrip(".output"), anim_cv)
         try:
-            anim_cv = filter(lambda x: cmds.nodeType(x) in ['animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
-            cmds.filterCurve(anim_cv, f='euler')
+            anim_cv = filter(
+                lambda x: cmds.nodeType(x)
+                in ["animCurveTL", "animCurveTU", "animCurveTA", "animCurveTT"],
+                anim_cv,
+            )
+            if len(list(anim_cv)) == 0:
+                continue
+            cmds.filterCurve(anim_cv, f="euler")
+            print("# Euler Filter Success: " + obj + " #")
         except:
-            print('# Euler FilterFailed: '+obj+' #')
             continue
-        print('# Euler Filter Success: '+obj+' #')
 
 
 def search_cam():
@@ -324,16 +236,6 @@ def export_cam_main(kwargs):
     import pprint
     pprint.pprint(kwargs)
     print('---------------------------')
-    # if kwargs['project'].lower() == 'd_wh':
-    #     set_dw_h_env()
-    # else:
-    try:
-        set_env()
-    except Exception as e:
-        print(e)
-    # シーンのオープン
-    # if not cmds.file(q=True, exists=True):
-    #     cmds.file(kwargs['input_path'], o=True, f=True)
     unlock_current_layer()
     top_nodes = cmds.ls(assemblies=True)
     batch_mode = cmds.about(batch=True)
@@ -433,9 +335,4 @@ def ndPylibExportCam_caller(**kwargs):
 
 
 if __name__ == '__main__':
-    # scene timewarp        :  False
-    # publish_ver_abc_path :  P:/Project/mem2/shots/roll05/s141G/c004/publish/test_charSet/001_LXMAR/v002/abc
-    # export_item           :  {'anim': None, 'abc': 'ABCset'}
-    # namespace             :  ['[_A-Za-z]*LXMAR[0-9]*_RigRH']
-    # abc_item:  ABCset
     pass

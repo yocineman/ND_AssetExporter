@@ -93,108 +93,7 @@ def set_env():
         "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources")
 
 
-def maya_cmd_maker(unique_order, mayafile=None, mayaBatch=None, is_exe=False):
-    maya_cmd = (
-        "import sys;"
-        + "sys.path.append('{}/maya_lib');".format(onpath)
-        + "sys.path.append('{}');".format(onpath)
-        + "sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts');"
-        + "sys.path.append('C:/Program Files/Autodesk/Maya2023/Python/Lib/site-packages/maya/mel');"
-        + "sys.path.append('Y:/users/env/maya/2023/mod');")
-    
-    maya_cmd = maya_cmd + unique_order
-    cmd = [mayaBatch]
-    if mayafile is not None:
-        cmd.append("-file")
-        cmd.append(mayafile.replace("\\", "/"))
-    if is_exe is not True:
-        cmd.append("-batch")
-    cmd.append("-command")
-    cmd.append('python("{}")'.format(maya_cmd.replace(";", "\;").replace("'", "'")))
-    return cmd
-
-
-def env_load(project):
-    ND_TOOL_PATH_default = "Y:/tool/ND_Tools/python"
-    env_key = "ND_TOOL_PATH_PYTHON"
-    ND_TOOL_PATH = os.environ.get(env_key, ND_TOOL_PATH_default)
-    for path in ND_TOOL_PATH.split(";"):
-        path = path.replace("\\", "/")
-        if path in sys.path:
-            continue
-        sys.path.append(path)
-    return 2023
-
-
-def maya_version(project, ver_override=False):
-    # ------------------------------------
-    env_key = "ND_TOOL_PATH_PYTHON"
-    ND_TOOL_PATH = os.environ.get(env_key, "Y:/tool/ND_Tools/python")
-    for path in ND_TOOL_PATH.split(";"):
-        path = path.replace("\\", "/")
-        if path in sys.path:
-            continue
-        sys.path.append(path)
-    toolkit_path = "Y:\\tool\\ND_Tools\\shotgun"
-    app_launcher_path = "config\\env\\includes\\app_launchers.yml"
-    dcc_tools = ["maya", "nuke", "nukex"]
-    project_app_launcher = "%s\\ND_sgtoolkit_%s\\%s" % (
-        toolkit_path,
-        project.lower(),
-        app_launcher_path,
-    )
-    # project_app_launcher = "Y:\\tool\\ND_Tools\\python\\ND_appEnv\\projects\\{}.json".format(project)
-    # ------------------------------------
-    if not os.path.exists(project_app_launcher):
-        print("Error: %s does not exist" % project_app_launcher)
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
-        # maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
-        return maya_exe
-    f = open(project_app_launcher, "r")
-    data = yaml.safe_load(f)
-    f.close()
-    # ------------------------------------
-    ryear = 2022
-    for dcc in dcc_tools:
-        for version in data["launch_%s" % dcc]["versions"]:
-            if dcc == "maya":
-                ryear = version.replace("(", "").split(")")[0]
-    if ver_override == "False" or ver_override == False:
-        # maya_exe = 'C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe'.format(str(ryear))
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
-    else:
-        maya_exe = "C:\\Program Files\\Autodesk\\Maya{}\\bin\\mayabatch.exe".format(
-            str(ver_override)
-        )
-    return maya_exe
-
-
-# ------------------------------------
-#  Anim
-# ------------------------------------
-def animExport(**kwargs):
-    print("###setn_env###")
-    set_env()
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
-    unique_order = (
-        "import maya.cmds as cmds;cmds.loadPlugin('mtoa');cmds.file('{}', f=True,o=True);"
-        "from maya_lib.ndPyLibExportAnim import export_anim_main;"
-        "export_anim_main(**{})".format(kwargs["input_path"], kwargs)
-    )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
-    print(cmd)
-    # subprocess.call(cmd, shell=True, env=os.environ)
-    # subprocess.call(cmd, shell=True, env=os.environ, cwd=os.path.dirname(kwargs['input_path']), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    # proc = subprocess.run(
-    #     cmd,
-    #     shell=True,
-    #     env=os.environ,
-    #     cwd=os.path.dirname(kwargs["input_path"]),
-    #     capture_output=True,
-    #     text=True,
-    # )
-
+def run_subprocess(cmd, kwargs):
     try:
         proc = subprocess.run(
             cmd,
@@ -224,7 +123,8 @@ def animExport(**kwargs):
         # 例: ジョブIDやタイムスタンプを使ってユニークなファイル名にする
         log_dir = "Y:/users/deadlineuser/DCC_log/ND_AssetExporter"  # ログ出力パス
         os.makedirs(log_dir, exist_ok=True)
-        log_file_path = os.path.join(log_dir, f"maya_batch_debug_log_{os.getpid()}.txt")
+        username= os.environ.get("USERNAME", "unknown_user")
+        log_file_path = os.path.join(log_dir, f"maya_batch_debug_log_{username}{os.getpid()}.txt")
 
         with open(log_file_path, "w", encoding="utf-8") as f:
             f.write(
@@ -240,14 +140,52 @@ def animExport(**kwargs):
         # subprocess.run 自体が失敗した場合の例外処理
         print(f"ERROR during subprocess execution: {e}")
     print("return code: {}".format(proc.returncode))
-    print("captured stdout: {}".format(proc.stdout))  # こんにちは
-    print("captured stderr: {}".format(proc.stderr))  # こんばんは
+    print("captured stdout: {}".format(proc.stdout))
+    print("captured stderr: {}".format(proc.stderr))
+
+
+def maya_cmd_maker(unique_order, mayafile=None, is_exe=False):
+    maya_cmd = (
+        "import sys;"
+        + "sys.path.append('{}/maya_lib');".format(onpath)
+        + "sys.path.append('{}');".format(onpath)
+        + "sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts');"
+        + "sys.path.append('C:/Program Files/Autodesk/Maya2023/Python/Lib/site-packages/maya/mel');"
+        + "sys.path.append('Y:/users/env/maya/2023/mod');")
+    
+    if is_exe is True:
+        mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+    else:
+        mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
+    cmd = [mayaBatch]
+    
+    maya_cmd = maya_cmd + unique_order
+    if mayafile is not None:
+        cmd.append("-file")
+        cmd.append(mayafile.replace("\\", "/"))
+
+    cmd.append("-command")
+    cmd.append('python("{}")'.format(maya_cmd.replace(";", "\;").replace("'", "'")))
+    return cmd
+
+
+# ------------------------------------
+#  Anim
+# ------------------------------------
+def animExport(**kwargs):
+    print("###setn_env###")
+    set_env()
+    unique_order = (
+        "import maya.cmds as cmds;cmds.loadPlugin('mtoa');cmds.file('{}', f=True,o=True);"
+        "from maya_lib.ndPyLibExportAnim import export_anim_main;"
+        "export_anim_main(**{})".format(kwargs["input_path"], kwargs)
+    )
+    cmd = maya_cmd_maker(unique_order, is_exe=kwargs["is_exe"])
+    print(cmd)
+    run_subprocess(cmd, kwargs)
 
 
 def animAttach(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    # mayaBatch = maya_version(kwargs['project'], maya_ver)
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
     file_namespace = kwargs["file_namespace"]
     ma_ver_path = kwargs["ma_ver_path"]
     anim_ver_path = kwargs["anim_ver_path"]
@@ -260,14 +198,12 @@ def animAttach(**kwargs):
         + "loadAsset('{}', '{}_anim');".format(anim_ver_path, file_namespace)
         + "saveAs('{}')".format(ma_ver_path)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
+    cmd = maya_cmd_maker(unique_order,  is_exe=kwargs["is_exe"])
     print(cmd)
-    subprocess.call(cmd, shell=False, env=os.environ)
+    run_subprocess(cmd, kwargs)
 
 
 def animReplace(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
     ma_current_path = kwargs["ma_current_path"]
     publish_current_anim_path = kwargs["anim_current_path"]
     file_namespace = kwargs["file_namespace"]
@@ -281,41 +217,22 @@ def animReplace(**kwargs):
     cmd = maya_cmd_maker(
         unique_order,
         mayafile=ma_current_path,
-        mayaBatch=mayaBatch,
         is_exe=kwargs["is_exe"],
     )
-    subprocess.call(cmd, shell=True, env=os.environ)
-
-
-# ------------------------------------
-#  Abc
-# ------------------------------------
-# def abcExport(**kwargs):
-#     maya_ver = env_load(kwargs['project'])
-#     mayaBatch = maya_version(kwargs['project'], maya_ver)
-#     unique_order = (
-#             'from ndPyLibExportAbc import ndPyLibExportAbc_caller;'
-#             'ndPyLibExportAbc_caller({})'.format(kwargs))
-#     cmd = maya_cmd_maker(unique_order, mayafile=kwargs['input_path'], mayaBatch=mayaBatch, is_exe=kwargs['is_exe'])
-#     subprocess.call(cmd, shell=True)
+    run_subprocess(cmd, kwargs)
 
 
 def abcExport(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
     unique_order = (
         "import maya.cmds as cmds;cmds.file('{}', f=True,o=True);"
         "from ndPyLibExportAbc import ndPyLibExportAbc_caller;"
         "ndPyLibExportAbc_caller({})".format(kwargs["input_path"], kwargs)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
-    subprocess.call(cmd, shell=True)
+    cmd = maya_cmd_maker(unique_order,  is_exe=kwargs["is_exe"])
+    run_subprocess(cmd, kwargs)
 
 
 def abcAttach(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    # mayaBatch = maya_version(kwargs['project'], maya_ver)
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
     asset_path = kwargs["asset_path"]
     namespace = kwargs["file_namespace"]
     top_node = namespace + ":" + kwargs["top_node"]
@@ -331,15 +248,13 @@ def abcAttach(**kwargs):
         + "attachABC('{}', '{}', selHierarchy);".format(abc_ver_path, namespace)
         + "saveAs('{}')".format(ma_ver_path)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
+    cmd = maya_cmd_maker(unique_order, is_exe=kwargs["is_exe"])
     print("####abcAttach####")
     print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_subprocess(cmd, kwargs)
 
 
 def abcReplace(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
     ma_current_path = kwargs["ma_current_path"]
     abc_current_path = kwargs["abc_current_path"]
     unique_order = (
@@ -349,20 +264,16 @@ def abcReplace(**kwargs):
     cmd = maya_cmd_maker(
         unique_order,
         mayafile=ma_current_path,
-        mayaBatch=mayaBatch,
         is_exe=kwargs["is_exe"],
     )
     print("####abcReplace####")
-    print(cmd)
-    subprocess.call(cmd, shell=True)
-
+    print(cmd)    
+    run_subprocess(cmd, kwargs)
 
 # ------------------------------------
 #  Abc&Anim
 # ------------------------------------
 def abcAnimAttach(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
     asset_path = kwargs["asset_path"]
     namespace = kwargs["file_namespace"]
     top_node = namespace + ":" + kwargs["top_node"]
@@ -381,13 +292,11 @@ def abcAnimAttach(**kwargs):
         + "saveAs('{}');".format(ma_ver_path)
     )
 
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
-    subprocess.call(cmd, shell=True)
+    cmd = maya_cmd_maker(unique_order, is_exe=kwargs["is_exe"])
+    run_subprocess(cmd, kwargs)
 
 
 def abcAnimReplace(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
     namespace = kwargs["file_namespace"]
     ma_current_path = kwargs["ma_current_path"]
     abc_current_path = kwargs["abc_current_path"]
@@ -401,62 +310,51 @@ def abcAnimReplace(**kwargs):
     cmd = maya_cmd_maker(
         unique_order,
         mayafile=ma_current_path,
-        mayaBatch=mayaBatch,
         is_exe=kwargs["is_exe"],
     )
-    subprocess.call(cmd, shell=True)
+    run_subprocess(cmd, kwargs)
 
 
 # ------------------------------------
 #  Cam
 # ------------------------------------
 def camExport(**kwargs):
-    maya_ver = env_load(kwargs["project"])
-    mayaBatch = maya_version(kwargs["project"], maya_ver)
     unique_order = (
         "from ndPyLibExportCam import ndPylibExportCam_caller;"
         "ndPylibExportCam_caller(**{})".format(kwargs)
     )
     cmd = maya_cmd_maker(
-        unique_order, mayafile=kwargs["input_path"], mayaBatch=mayaBatch
+        unique_order, mayafile=kwargs["input_path"], is_exe=kwargs["is_exe"]
     )
-    # subprocess.call(
-    #     cmd, shell=True, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    # )
-    subprocess.run(cmd, shell=True)
-
+    run_subprocess(cmd, kwargs)
 
 
 # ------------------------------------
 #  Ass
 # ------------------------------------
 def assExport(**kwargs):
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
     unique_order = (
         "from maya_lib.ndPyLibExportAss import export_ass_main;"
         "export_ass_main(**{})".format(kwargs)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
-    subprocess.call(cmd, shell=True)
-
+    cmd = maya_cmd_maker(unique_order, is_exe=kwargs["is_exe"])
+    run_subprocess(cmd, kwargs)
 
 def assAttach(**kwargs):
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
     unique_order = (
         "from maya_lib.ndPyLibAttachAss import attach_ass_main;"
         "attach_ass_main(**{})".format(kwargs)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
+    cmd = maya_cmd_maker(unique_order, is_exe=kwargs["is_exe"])
     print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_subprocess(cmd, kwargs)
 
 
 def assReplace(**kwargs):
-    mayaBatch = "C:\\Program Files\\Autodesk\\Maya2022\\bin\\mayabatch.exe"
     unique_order = (
         "from maya_lib.ndPyLibReplaceAss import replace_ass_main;"
         "replace_ass_main(**{})".format(kwargs)
     )
-    cmd = maya_cmd_maker(unique_order, mayaBatch=mayaBatch, is_exe=kwargs["is_exe"])
+    cmd = maya_cmd_maker(unique_order, is_exe=kwargs["is_exe"])
     print(cmd)
-    subprocess.call(cmd, shell=True)
+    run_subprocess(cmd, kwargs)
