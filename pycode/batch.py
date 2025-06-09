@@ -94,6 +94,7 @@ def set_env():
 
 
 def run_subprocess(cmd, kwargs):
+    set_env()
     try:
         proc = subprocess.run(
             cmd,
