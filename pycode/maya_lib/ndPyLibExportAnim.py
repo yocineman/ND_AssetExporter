@@ -385,6 +385,21 @@ def get_unload_ns_dic():
     return unLoaded_ref_dic
 
 
+def mergeAnimLayers():
+    mel.eval(
+        'source "C:/Program Files/Autodesk/Maya2020/scripts/others/performAnimLayerMerge.mel"'.format(
+            pm.about(version=True)
+        )
+    )
+    animLayers = cmds.ls(type="animLayer")
+    if animLayers:
+        try:
+            mel.eval('animLayerMerge {"%s"}' % '","'.join(animLayers))
+        except Exception as e:
+            pass
+    return
+
+
 def export_anim_main(**kwargs):
     set_env()
 
@@ -469,6 +484,7 @@ def export_anim_main(**kwargs):
 
     if manual_bake:
         cmds.setAttr("time1.enableTimewarp", 0)
+    mergeAnimLayers()
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
     if baseAnimationLayer != None:
         animLayers = cmds.ls(type='animLayer')
