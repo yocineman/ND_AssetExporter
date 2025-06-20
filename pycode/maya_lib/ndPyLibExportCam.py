@@ -276,7 +276,10 @@ def export_cam_main(kwargs):
     if cams is None:
         return
 
-    cam_grp = cmds.group(em=True, n='cam_grp')
+    if not cmds.objExists('cam_grp'):
+        cam_grp = cmds.group(em=True, n='cam_grp')
+    else:
+        cam_grp = cmds.group(em=True, n='__camera_grp__')
     bake_cams = []
     for i in range(len(cams)):
         from_cam = cams[i][1]
