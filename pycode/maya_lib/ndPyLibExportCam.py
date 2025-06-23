@@ -297,7 +297,7 @@ def export_cam_main(kwargs):
             f.write(str(eframe)+'\n')
     except:
         pass
-    cmds.select('cam_grp')
+    cmds.select(cam_grp)
     if ext_type == 'ma' or ext_type == 'all':
         ma_cam_path = kwargs['ma_cam_path']
         export_ma(ma_cam_path)
