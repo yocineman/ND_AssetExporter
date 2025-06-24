@@ -212,7 +212,7 @@ def export_fbx(fbx_path):
     cmds.file(fbx_path, force=True, options='v=0', typ='FBX export', pr=True, es=True, f=True)
 
 
-def export_abc(abc_path, sframe, eframe):
+def export_abc(abc_path, sframe, eframe, grp_name='cam_grp'):
     if not os.path.exists(os.path.dirname(abc_path)):
         os.makedirs(os.path.dirname(abc_path))
     if cmds.pluginInfo('AbcExport', q=True, l=True) == 0:
@@ -306,7 +306,7 @@ def export_cam_main(kwargs):
         export_fbx(fbx_cam_path)
     if ext_type == 'abc' or ext_type == 'all':
         abc_cam_path = kwargs['abc_cam_path']
-        export_abc(abc_cam_path, sframe, eframe)
+        export_abc(abc_cam_path, sframe, eframe,cam_grp)
 
     if 'remain_cam' in kwargs.keys():
         if kwargs['remain_cam'] == False:
