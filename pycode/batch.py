@@ -9,11 +9,95 @@ import time
 onpath = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
 
 
+# def set_env():
+#     # arnold
+#     sys.path.append("Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts")
+#     # scripts
+#     scripts_path = "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts"
+#     if os.environ.get("PYTHONPATH") is None:
+#         os.environ["PYTHONPATH"] = scripts_path
+#     else:
+#         os.environ["PYTHONPATH"] = (
+#             scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
+#         )
+#     if os.environ.get("PYTHONPATH") is None:
+#         os.environ["PYTHONPATH"] = scripts_path
+#     else:
+#         os.environ["PYTHONPATH"] = (
+#             scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
+#         )
+#     # plug-in
+#     if os.environ.get("MAYA_PLUG_IN_PATH") is None:
+#         os.environ["MAYA_PLUG_IN_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins"
+#         )
+#     else:
+#         os.environ["MAYA_PLUG_IN_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins;"
+#             + os.environ["MAYA_PLUG_IN_PATH"].rstrip(";")
+#         )
+#     # mod
+#     mod_path = "Y:/users/env/maya/2023/mod"
+#     if os.environ.get("MAYA_MODULE_PATH") is None:
+#         os.environ["MAYA_MODULE_PATH"] = mod_path
+#     else:
+#         os.environ["MAYA_MODULE_PATH"] = (
+#             mod_path + ";" + os.environ["MAYA_MODULE_PATH"].rstrip(";")
+#         )
+#     # path
+#     if os.environ.get("PATH") is None:
+#         os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin"
+#     else:
+#         os.environ["PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin;"
+#             + os.environ["PATH"].rstrip(";")
+#         )
+#     if os.environ.get("ARNOLD_PATH") is None:
+#         os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545"
+#     else:
+#         os.environ["ARNOLD_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545;"
+#             + os.environ["ARNOLD_PATH"].rstrip(";")
+#         )
+#     if os.environ.get("ARNOLD_PLUGIN_PATH") is None:
+#         os.environ["ARNOLD_PLUGIN_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals"
+#         )
+#     else:
+#         os.environ["ARNOLD_PLUGIN_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
+#             + os.environ["ARNOLD_PLUGIN_PATH"].rstrip(";")
+#         )
+#     os.environ["MTOA_EXTENSIONS_PATH"] = (
+#         "Y:/users/env/arnold/mtoa/2025_MtoA_545/extensions"
+#     )
+#     os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/"
+#     if os.environ.get("MTOA_SCRIPT_PATH") is None:
+#         os.environ["MTOA_SCRIPT_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts/mtoa/mel"
+#         )
+#     else:
+#         os.environ["MTOA_SCRIPT_PATH"] = (
+#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts;"
+#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts/mtoa/mel"
+#         )
+
+#     os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = ("Y:/users/env/arnold/mtoa/2025_MtoA_545/resources;"
+#         "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources")
+
+
 def set_env():
     # arnold
-    sys.path.append("Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts")
+    sys.path.append("Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts")
     # scripts
-    scripts_path = "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts"
+    scripts_path = "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts"
     if os.environ.get("PYTHONPATH") is None:
         os.environ["PYTHONPATH"] = scripts_path
     else:
@@ -29,15 +113,15 @@ def set_env():
     # plug-in
     if os.environ.get("MAYA_PLUG_IN_PATH") is None:
         os.environ["MAYA_PLUG_IN_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins"
         )
     else:
         os.environ["MAYA_PLUG_IN_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/plug-ins;"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins;"
             + os.environ["MAYA_PLUG_IN_PATH"].rstrip(";")
         )
     # mod
-    mod_path = "Y:/users/env/maya/2023/mod"
+    mod_path = "Y:/users/env/maya/2025/mod"
     if os.environ.get("MAYA_MODULE_PATH") is None:
         os.environ["MAYA_MODULE_PATH"] = mod_path
     else:
@@ -46,51 +130,52 @@ def set_env():
         )
     # path
     if os.environ.get("PATH") is None:
-        os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/bin"
+        os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin"
     else:
-        os.environ["PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/bin;"
-            + os.environ["PATH"].rstrip(";")
-        )
+        os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin;" + os.environ[
+            "PATH"
+        ].rstrip(";")
     if os.environ.get("ARNOLD_PATH") is None:
-        os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531"
+        os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545"
     else:
         os.environ["ARNOLD_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531;"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545;"
             + os.environ["ARNOLD_PATH"].rstrip(";")
         )
     if os.environ.get("ARNOLD_PLUGIN_PATH") is None:
         os.environ["ARNOLD_PLUGIN_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals"
         )
     else:
         os.environ["ARNOLD_PLUGIN_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/shaders;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/procedurals;"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
             + os.environ["ARNOLD_PLUGIN_PATH"].rstrip(";")
         )
     os.environ["MTOA_EXTENSIONS_PATH"] = (
-        "Y:/users/env/arnold/mtoa/2023_MtoA_531/extensions"
+        "Y:/users/env/arnold/mtoa/2025_MtoA_545/extensions"
     )
-    os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2023_MtoA_531/"
+    os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/"
     if os.environ.get("MTOA_SCRIPT_PATH") is None:
         os.environ["MTOA_SCRIPT_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts/mtoa/mel"
         )
     else:
         os.environ["MTOA_SCRIPT_PATH"] = (
-            "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts;"
-            + "Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts/mtoa/mel"
+            "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts;"
+            + "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts/mtoa/mel"
         )
-    
-    os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = ("Y:/users/env/arnold/mtoa/2023_MtoA_531/resources;"
-        "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources")
+
+    os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = (
+        "Y:/users/env/arnold/mtoa/2025_MtoA_545/resources;"
+        "C:/Program Files/Autodesk/Maya2025/plug-ins/ATF/resources"
+    )
 
 
 def run_subprocess(cmd, kwargs):
@@ -150,14 +235,14 @@ def maya_cmd_maker(unique_order, mayafile=None, is_exe=False):
         "import sys;"
         + "sys.path.append('{}/maya_lib');".format(onpath)
         + "sys.path.append('{}');".format(onpath)
-        + "sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_531/scripts');"
-        + "sys.path.append('C:/Program Files/Autodesk/Maya2023/Python/Lib/site-packages/maya/mel');"
-        + "sys.path.append('Y:/users/env/maya/2023/mod');")
+        + "sys.path.append('Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts');"
+        + "sys.path.append('C:/Program Files/Autodesk/Maya2025/Python/Lib/site-packages/maya/mel');"
+        + "sys.path.append('Y:/users/env/maya/2025/mod');")
     
     if is_exe is True:
-        mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\maya.exe"
+        mayaBatch = "C:\\Program Files\\Autodesk\\Maya2025\\bin\\maya.exe"
     else:
-        mayaBatch = "C:\\Program Files\\Autodesk\\Maya2023\\bin\\mayabatch.exe"
+        mayaBatch = "C:\\Program Files\\Autodesk\\Maya2025\\bin\\mayabatch.exe"
     cmd = [mayaBatch]
     
     maya_cmd = maya_cmd + unique_order

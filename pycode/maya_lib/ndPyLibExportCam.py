@@ -224,7 +224,7 @@ def export_abc(abc_path, sframe, eframe, grp_name='cam_grp'):
     strAbc = strAbc+'-worldSpace '
     strAbc = strAbc+'-eulerFilter '
     strAbc = strAbc+'-dataFormat ogawa '
-    strAbc = strAbc+ '-root cam_grp '
+    strAbc = strAbc+ '-root {} '.format(grp_name)
     strAbc = strAbc+ '-file '+ abc_path
     print ('AbcExport -j ' + strAbc)
     mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
