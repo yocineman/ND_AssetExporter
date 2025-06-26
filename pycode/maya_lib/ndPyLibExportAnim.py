@@ -7,30 +7,33 @@ except:
     pass
 import maya.cmds as cmds
 import maya.mel as mel
-import pymel.core as pm
 
 sys.path.append('Y:/users/env/maya/Python3/scripts/Python/site-packages')
 sys.path.append("Y:/tool/ND_Tools/DCC/dev/standalone/ND_AssetExporter/pycode/maya_lib")
-sys.path.append("Y:/users/env/maya/2023/mod")
+sys.path.append("Y:/users/env/maya/2025/mod")
 
 import ndPyLibAnimIOExportContain; reload(ndPyLibAnimIOExportContain)
 
 
 def set_env():
     # arnold
-    sys.path.append('Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts')
+    sys.path.append("Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts")
     # scripts
-    scripts_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/scripts'
+    scripts_path = "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts"
     os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'].rstrip(';') + ';' + scripts_path
     os.environ['MAYA_SCRIPT_PATH'] = os.environ['MAYA_SCRIPT_PATH'] + ';' + scripts_path
     # plug-in
-    plugin_path = 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/plug-ins'
+    plugin_path = "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins"
     os.environ['MAYA_PLUG_IN_PATH'] = os.environ['MAYA_PLUG_IN_PATH'].rstrip(';') + ';' + plugin_path
     # mod
-    mod_path = 'Y:/users/env/maya/2023/mod'
+    mod_path = 'Y:/users/env/maya/2025/mod'
     os.environ['MAYA_MODULE_PATH'] = mod_path
     # path
-    os.environ['PATH'] = os.environ['PATH'].rstrip(';') + ';' + 'Y:/users/env/arnold/mtoa/2023_MtoA_5133/bin'
+    os.environ["PATH"] = (
+        os.environ["PATH"].rstrip(";")
+        + ";"
+        + "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin"
+    )
     try:
         cmds.loadPlugin('mtoa')
     except:
@@ -388,7 +391,7 @@ def get_unload_ns_dic():
 def mergeAnimLayers():
     mel.eval(
         'source "C:/Program Files/Autodesk/Maya2020/scripts/others/performAnimLayerMerge.mel"'.format(
-            pm.about(version=True)
+            cmds.about(version=True)
         )
     )
     animLayers = cmds.ls(type="animLayer")
@@ -418,7 +421,7 @@ def export_anim_main(**kwargs):
         for mute_layer in mute_layers:
             cmds.animLayer(mute_layer, edit=True, mute=False)
             cmds.animLayer(mute_layer, edit=True, sel=False)
-            pm.delete(mute_layer)
+            cmds.delete(mute_layer)
 
     cache_nodes = cmds.ls(type='cacheFile')
     hidden_objs = []
@@ -444,12 +447,8 @@ def export_anim_main(**kwargs):
     if 'on_maya' in kwargs.keys():
         frame_range = [sframe, sframe+1]
 
-    print("check kwargs type.")
-    print(type(kwargs['manual_bake']))
-    if kwargs['manual_bake'] == True or kwargs['manual_bake'] == 'True':
-        manual_bake = True
-    else:
-        manual_bake = False
+    # scene timewarp
+    scene_timewarp = cmds.getAttr("time1.enableTimewarp")
 
     with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_anim_path))) + '/sceneConf.txt', 'w') as f:
         f.write(str(sframe)+'\n')
@@ -482,7 +481,7 @@ def export_anim_main(**kwargs):
     if len(character_set) != 0:
         cmds.delete(character_set)
 
-    if manual_bake:
+    if scene_timewarp == 1:
         cmds.setAttr("time1.enableTimewarp", 0)
     mergeAnimLayers()
     baseAnimationLayer = cmds.animLayer(q=True, r=True)
@@ -491,7 +490,7 @@ def export_anim_main(**kwargs):
         for al in animLayers:
             cmds.animLayer(al, e=True, sel=False)
         cmds.bakeResults(baseAnimationLayer, t=(sframe, eframe), sb=True, ral=True, sm=True, dic=True)
-    if manual_bake:
+    if scene_timewarp:
         cmds.setAttr("time1.enableTimewarp", 1)
 
     attrs = getNoKeyAttributes(tg_nodes)
@@ -520,7 +519,7 @@ def export_anim_main(**kwargs):
     unlockAttributes(attrs)
     eulerfilter(attrs)
 
-    if manual_bake: 
+    if scene_timewarp:
         time_set_list = []
         time_value_set_list = []
 
@@ -619,7 +618,6 @@ def export_anim_main(**kwargs):
             argsdic['pick_nodes'] = pick_nodes
             argsdic['pick_node_and_attrs'] = pick_node_and_attrs
             argsdic['frame_range'] = frame_range
-            argsdic['manual_bake'] = kwargs['manual_bake']
             argsdic['is_check_constraint'] = True
             argsdic['is_check_anim_curve'] = True
             ndPyLibAnimIOExportContain.ndPyLibAnimIOExportContain_main(**argsdic)

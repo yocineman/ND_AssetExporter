@@ -48,7 +48,7 @@ def search_cam():
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, manual_bake, step_value, tg_cam_list):
+def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
     if tg_cam_list is None or tg_cam_list == 'None':
         cams = search_cam()
     else:
@@ -63,7 +63,9 @@ def bake_cam(sframe, eframe, cam_scale, manual_bake, step_value, tg_cam_list):
         to_cam.append(cmds.camera()[0])
         from_cam.append(cams[i])
 
-    if manual_bake == True:
+    scene_timewarp = cmds.getAttr("time1.enableTimewarp")
+
+    if scene_timewarp == True:
         for i in range(len(to_cam)):
             time_set_list = []
             time_value_set_list = []
@@ -133,7 +135,6 @@ def bake_cam(sframe, eframe, cam_scale, manual_bake, step_value, tg_cam_list):
 
                 for thisAttr in shapeAttrs:
                     cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=cmds.getAttr(from_cam[i]+'.'+thisAttr), at='.'+thisAttr)
-
 
     for i in range(len(to_cam)):
         print('to_cam:', to_cam[i])
@@ -272,7 +273,7 @@ def export_cam_main(kwargs):
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
-    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['manual_bake'], kwargs['step_value'], kwargs['tg_cam_list'])
+    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['step_value'], kwargs['tg_cam_list'])
     if cams is None:
         return
 

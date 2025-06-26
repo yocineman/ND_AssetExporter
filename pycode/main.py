@@ -498,7 +498,6 @@ class GUI(QMainWindow):
             "input_path": str(self.input_path),
             "shot": str(self.ui.shot_line.text()),
             "sequence": str(self.ui.cut_line.text()),
-            "manual_bake": self.ui.manual_bake_chk.isChecked(),
             "evaluate": str(evaluate),
             "priority": str(self.ui.priority.text()),
             "pool": str(self.ui.poollist.currentText()),

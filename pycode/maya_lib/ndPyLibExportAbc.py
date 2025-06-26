@@ -63,7 +63,6 @@ def getAllNodes(namespace, _regexArgs):
 def export_abc_main(**kwargs):
     print("ndPylibExportABC Start")
     print('##export_anim_main args#############')
-    print('scene timewarp        : ', kwargs['manual_bake'])
     print('publish_ver_abc_path : ', kwargs['publish_ver_abc_path'])
     print('export_item           : ', kwargs['export_item'])
     print('namespace             : ', kwargs['namespace'])
@@ -106,35 +105,35 @@ def export_abc_main(**kwargs):
     if 'add_attr' in kwargs.keys():
         dictAttributes = {}
         context = "/mat/"
-        for eachSG in pm.ls(type="shadingEngine"):
+        for eachSG in cmds.ls(type="shadingEngine"):
             if eachSG.split(':')[0] not in scene_ns_list:
                 continue
-            members = pm.sets(eachSG,q=True,nodesOnly=False)
+            members = cmds.sets(eachSG,q=True,nodesOnly=False)
             if len(members)==0:
                 continue
-            shader = (pm.listConnections(eachSG+".aiSurfaceShader",p=False,c=False,s=True,d=False) or [""])[0]
+            shader = (cmds.listConnections(eachSG+".aiSurfaceShader",p=False,c=False,s=True,d=False) or [""])[0]
             if shader == "":
-                shader = (pm.listConnections(eachSG+".surfaceShader",p=False,c=False,s=True,d=False) or [""])[0]
+                shader = (cmds.listConnections(eachSG+".surfaceShader",p=False,c=False,s=True,d=False) or [""])[0]
             if shader == "":
                 continue
             shaderName = shader.name()
             for eachMember in members:
                 #SGがオブジェクトに紐付けられている場合の処理
-                if type(eachMember) == pm.nodetypes.Mesh:
+                if type(eachMember) == cmds.nodetypes.Mesh:
                     dictAttributes[eachMember]={"shader":[],"rest":[]}
                     dictAttributes[eachMember]["shader"] = [context+eachSG]*eachMember.numFaces()
                     for vtxIndex in range(eachMember.numVertices()):
-                        position = pm.pointPosition(eachMember+".vtx["+str(vtxIndex)+"]",world=True).get()
+                        position = cmds.pointPosition(eachMember+".vtx["+str(vtxIndex)+"]",world=True).get()
                         dictAttributes[eachMember]["rest"].append( [position[0],position[1],position[2]] )
                 #SGがフェースに紐付けられている場合の処理
                 elif eachMember._ComponentLabel__ == "f":
-                    # listComponents = pm.ls(eachMember,flatten=True)
+                    # listComponents = cmds.ls(eachMember,flatten=True)
                     shape = eachMember._node
                     if shape not in dictAttributes:
                         dictAttributes[shape]={"shader":[],"rest":[]}
                         dictAttributes[shape]["shader"]= [""]*eachMember.totalSize()
                         for vtxIndex in range(shape.numVertices()):
-                            dictAttributes[shape]["rest"].append( pm.pointPosition(shape+".vtx["+str(vtxIndex)+"]",world=True) )
+                            dictAttributes[shape]["rest"].append( cmds.pointPosition(shape+".vtx["+str(vtxIndex)+"]",world=True) )
                     #該当するリストのインデックスにシェーダ名を書き込む
                     for index in eachMember.indices():
                         dictAttributes[shape]["shader"][index] = context+eachSG#shaderName
@@ -142,19 +141,19 @@ def export_abc_main(**kwargs):
         shaderAttributeName = "shop_materialpath"
         for eachShape in dictAttributes:
             #Rest Positionアトリビュートを追加
-            if not pm.attributeQuery(restAttributeName+"_AbcGeomScope",node=eachShape,exists=True):
-                pm.addAttr(eachShape, dataType="string", longName=restAttributeName+"_AbcGeomScope")
-            pm.setAttr(eachShape+"."+restAttributeName+"_AbcGeomScope", "var")
-            if not pm.attributeQuery(restAttributeName,node=eachShape,exists=True):
-                pm.addAttr(eachShape,dataType="vectorArray",longName=restAttributeName)
-            pm.setAttr(eachShape+"."+restAttributeName,dictAttributes[eachShape]["rest"])
+            if not cmds.attributeQuery(restAttributeName+"_AbcGeomScope",node=eachShape,exists=True):
+                cmds.addAttr(eachShape, dataType="string", longName=restAttributeName+"_AbcGeomScope")
+            cmds.setAttr(eachShape+"."+restAttributeName+"_AbcGeomScope", "var")
+            if not cmds.attributeQuery(restAttributeName,node=eachShape,exists=True):
+                cmds.addAttr(eachShape,dataType="vectorArray",longName=restAttributeName)
+            cmds.setAttr(eachShape+"."+restAttributeName,dictAttributes[eachShape]["rest"])
             #shop_materialpathアトリビュートを追加
-            if not pm.attributeQuery(shaderAttributeName+"_AbcGeomScope",node=eachShape,exists=True):
-                pm.addAttr(eachShape, dataType="string", longName=shaderAttributeName+"_AbcGeomScope")
-            pm.setAttr(eachShape+"."+shaderAttributeName+"_AbcGeomScope", "uni")
-            if not pm.attributeQuery(shaderAttributeName,node=eachShape,exists=True):
-                pm.addAttr(eachShape,dataType="stringArray",longName=shaderAttributeName)
-            pm.setAttr(eachShape+"."+shaderAttributeName,dictAttributes[eachShape]["shader"])
+            if not cmds.attributeQuery(shaderAttributeName+"_AbcGeomScope",node=eachShape,exists=True):
+                cmds.addAttr(eachShape, dataType="string", longName=shaderAttributeName+"_AbcGeomScope")
+            cmds.setAttr(eachShape+"."+shaderAttributeName+"_AbcGeomScope", "uni")
+            if not cmds.attributeQuery(shaderAttributeName,node=eachShape,exists=True):
+                cmds.addAttr(eachShape,dataType="stringArray",longName=shaderAttributeName)
+            cmds.setAttr(eachShape+"."+shaderAttributeName,dictAttributes[eachShape]["shader"])
 
     # euler filter
 
@@ -234,7 +233,6 @@ def ndPyLibExportAbc_caller(args):
 
 if __name__ == '__main__':
     args = {
-        'manual_bake': False,
         'publish_ver_abc_path': 'P:/Project/mem2/shots/roll05/s141G/c004/publish/test_charSet/001_LXMAR/v002/abc',
         'export_item': {'anim': None, 'abc': 'ABCset'},
         'namespace': ['[_A-Za-z]*LXMAR[0-9]*_RigRH'],
