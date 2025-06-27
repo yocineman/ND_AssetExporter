@@ -3,6 +3,7 @@ import os,sys
 import maya.cmds as cmds
 import maya.mel as mel
 import re
+import pymel.core as pm
 try:
     from importlib import reload
 except:
@@ -36,6 +37,22 @@ def Euler_filter(obj_list):
             continue
 
 
+def mergeAnimLayers():
+    mel.eval(
+        'source "C:/Program Files/Autodesk/Maya2020/scripts/others/performAnimLayerMerge.mel"'.format(
+            pm.about(version=True)
+        )
+    )
+    animLayers = cmds.ls(type="animLayer")
+    if animLayers:
+        try:
+            mel.eval('animLayerMerge {"%s"}' % '","'.join(animLayers))
+        except Exception as e:
+            print("Error merging animation layers: {}".format(e))
+            cmds.warning("Failed to merge animation layers. Please check the output for details.")
+    return
+
+
 def search_cam():
     tg_cam_list = []
     for cam_shape in cmds.ls(ca=True):
@@ -49,6 +66,9 @@ def search_cam():
 
 
 def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
+
+    mergeAnimLayers()
+
     if tg_cam_list is None or tg_cam_list == 'None':
         cams = search_cam()
     else:
@@ -114,9 +134,14 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
     else:
         for t in range(int(sframe),int(eframe+1)):
             for i in range(len(to_cam)):
+                # Set current time
                 cmds.currentTime(t)
+                # 描画を更新
+                cmds.refresh()
+                
                 attrsTrans = cmds.xform(from_cam[i],q=True,ws=True,t=True)
                 attrsRot = cmds.xform(from_cam[i],q=True,ws=True,ro=True)
+                print(t, attrsTrans)
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[0], at='tx')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[1], at='ty')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[2], at='tz')
@@ -264,12 +289,12 @@ def export_cam_main(kwargs):
                 ignore_attrs.append('{}Shape.visibility'.format(obj.lstrip('|')))
                 ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
 
-    if kwargs['frame_range'] != False and kwargs['frame_range']!=None:
-        sframe = float(kwargs['frame_range'].split(',')[0])
-        eframe = float(kwargs['frame_range'].split(',')[1])
-    else:
-        sframe = cmds.playbackOptions(q=True, min=True)
-        eframe = cmds.playbackOptions(q=True, max=True)
+    # if kwargs['frame_range'] != False and kwargs['frame_range']!=None:
+    #     sframe = float(kwargs['frame_range'].split(',')[0])
+    #     eframe = float(kwargs['frame_range'].split(',')[1])
+    # else:
+    sframe = cmds.playbackOptions(q=True, min=True)
+    eframe = cmds.playbackOptions(q=True, max=True)
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
@@ -339,4 +364,7 @@ def ndPylibExportCam_caller(**kwargs):
 
 
 if __name__ == '__main__':
-    pass
+    sframe = 995
+    eframe = 1300
+    cam_grps = ["cameraFX3:cameraFX3"]
+    bake_cam(sframe, eframe, 1.0, 1, cam_grps)
