@@ -29,6 +29,7 @@ def Euler_filter(obj_list):
                 in ["animCurveTL", "animCurveTU", "animCurveTA", "animCurveTT"],
                 anim_cv,
             )
+            anim_cv = list(anim_cv)
             if len(list(anim_cv)) == 0:
                 continue
             cmds.filterCurve(anim_cv, f="euler")
@@ -141,7 +142,7 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
                 
                 attrsTrans = cmds.xform(from_cam[i],q=True,ws=True,t=True)
                 attrsRot = cmds.xform(from_cam[i],q=True,ws=True,ro=True)
-                print(t, attrsTrans)
+                print(t, attrsRot)
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[0], at='tx')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[1], at='ty')
                 cmds.setKeyframe(to_cam[i],t=cmds.currentTime(q=True), v=attrsTrans[2], at='tz')
@@ -186,7 +187,7 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
         result_cams.append([to_cam[i], from_cam[i]])
 
         mel.eval('setAttr '+to_cam[i]+'.bestFitClippingPlanes true')
-    Euler_filter(to_cam)
+    # Euler_filter(to_cam)
 
     return result_cams
 
@@ -368,3 +369,7 @@ if __name__ == '__main__':
     eframe = 1300
     cam_grps = ["cameraFX3:cameraFX3"]
     bake_cam(sframe, eframe, 1.0, 1, cam_grps)
+    
+# 1286 (107, 84, 116)
+# 1287 (177,87,-175)
+# 1288 (45, 97, 54)
