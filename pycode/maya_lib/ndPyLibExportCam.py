@@ -187,7 +187,7 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
         result_cams.append([to_cam[i], from_cam[i]])
 
         mel.eval('setAttr '+to_cam[i]+'.bestFitClippingPlanes true')
-    # Euler_filter(to_cam)
+    Euler_filter(to_cam)
 
     return result_cams
 
