@@ -48,6 +48,7 @@ def eulerfilter(attr_list):
             anim_cv = map(lambda x: x.rstrip('.output'), attr)
             anim_cv = filter(lambda x: cmds.nodeType(x) in [
                              'animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
+            anim_cv = list(anim_cv)
             if len(list(anim_cv))== 0:
                 continue
             cmds.filterCurve(anim_cv, f='euler')

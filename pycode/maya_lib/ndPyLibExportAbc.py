@@ -21,6 +21,7 @@ def Euler_filter(obj_list):
         anim_cv = map(lambda x: x.rstrip('.output'), anim_cv)
         try:
             anim_cv = filter(lambda x: cmds.nodeType(x) in ['animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
+            anim_cv = list(anim_cv)
             if len(list(anim_cv)) == 0:
                 continue
             cmds.filterCurve(anim_cv, f='euler')
