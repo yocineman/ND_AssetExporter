@@ -87,11 +87,11 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list, scenetimewarp_t
 
     if scenetimewarp_type == 'auto':
         scenetimewarp = cmds.getAttr("time1.enableTimewarp")
-    elif scenetimewarp_type == 'disable':
+    elif scenetimewarp_type == 'Disable':
         scene_timewarp = False
-    elif scenetimewarp_type == 'enable':
+    elif scenetimewarp_type == 'Enable':
         scene_timewarp = True
-
+    print('Scene Timewarp:', scenetimewarp_type)
 
     if scene_timewarp == True:
         print('$$$$Scene Timewarp is enabled. Disabling it for baking cameras.')

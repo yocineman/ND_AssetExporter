@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>350</height>
+    <height>367</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -163,6 +163,9 @@
         <property name="text">
          <string>Auto</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
         <attribute name="buttonGroup">
          <string notr="true">timewarp_group</string>
         </attribute>
@@ -258,7 +261,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="ext_group"/>
   <buttongroup name="timewarp_group"/>
+  <buttongroup name="ext_group"/>
  </buttongroups>
 </ui>
