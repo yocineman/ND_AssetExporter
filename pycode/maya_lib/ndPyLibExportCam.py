@@ -66,7 +66,7 @@ def search_cam():
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
+def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list, scenetimewarp_type='auto'):
 
     mergeAnimLayers()
 
@@ -84,9 +84,17 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
         to_cam.append(cmds.camera()[0])
         from_cam.append(cams[i])
 
-    scene_timewarp = cmds.getAttr("time1.enableTimewarp")
+
+    if scenetimewarp_type == 'auto':
+        scenetimewarp = cmds.getAttr("time1.enableTimewarp")
+    elif scenetimewarp_type == 'disable':
+        scene_timewarp = False
+    elif scenetimewarp_type == 'enable':
+        scene_timewarp = True
+
 
     if scene_timewarp == True:
+        print('$$$$Scene Timewarp is enabled. Disabling it for baking cameras.')
         for i in range(len(to_cam)):
             time_set_list = []
             time_value_set_list = []
@@ -139,7 +147,7 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list):
                 cmds.currentTime(t)
                 # 描画を更新
                 cmds.refresh()
-                
+
                 attrsTrans = cmds.xform(from_cam[i],q=True,ws=True,t=True)
                 attrsRot = cmds.xform(from_cam[i],q=True,ws=True,ro=True)
                 print(t, attrsRot)
@@ -271,6 +279,11 @@ def export_cam_main(kwargs):
     else:
         ext_type = kwargs['ext_type']
 
+    if 'scenetimewarp_type' not in kwargs.keys():
+        scenetimewarp_type = "auto"
+    else:
+        scenetimewarp_type = kwargs["scenetimewarp_type"]
+
     if batch_mode:
         cache_nodes = cmds.ls(type='cacheFile')
         hidden_objs = []
@@ -299,7 +312,7 @@ def export_cam_main(kwargs):
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
 
-    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['step_value'], kwargs['tg_cam_list'])
+    cams = bake_cam(sframe, eframe, kwargs['cam_scale'], kwargs['step_value'], kwargs['tg_cam_list'], scenetimewarp_type)
     if cams is None:
         return
 
@@ -338,16 +351,16 @@ def export_cam_main(kwargs):
     if 'remain_cam' in kwargs.keys():
         if kwargs['remain_cam'] == False:
             for i in range(len(bake_cams)):
-                #cameraを削除する referenceの場合はreferenceを削除する
+                # cameraを削除する referenceの場合はreferenceを削除する
                 try:
                     cmds.delete(bake_cams[i])
                 except:
-                    #referenceの場合
+                    # referenceの場合
                     try:
                         cmds.file(rm=cmds.referenceQuery(bake_cams[i], f=True))
                     except Exception as e:
                         print(e)
-                
+
     if batch_mode:
         for obj in hidden_objs:
             try:
@@ -357,7 +370,7 @@ def export_cam_main(kwargs):
             except Exception as e:
                 print(e)
         cmds.showHidden(hidden_objs)
-    
+
     return
 
 def ndPylibExportCam_caller(**kwargs):
@@ -369,7 +382,7 @@ if __name__ == '__main__':
     eframe = 1300
     cam_grps = ["cameraFX3:cameraFX3"]
     bake_cam(sframe, eframe, 1.0, 1, cam_grps)
-    
+
 # 1286 (107, 84, 116)
 # 1287 (177,87,-175)
 # 1288 (45, 97, 54)

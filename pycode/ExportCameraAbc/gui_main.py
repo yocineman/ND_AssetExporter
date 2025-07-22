@@ -1,6 +1,6 @@
 # coding: utf-8
 # ------------------------------
-_version_ = "0.3.0"
+_version_ = "0.4.0"
 _author_ = "Kei Ueda"
 # ------------------------------
 import os
@@ -74,12 +74,16 @@ class GUI(MayaQWidgetBaseMixin, QtWidgets.QMainWindow):
         for cam in self.ui.camera_list.selectedItems():
             tg_cam_list.append(cam.text())
 
-        self.InstanceExportCameraAbc.export(remain_cam, self.get_ext_type(), tg_cam_list)
+        self.InstanceExportCameraAbc.export(remain_cam, self.get_ext_type(), tg_cam_list, self.get_timewarp_type())
 
     def get_ext_type(self):
         self.ext_type = self.ui.ext_group.checkedButton().text().split('_exp')[0]
         return self.ext_type
-
+    
+    def get_timewarp_type(self):
+        self.timewarp_type = self.ui.timewarp_group.checkedButton().text().split('_')[-1]
+        return self.timewarp_type
+    
     def open_exp_folder_btn_clicked(self):
         # open folder
         self.get_ext_type()

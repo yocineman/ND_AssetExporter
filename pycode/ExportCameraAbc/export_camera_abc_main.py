@@ -88,7 +88,7 @@ class ExportCameraAbc(object):
             cmds.setAttr(cam + ".horizontalFilmAperture", h_aperture)
             cmds.setAttr(cam + ".filmFit", 1)
 
-    def export(self, remain_cam=False, ext_type="all", tg_cam_list=None):
+    def export(self, remain_cam=False, ext_type="all", tg_cam_list=None, scenetimewarp_type="auto"):
         try:
             if (
                 cmds.getAttr("time1.enableTimewarp")
@@ -117,6 +117,7 @@ class ExportCameraAbc(object):
             "project": os.environ["PROJ"],
             "step_value": 1.0,
             "tg_cam_list": tg_cam_list,
+            "scenetimewarp_type": scenetimewarp_type,
         }
         ndPyLibExportCam.export_cam_main(info_dic)
 
