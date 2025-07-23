@@ -280,7 +280,7 @@ def export_cam_main(kwargs):
         ext_type = kwargs['ext_type']
 
     if 'scenetimewarp_type' not in kwargs.keys():
-        scenetimewarp_type = "auto"
+        scenetimewarp_type = "Auto"
     else:
         scenetimewarp_type = kwargs["scenetimewarp_type"]
 
