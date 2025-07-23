@@ -66,7 +66,7 @@ def search_cam():
     return tg_cam_list
 
 
-def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list, scenetimewarp_type='auto'):
+def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list, scenetimewarp_type='Auto'):
 
     mergeAnimLayers()
 
