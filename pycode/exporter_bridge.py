@@ -1,10 +1,13 @@
 # coding: utf-8
-
+"""
+main.pyとbatch.pyの間のフォルダやタイムログの管理
+-------------------------------------------------
+一瞬だけ書き出されるが消えるという質問が寄せられるが、正しい挙動
+"""
 import os,sys
 import yaml
 import shell_lib.util_exporter as util_exporter
 sys.path.append('Y:/tool/ND_Tools/DCC')  
-# このファイルのパスにdevが含まれていれば
 if 'dev' not in os.path.dirname(__file__).split('/'):
     import dev.Standalone.ND_AssetExporter.pycode.batch as batch
 else:

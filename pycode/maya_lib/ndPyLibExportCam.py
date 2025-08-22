@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+カメラをbakeして出力するモジュール
+mayabatchだけでなくmaya.exeでも使用します。
+カメラのアニメーションをbakeして、FBX,ABC,MA形式で出力します。
+このモジュールは、カメラのアニメーションをbakeして、指定された形式で出力するためのものです。
+ndPylibExportCam->export_cam_main->bake_cam
+"""
 import os,sys
 import maya.cmds as cmds
 import maya.mel as mel
@@ -23,6 +30,7 @@ def Euler_filter(obj_list):
     for obj in obj_list:
         anim_cv = map(lambda x: cmds.connectionInfo(obj + x, sfd=True), xyz)
         anim_cv = map(lambda x: x.rstrip(".output"), anim_cv)
+        anim_cv = list(anim_cv)
         try:
             anim_cv = filter(
                 lambda x: cmds.nodeType(x)
@@ -64,6 +72,72 @@ def search_cam():
             continue
         tg_cam_list.append(cam)
     return tg_cam_list
+
+
+def get_unload_ns_dic():
+    unLoaded_ref_dic = {}
+    refList = cmds.ls(type='reference')
+    for ref in refList:
+        if ref == 'sharedReferenceNode':
+            continue
+        try:
+            if cmds.referenceQuery(ref, isLoaded=True):
+                pass
+            else:
+                ref_path = cmds.referenceQuery(ref, filename=True)
+                ref_ns = cmds.file(ref_path, q=True, ns=True)
+                unLoaded_ref_dic[ref_ns] = ref
+        except Exception as e:
+            print(e)
+    return unLoaded_ref_dic
+
+
+def get_tg_ns_list(scene_ns_list, input_ns_list):
+    tg_ns_list = []
+    for scene_ns in scene_ns_list:
+        for input_ns in input_ns_list:
+            match = re.match(input_ns+'$', scene_ns)
+            if match != None:
+                tg_ns_list.append(scene_ns)
+    return tg_ns_list
+
+
+def export_ma(ma_path):
+    if not os.path.exists(os.path.dirname(ma_path)):
+        os.makedirs(os.path.dirname(ma_path))
+    # delete unkonwn nodes
+    cmds.delete(cmds.ls(type='unknown'))
+    try:
+        cmds.file(ma_path, force=True, options='v=0', typ='mayaAscii', pr=True, es=True, f=True)
+    except Exception as e:
+        print(e)
+
+
+def export_fbx(fbx_path):
+    if not os.path.exists(os.path.dirname(fbx_path)):
+        os.makedirs(os.path.dirname(fbx_path))
+    if cmds.pluginInfo('fbxmaya', q=True, l=True) == 0:
+        cmds.loadPlugin('fbxmaya')
+    cmds.file(fbx_path, force=True, options='v=0', typ='FBX export', pr=True, es=True, f=True)
+
+
+def export_abc(abc_path, sframe, eframe, grp_name='cam_grp'):
+    if not os.path.exists(os.path.dirname(abc_path)):
+        os.makedirs(os.path.dirname(abc_path))
+    if cmds.pluginInfo('AbcExport', q=True, l=True) == 0:
+        cmds.loadPlugin('AbcExport')
+    cmds.evaluationManager(mode='off')
+    strAbc = ''
+    strAbc = strAbc+'-frameRange '+str(sframe)+' '+str(eframe)+' '
+    strAbc = strAbc+'-uvWrite '
+    strAbc = strAbc+'-worldSpace '
+    strAbc = strAbc+'-eulerFilter '
+    strAbc = strAbc+'-dataFormat ogawa '
+    strAbc = strAbc+ '-root {} '.format(grp_name)
+    strAbc = strAbc+ '-file '+ abc_path
+    print ('AbcExport -j ' + strAbc)
+    mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
+    # cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
 
 
 def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list, scenetimewarp_type='Auto'):
@@ -200,72 +274,6 @@ def bake_cam(sframe, eframe, cam_scale, step_value, tg_cam_list, scenetimewarp_t
     return result_cams
 
 
-def get_unload_ns_dic():
-    unLoaded_ref_dic = {}
-    refList = cmds.ls(type='reference')
-    for ref in refList:
-        if ref == 'sharedReferenceNode':
-            continue
-        try:
-            if cmds.referenceQuery(ref, isLoaded=True):
-                pass
-            else:
-                ref_path = cmds.referenceQuery(ref, filename=True)
-                ref_ns = cmds.file(ref_path, q=True, ns=True)
-                unLoaded_ref_dic[ref_ns] = ref
-        except Exception as e:
-            print(e)
-    return unLoaded_ref_dic
-
-
-def get_tg_ns_list(scene_ns_list, input_ns_list):
-    tg_ns_list = []
-    for scene_ns in scene_ns_list:
-        for input_ns in input_ns_list:
-            match = re.match(input_ns+'$', scene_ns)
-            if match != None:
-                tg_ns_list.append(scene_ns)
-    return tg_ns_list
-
-
-def export_ma(ma_path):
-    if not os.path.exists(os.path.dirname(ma_path)):
-        os.makedirs(os.path.dirname(ma_path))
-    # delete unkonwn nodes
-    cmds.delete(cmds.ls(type='unknown'))
-    try:
-        cmds.file(ma_path, force=True, options='v=0', typ='mayaAscii', pr=True, es=True, f=True)
-    except Exception as e:
-        print(e)
-
-
-def export_fbx(fbx_path):
-    if not os.path.exists(os.path.dirname(fbx_path)):
-        os.makedirs(os.path.dirname(fbx_path))
-    if cmds.pluginInfo('fbxmaya', q=True, l=True) == 0:
-        cmds.loadPlugin('fbxmaya')
-    cmds.file(fbx_path, force=True, options='v=0', typ='FBX export', pr=True, es=True, f=True)
-
-
-def export_abc(abc_path, sframe, eframe, grp_name='cam_grp'):
-    if not os.path.exists(os.path.dirname(abc_path)):
-        os.makedirs(os.path.dirname(abc_path))
-    if cmds.pluginInfo('AbcExport', q=True, l=True) == 0:
-        cmds.loadPlugin('AbcExport')
-    cmds.evaluationManager(mode='off')
-    strAbc = ''
-    strAbc = strAbc+'-frameRange '+str(sframe)+' '+str(eframe)+' '
-    strAbc = strAbc+'-uvWrite '
-    strAbc = strAbc+'-worldSpace '
-    strAbc = strAbc+'-eulerFilter '
-    strAbc = strAbc+'-dataFormat ogawa '
-    strAbc = strAbc+ '-root {} '.format(grp_name)
-    strAbc = strAbc+ '-file '+ abc_path
-    print ('AbcExport -j ' + strAbc)
-    mel.eval('AbcExport -verbose -j ' + '"' + strAbc + '"')
-    # cmds.file(kwargs['ma_cam_path'], force=True, options='v=0', typ='mayaAscii', pr=True, es=True)
-
-
 def export_cam_main(kwargs):
     print('------export_cam_main------')
     import pprint
@@ -303,10 +311,6 @@ def export_cam_main(kwargs):
                 ignore_attrs.append('{}Shape.visibility'.format(obj.lstrip('|')))
                 ignore_attrs.append('{}.visibility'.format(obj.lstrip('|')))
 
-    # if kwargs['frame_range'] != False and kwargs['frame_range']!=None:
-    #     sframe = float(kwargs['frame_range'].split(',')[0])
-    #     eframe = float(kwargs['frame_range'].split(',')[1])
-    # else:
     sframe = cmds.playbackOptions(q=True, min=True)
     eframe = cmds.playbackOptions(q=True, max=True)
     sframe -= float(kwargs['frame_handle'])
@@ -382,7 +386,3 @@ if __name__ == '__main__':
     eframe = 1300
     cam_grps = ["cameraFX3:cameraFX3"]
     bake_cam(sframe, eframe, 1.0, 1, cam_grps)
-
-# 1286 (107, 84, 116)
-# 1287 (177,87,-175)
-# 1288 (45, 97, 54)

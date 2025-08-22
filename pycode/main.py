@@ -1,4 +1,24 @@
 # -*- coding: utf-8 -*-
+"""
+ND_AssetExporterはアセットを置き換えたシーンをアニメーションベイクして書き出すツールです。
+https://otakendesigncojp.sharepoint.com/sites/RigDevelopment/_layouts/Doc.aspx?sourcedoc={9EC34422-5BFF-42EF-8C06-DA416DB63DF4}&wd=target%28StandAlone.one%7C2095B921-4EED-4073-BFD3-E3AC60B70F5A%2F%E3%80%90ND_AssetExporter%E3%80%91%7CBE67CBA1-EB34-4CFD-A8FC-C795A4F2BFBB%2F%29&wdpartid={5648D3F9-91A6-0FB4-0E2C-26EEE8FB9FFD}{1}&wdsectionfileid={8A654079-8591-4291-99AF-86FF99CA549D}
+-------------------------------
+main.py
+-> exporter_bridge.py -> batch.py 
+    -> ndPyLibExportAnim
+    -> ndPyLibExportAbc
+    -> ndPyLibExportCam
+と大まかに移動する
+-------------------------------
+注意点
+mtoaのバージョンが決め打ちになっている
+batch.pyのset_env()をどうにかする必要がある
+-------------------------------
+ログの出力先
+Y:\users\deadlineuser\DCC_log\ND_AssetExporter
+-------------------------------
+Copyright (c) Kei Ueda
+"""
 from shell_lib import util_exporter
 import threading
 import subprocess

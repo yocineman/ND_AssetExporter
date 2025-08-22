@@ -1,99 +1,28 @@
 # -*- coding: utf-8 -*-
+"""
+バッチを呼び出す
+
+set_envで環境変数を設定
+run_subprocessでコマンドを実行
+
+コマンドはunique_orderで仕込んだコードをmaya_cmd_makerで整形する
+"""
+
 import sys
 import os
 import subprocess
-import yaml
-import time
 
 
 onpath = os.path.dirname(os.path.abspath(__file__)).replace("\\", "/")
 
 
-# def set_env():
-#     # arnold
-#     sys.path.append("Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts")
-#     # scripts
-#     scripts_path = "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts"
-#     if os.environ.get("PYTHONPATH") is None:
-#         os.environ["PYTHONPATH"] = scripts_path
-#     else:
-#         os.environ["PYTHONPATH"] = (
-#             scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
-#         )
-#     if os.environ.get("PYTHONPATH") is None:
-#         os.environ["PYTHONPATH"] = scripts_path
-#     else:
-#         os.environ["PYTHONPATH"] = (
-#             scripts_path + ";" + os.environ["PYTHONPATH"].rstrip(";")
-#         )
-#     # plug-in
-#     if os.environ.get("MAYA_PLUG_IN_PATH") is None:
-#         os.environ["MAYA_PLUG_IN_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins"
-#         )
-#     else:
-#         os.environ["MAYA_PLUG_IN_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/plug-ins;"
-#             + os.environ["MAYA_PLUG_IN_PATH"].rstrip(";")
-#         )
-#     # mod
-#     mod_path = "Y:/users/env/maya/2023/mod"
-#     if os.environ.get("MAYA_MODULE_PATH") is None:
-#         os.environ["MAYA_MODULE_PATH"] = mod_path
-#     else:
-#         os.environ["MAYA_MODULE_PATH"] = (
-#             mod_path + ";" + os.environ["MAYA_MODULE_PATH"].rstrip(";")
-#         )
-#     # path
-#     if os.environ.get("PATH") is None:
-#         os.environ["PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin"
-#     else:
-#         os.environ["PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/bin;"
-#             + os.environ["PATH"].rstrip(";")
-#         )
-#     if os.environ.get("ARNOLD_PATH") is None:
-#         os.environ["ARNOLD_PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545"
-#     else:
-#         os.environ["ARNOLD_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545;"
-#             + os.environ["ARNOLD_PATH"].rstrip(";")
-#         )
-#     if os.environ.get("ARNOLD_PLUGIN_PATH") is None:
-#         os.environ["ARNOLD_PLUGIN_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals"
-#         )
-#     else:
-#         os.environ["ARNOLD_PLUGIN_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/shaders;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/procedurals;"
-#             + os.environ["ARNOLD_PLUGIN_PATH"].rstrip(";")
-#         )
-#     os.environ["MTOA_EXTENSIONS_PATH"] = (
-#         "Y:/users/env/arnold/mtoa/2025_MtoA_545/extensions"
-#     )
-#     os.environ["MTOA_PATH"] = "Y:/users/env/arnold/mtoa/2025_MtoA_545/"
-#     if os.environ.get("MTOA_SCRIPT_PATH") is None:
-#         os.environ["MTOA_SCRIPT_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts/mtoa/mel"
-#         )
-#     else:
-#         os.environ["MTOA_SCRIPT_PATH"] = (
-#             "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts;"
-#             + "Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts/mtoa/mel"
-#         )
-
-#     os.environ["MAYA_PLUG_IN_RESOURCE_PATH"] = ("Y:/users/env/arnold/mtoa/2025_MtoA_545/resources;"
-#         "C:/Program Files/Autodesk/Maya2023/plug-ins/ATF/resources")
-
 
 def set_env():
+    '''
+    環境変数を設定する
+
+    MtoAなどは決め打ちのため、環境に合わせて変更する必要がある
+    '''
     # arnold
     sys.path.append("Y:/users/env/arnold/mtoa/2025_MtoA_545/scripts")
     # scripts

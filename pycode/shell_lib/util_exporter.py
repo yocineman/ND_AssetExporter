@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+"""
+main.pyが長くなりすぎないようにするための補助モジュール
+
+このモジュールは、ND_AssetExporterの中で使用されるユーティリティ関数やクラスを提供します。
+GUIのテーブルモデル、パスの管理、データ取得などを行います。
+Shotgridからのデータ取得、パスの管理、エクスポートの設定などを行うためのクラスや関数が含まれています。
+Deadlineへのジョブ送信や、Mayaでのエクスポート処理を行うための関数も含まれています。
+"""
 import os, sys
 from imp import reload
 import re
@@ -68,8 +76,31 @@ def get_vers(folder_path):
     return vers
 
 
-# Pathをパースして各種出力先を取得するクラス
 class outputPathConf(object):
+    """
+    Pathをパースして各種出力先を取得するクラス
+    util_path.get_path_dic()を使用して、入力パスからプロジェクト名、ショット、シーケンスなどの情報を取得します。
+    出力先のパスを設定し、バージョン管理やディレクトリの作成、削除などを行います。
+    また、バージョンのインクリメントや現在のバージョンのコピー、タイムログの追加なども行います。
+    このクラスは、アセットのエクスポートやパスの管理を行うために使用されます。
+    Attributes:
+        input_path (str): 入力パス
+        export_type (str): エクスポートの種類（例: 'anim', 'abc', 'camera'など）
+        debug (bool): デバッグモードのフラグ
+        root_dir (str): 出力先のルートディレクトリ名
+        pro_name (str): プロジェクト名
+        roll (str): ロール名（存在する場合）
+        shot (str): ショット名
+        sequence (str): シーケンス名
+        shot_path (str): ショットのパス
+    Methods:
+        set_char(char): キャラクター名を設定し、出力パスを準備します。
+        ver_inc(): バージョンをインクリメントし、新しいバージョンのディレクトリを作成します。
+        copy_ver2current(): 最新のバージョンから現在のバージョンにファイルをコピーします。
+        remove_dir(): バージョンディレクトリを削除し、必要に応じて現在のディレクトリも削除します。
+        overrideShotpath(shotpath): ショットパスを上書きします。
+        addTimeLog(): タイムログを追加します。
+    """
     def __init__(self, input_path, export_type=None, debug=False):
         self.input_path = input_path.replace("\\", "/")
         self.export_type = export_type
@@ -325,6 +356,26 @@ class ProjectInfo:
 
 #  Deadline用クラス
 class DeadlineMod:
+    """
+    Deadlineにジョブを投げるためのクラス
+    このクラスは、Deadlineにジョブを送信するための設定やファイルの生成を行います。
+    Attributes:
+        target_py (str): 実行するPythonスクリプトのパス
+        argsdict (dict): ジョブに渡す引数の辞書
+        executer (str): Python実行ファイルのパス
+        stg_dir (str): スタートアップディレクトリのパス
+        tmp_dir (str): 一時ディレクトリのパス
+        job_dict (dict): ジョブの設定内容を含む辞書
+        info_dict (dict): ジョブの情報を含む辞書
+    Methods:
+        __init__(**kwargs): コンストラクタ。引数を受け取り、必要なパスや設定を初期化します。
+        job_content(): ジョブの設定内容を辞書形式で返します。
+        info_content(): ジョブの情報を辞書形式で返します。
+        file_maker(file_type, file_number): 指定されたファイルタイプのジョブファイルまたは情報ファイルを生成します。
+        make_submit_files(file_number, farm="Deadline", version="10"): ジョブファイルと情報ファイルを生成し、辞書形式で返します。
+        submit_to_deadlineJob(farm="Deadline", version="10", file_number=1): Deadlineにジョブを送信します。
+    """
+    
     def __init__(self, **kwargs):
         # jobFile
         self.target_py = (
@@ -436,9 +487,27 @@ def submit_to_deadlineJobs(jobs, farm="Deadline", version="10"):
     lines_iterator = iter(process.stdout.readline, b"")
     return lines_iterator
 
-
-#  GUI用
 class ExporterTableModel(QAbstractTableModel):
+    """
+    テーブルモデルクラス
+    QAbstractTableModelを継承して、テーブルのデータを管理します。
+    このクラスは、テーブルの行数、列数、データの取得、ヘッダーの設定などを行います。
+    Attributes:
+        table_data (list): テーブルのデータを保持する二次元リスト
+        headers (list): テーブルのヘッダー情報
+        check_row (list): チェックされた行のインデックスを保持するリスト
+        executed_row (list): 実行済みの行のインデックスを保持するリスト
+    Methods:
+        __init__(table_data, headers=[], check_row=[], executed_row=[], parent=None):
+            コンストラクタ。テーブルのデータ、ヘッダー、チェック行、実行済み行を初期化します。
+        rowCount(parent): テーブルの行数を返します。
+        columnCount(parent): テーブルの列数を返します。
+        flags(index): アイテムのフラグを設定します。
+        data(index, role=Qt.BackgroundRole): 指定されたインデックスのデータを取得します。
+        setData(index, value, role=Qt.DisplayRole): 指定されたインデックスのデータを更新します。
+        headerData(section, orientation, role): ヘッダーのデータを取得します。
+    """
+
     def __init__(
         self, table_data, headers=[], check_row=[], executed_row=[], parent=None
     ):
@@ -692,6 +761,30 @@ def is_arnold(project):
 
 
 class SGProjectClass(object):
+    """
+    ShotGridのプロジェクト情報を取得するクラス
+    このクラスは、指定されたプロジェクト名とフィールドコードに基づいて、ShotGridからアセットとショットの情報を取得します。
+    Attributes:
+        project_name (str): プロジェクト名
+        project_code (str): プロジェクトコード
+        filters (list): ShotGridのフィルター条件
+        SGFieldDict (dict): アセットとショットの情報を格納する辞書
+        ProjectInfoClass (class): プロジェクト情報を管理するクラス
+    Methods:
+        __init__(project, field_codes, ProjectInfoClass=None):
+            コンストラクタ。プロジェクト名とフィールドコードを受け取り、ShotGridから情報を取得します。
+        get_dict(category): 指定されたカテゴリのデータをShotGridから取得します。
+        sg_write(category, attribute_name, field_code, new_data):
+            ShotGridのデータを更新します。
+        get_keying_dict(category, priority_field):
+            特定のコードをキーに格納した辞書を返します。
+        get_keying_list(category, target_field, topic_item):
+            特定のキー:アイテムのリストを返します。
+        get_target_asset_list():
+            ショットからアセットのリストを取得します。
+        get_all_asset_dic():
+            すべてのアセットの辞書を取得します。
+    """
     def __init__(self, project, field_codes, ProjectInfoClass=None):
         self.SGFieldDict = {}
         self.project_name = project

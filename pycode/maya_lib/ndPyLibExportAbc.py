@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+abcの書き出しを行うモジュール
 
+maya.batchで実行することを前提としている。
+-------------------------------------------------
+ndPyLibExportAbc_Caller
+-> export_abc_mainの順で実行される
+-------------------------------------------------
+yetiのキャッシュファイルのパスを取得し、publish_char_pathに保存する
+
+"""
 import os
 import re
 
@@ -62,6 +72,32 @@ def getAllNodes(namespace, _regexArgs):
 
 
 def export_abc_main(**kwargs):
+    """
+    abcの書き出しを行うメイン関数
+
+    Args:
+    publish_ver_abc_path (str): 書き出し先のパス
+    export_item (dict): 書き出し対象のアイテム
+    namespace (list): 書き出し対象の名前空間リスト
+    abc_item (str): 書き出し対象のabcアイテム名
+    input_path (str): 入力ファイルのパス
+    frame_range (tuple): フレーム範囲 (start, end)
+    frame_handle (int): フレームハンドルの値
+    top_node (str): トップノードの名前
+    step_value (int): ステップ値
+    publish_char_path (str): キャラクターのパス
+    add_attr (bool): 属性を追加するかどうか
+    Returns:
+    None
+    ------------------------------------------------
+    処理は
+    1. 名前空間の取得
+    2. 名前空間のフィルタリング
+    3. 対象ノードの取得
+    4. ユーティリティ関数の実行
+    5. abcの書き出し
+    ------------------------------------------------
+    """
     print("ndPylibExportABC Start")
     print('##export_anim_main args#############')
     print('publish_ver_abc_path : ', kwargs['publish_ver_abc_path'])
