@@ -1,4 +1,7 @@
 # coding: utf-8
+"""
+mayaから直接起動してalembicをエクスポートするツール
+"""
 # ------------------------------
 _version_ = "0.4.0"
 _author_ = "Kei Ueda"

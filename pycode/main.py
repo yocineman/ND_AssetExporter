@@ -1,7 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-ND_AssetExporterはアセットを置き換えたシーンをアニメーションベイクして書き出すツールです。
+ND_AssetExporterはアセットを置き換えたシーンをアニメーションベイクして書き出すツール。
 https://otakendesigncojp.sharepoint.com/sites/RigDevelopment/_layouts/Doc.aspx?sourcedoc={9EC34422-5BFF-42EF-8C06-DA416DB63DF4}&wd=target%28StandAlone.one%7C2095B921-4EED-4073-BFD3-E3AC60B70F5A%2F%E3%80%90ND_AssetExporter%E3%80%91%7CBE67CBA1-EB34-4CFD-A8FC-C795A4F2BFBB%2F%29&wdpartid={5648D3F9-91A6-0FB4-0E2C-26EEE8FB9FFD}{1}&wdsectionfileid={8A654079-8591-4291-99AF-86FF99CA549D}
+-------------------------------
+animの場合は
+    アセットとアニメーションをreferenceしている.ma
+    アニメーションカーブが記述された.ma
+    の2つのファイルを出力する
+abcの場合は
+    アセットとアニメーションをreferenceしている.ma
+    アニメーションが読まれたabc
+    アニメーションが読まれたfbx
+    の3つのファイルを出力する。
+cameraの場合は
+    アニメーションがベイクされたカメラの.ma
+    のみが出力される
+-------------------------------
+出力されたファイルは
+    publish/charSet/アセット名/v{バージョン}
+    に格納される。(timelog.txtも同じ場所に格納される)
+    また、最新の出力はcurrentにコピーされる。
+    importerなどで参照する場合はcurrentを参照する。
 -------------------------------
 main.py
 -> exporter_bridge.py -> batch.py 
@@ -35,7 +54,7 @@ try:
 except:
     pass
 # ------------------------------
-__version__ = '10.3.1'
+__version__ = '10.3.2'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(

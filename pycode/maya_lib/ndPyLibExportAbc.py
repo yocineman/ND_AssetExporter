@@ -24,21 +24,38 @@ def getNamespace():
     return namespaces
 
 
-def Euler_filter(obj_list):
-    xyz = ['.rotateX', '.rotateY', '.rotateZ']
-    for obj in obj_list:
-        anim_cv = map(lambda x: cmds.connectionInfo(obj+x, sfd=True), xyz)
-        anim_cv = map(lambda x: x.rstrip('.output'), anim_cv)
+def mergeAnimLayers():
+    mel.eval(
+        'source "C:/Program Files/Autodesk/Maya2020/scripts/others/performAnimLayerMerge.mel"'.format(
+            pm.about(version=True)
+        )
+    )
+    animLayers = cmds.ls(type="animLayer")
+    if animLayers:
         try:
-            anim_cv = filter(lambda x: cmds.nodeType(x) in ['animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
+            mel.eval('animLayerMerge {"%s"}' % '","'.join(animLayers))
+        except Exception as e:
+            print("Error merging animation layers: {}".format(e))
+            cmds.warning("Failed to merge animation layers. Please check the output for details.")
+    return
+
+
+
+def Euler_Filter(attr_list):
+    for attr in attr_list:
+        try:
+            if attr.rstrip('.output') == '':
+                continue
+            anim_cv = map(lambda x: x.rstrip('.output'), attr)
+            anim_cv = filter(lambda x: cmds.nodeType(x) in [
+                             'animCurveTL', 'animCurveTU', 'animCurveTA', 'animCurveTT'], anim_cv)
             anim_cv = list(anim_cv)
-            if len(list(anim_cv)) == 0:
+            if len(list(anim_cv))== 0:
                 continue
             cmds.filterCurve(anim_cv, f='euler')
-            print('# Euler Filter Success: '+obj+' #')
-        except:
-            continue
-
+            print("EulerFilter Success: {}".format(attr))
+        except Exception as e:
+            pass
 
 def getAllNodes(namespace, _regexArgs):
     if len(_regexArgs) == 0:
@@ -116,6 +133,8 @@ def export_abc_main(**kwargs):
 
     sframe -= float(kwargs['frame_handle'])
     eframe += float(kwargs['frame_handle'])
+
+    mergeAnimLayers()
 
     tg_ns_list = []
     scene_ns_list = getNamespace()
@@ -198,7 +217,7 @@ def export_abc_main(**kwargs):
         print(tg_ns, kwargs['abc_item'])
         print(getAllNodes(tg_ns, kwargs['abc_item']))
         all_nodes = getAllNodes(tg_ns, kwargs['abc_item'])
-        Euler_filter(all_nodes)
+        Euler_Filter(all_nodes)
         tg_nodes_dic[tg_ns] = all_nodes
         yeti_set = cmds.ls(tg_ns+':yetiSet')
         if len(yeti_set) != 0:
