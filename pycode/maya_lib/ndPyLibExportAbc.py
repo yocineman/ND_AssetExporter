@@ -131,8 +131,10 @@ def export_abc_main(**kwargs):
         sframe = cmds.playbackOptions(q=True, min=True)
         eframe = cmds.playbackOptions(q=True, max=True)
 
-    sframe -= float(kwargs['frame_handle'])
-    eframe += float(kwargs['frame_handle'])
+    # sframe -= float(kwargs['frame_handle'])
+    # eframe += float(kwargs['frame_handle'])
+    eframe = float(eframe) + float(kwargs['frame_handle'])
+    sframe = float(sframe) - float(kwargs['frame_handle'])
 
     mergeAnimLayers()
 

@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Camera Exportを行うためのメインスクリプト
+"""
 import os, sys
 import maya.cmds as cmds
 
