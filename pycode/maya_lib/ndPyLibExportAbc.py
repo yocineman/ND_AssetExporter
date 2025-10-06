@@ -136,6 +136,10 @@ def export_abc_main(**kwargs):
     eframe = float(eframe) + float(kwargs['frame_handle'])
     sframe = float(sframe) - float(kwargs['frame_handle'])
 
+    with open(os.path.dirname(os.path.dirname(os.path.dirname(publish_ver_abc_path))) + '/sceneConf.txt', 'w') as f:
+        f.write(str(sframe)+'\n')
+        f.write(str(eframe)+'\n')
+
     mergeAnimLayers()
 
     tg_ns_list = []

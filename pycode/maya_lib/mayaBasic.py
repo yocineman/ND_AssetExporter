@@ -64,7 +64,8 @@ def attachABC(abcPath,namespace,hierarchyList):
     # hierarchy = ''.join(hierarchyList)
     # topNodeを指定する
     hierarchy = cmds.ls(hierarchyList, long=True)[0] if hierarchyList else ''
-    mel.eval('AbcImport -mode import -fitTimeRange -debug -createIfNotFound -removeIfNoUpdate -connect ' + '\"' + hierarchy + '\" ' + '\"' + abcPath + '\"')
+    # mel.eval('AbcImport -mode import -fitTimeRange -debug -createIfNotFound -removeIfNoUpdate -connect ' + '\"' + hierarchy + '\" ' + '\"' + abcPath + '\"')
+    mel.eval('AbcImport -mode import -fitTimeRange -debug -connect ' + '\"' + hierarchy + '\" ' + '\"' + abcPath + '\"')
     # mel.eval('AbcImport -mode import -fitTimeRange -debug -connect ' + '\"' + '/' + '\" ' + '\"' + abcPath + '\"')
     outputFile = os.path.dirname(os.path.dirname(abcPath))+'/yetimem.txt'
     print("outputFile: {}".format(outputFile))
