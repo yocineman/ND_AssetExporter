@@ -74,12 +74,19 @@ class ExportCameraAbc(object):
         device_aspect_ratio = cmds.getAttr("defaultResolution.deviceAspectRatio")
         # horizontal film apertureのコネクション削除
         for cam in cam_list:
+            # horizontal なら処理しない
+            if cmds.getAttr(cam+'.filmFit') == 1:
+                continue
             if cmds.objExists(cam + ".horizontalFilmAperture"):
+                if cmds.getAttr(cam+'.horizontalFilmAperture', lock=True):
+                    cmds.setAttr(cam+'.horizontalFilmAperture', lock=False)
                 con_list = cmds.listConnections(cam + ".horizontalFilmAperture", p=True)
                 if con_list:
                     for con in con_list:
                         cmds.disconnectAttr(con, cam + ".horizontalFilmAperture")
             if cmds.objExists(cam + ".verticalFilmAperture"):
+                if cmds.getAttr(cam+'.verticalFilmAperture', lock=True):
+                    cmds.setAttr(cam+'.verticalFilmAperture', lock=False)
                 con_list = cmds.listConnections(cam + ".verticalFilmAperture", p=True)
                 if con_list:
                     for con in con_list:
