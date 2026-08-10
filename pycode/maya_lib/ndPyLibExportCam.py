@@ -50,7 +50,7 @@ def Euler_filter(obj_list):
 
 def mergeAnimLayers():
     mel.eval(
-        'source "C:/Program Files/Autodesk/Maya2020/scripts/others/performAnimLayerMerge.mel"'.format(
+        'source "C:/Program Files/Autodesk/Maya2025/scripts/others/performAnimLayerMerge.mel"'.format(
             pm.about(version=True)
         )
     )
