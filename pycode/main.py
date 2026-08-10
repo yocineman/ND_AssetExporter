@@ -54,7 +54,7 @@ try:
 except:
     pass
 # ------------------------------
-__version__ = '10.3.3'
+__version__ = '10.3.3a'
 __author__ = 'Kei Ueda'
 # ------------------------------
 EXPORTER_PATH = os.path.dirname(os.path.dirname(
